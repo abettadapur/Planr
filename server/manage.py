@@ -1,9 +1,13 @@
 import argparse
 
 from funtimes import db
+from funtimes.models.itinerary import Itinerary
+
 
 def create_db():
     db.create_all()
+
+
 def drop_db():
     db.drop_all()
 
