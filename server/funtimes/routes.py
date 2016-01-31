@@ -14,7 +14,6 @@ api.add_resource(funtimes_api.HelloWorld, '/api')
 def default(obj):
     """Default JSON serializer."""
     import calendar, datetime
-
     if isinstance(obj, datetime.datetime):
         if obj.utcoffset() is not None:
             obj = obj - obj.utcoffset()
