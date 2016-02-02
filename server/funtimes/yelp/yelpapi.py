@@ -56,4 +56,9 @@ def search(query, location, category_filters, **kwargs):
         url_params['radius_filters'] = 150000  # default radius is set to 15Km
 
     businesses = _make_request(SEARCH_PATH, url_params)
-    return businesses['businesses']  # Sara was here yolo
+    return businesses['businesses']  # Sara was here yolo and ACTUALLY wrote all this code
+
+def get_business(yelp_id):
+    api_entry = _make_request(BUSINESS_PATH+yelp_id)
+    return api_entry
+
