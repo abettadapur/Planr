@@ -3,7 +3,7 @@ from funtimes.models.base import BaseModel
 
 
 class Category(BaseModel):
-    __tablename__ = "Category"
+    __tablename__ = "category"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
     search_term = db.Column(db.String(200), nullable=True)

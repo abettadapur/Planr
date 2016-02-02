@@ -1,14 +1,15 @@
 import json
 
-from funtimes import db
 from funtimes.rest import api as funtimes_api
 from funtimes import app
-from flask import render_template
+from funtimes.models.base import BaseModel
 from flask_restful import Api
 from flask import make_response
 
 api = Api(app)
 api.add_resource(funtimes_api.HelloWorld, '/api')
+api.add_resource(funtimes_api.ItineraryListResource, '/api/itineraries')
+api.add_resource(funtimes_api.ItineraryResource, '/api/itineraries/<int:id>')
 
 
 def default(obj):
@@ -21,6 +22,8 @@ def default(obj):
 
     if isinstance(obj, datetime.date):
         return obj.strftime("%Y-%m-%d")
+    if isinstance(obj, BaseModel):
+        return obj.as_dict()
     raise TypeError('Not sure how to serialize %s' % (obj,))
 
 

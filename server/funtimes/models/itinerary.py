@@ -4,7 +4,7 @@ import datetime, time
 
 
 class Itinerary(BaseModel):
-    __tablename__ = "Itinerary"
+    __tablename__ = "itinerary"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
     date = db.Column(db.Date, nullable=False)
@@ -13,7 +13,7 @@ class Itinerary(BaseModel):
     city = db.Column(db.String(200), nullable=False)
     public = db.Column(db.Boolean)
     items = db.relationship("Item")
-    user_id = db.Column(db.Integer, db.ForeignKey("User.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     user = db.relationship("User", back_populates="itineraries")
     # user
 

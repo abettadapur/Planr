@@ -16,7 +16,9 @@ class ItineraryResource(Resource):
 
     # Get an itinerary by id
     def get(self, id):
-        pass
+        itinerary_repository = ItineraryRepository()
+        itinerary = itinerary_repository.find(id)
+        return itinerary
 
     # Update an itinerary by id
     def put(self, id):

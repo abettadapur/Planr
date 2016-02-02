@@ -1,5 +1,10 @@
 from abc import ABCMeta, abstractmethod
 from funtimes.models.base import BaseModel
+from funtimes.models.itinerary import Itinerary
+from funtimes.models.item import Item
+from funtimes.models.user import User
+from funtimes.models.category import Category
+from funtimes.models.search_filter import SearchFilter
 from funtimes import db
 
 
