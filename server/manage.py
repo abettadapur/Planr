@@ -2,6 +2,10 @@ import argparse
 
 from funtimes import db
 from funtimes.models.itinerary import Itinerary
+from funtimes.models.item import Item
+from funtimes.models.user import User
+from funtimes.models.category import Category
+from funtimes.models.search_filter import SearchFilter
 
 
 def create_db():

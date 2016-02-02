@@ -1,7 +1,5 @@
-import json
 import oauth2
 import requests
-import urllib
 
 from funtimes.etc import config
 from requests.exceptions import HTTPError
