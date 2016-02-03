@@ -24,6 +24,10 @@ class BaseRepository(metaclass=ABCMeta):
         else:
             pass
 
+    def get(self, **kwargs):
+        entities = self.model_class.query.filter_by(**kwargs).all()
+        return entities
+
     def delete(self, id):
         pass
 

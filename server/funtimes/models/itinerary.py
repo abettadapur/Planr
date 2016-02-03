@@ -18,5 +18,12 @@ class Itinerary(BaseModel):
     # user
 
     def __init__(self, name):
+        super(Itinerary, self).__init__()
         self.name = name
+
+    def as_dict(self):
+        itinerary_dict = super(Itinerary, self).as_dict()
+        itinerary_dict['user'] = self.user.as_dict()
+        itinerary_dict['items'] = [i.as_dict() for i in self.items]
+        return itinerary_dict
 
