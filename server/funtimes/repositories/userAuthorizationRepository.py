@@ -23,7 +23,7 @@ class UserAuthorizationRepository(BaseRepository):
 
     def insert_authorization(self, token, user_id):
         self.remove_authorization(user_id)
-        user_authorization = UserAuthorization(user_id, token)
+        user_authorization = UserAuthorization(token, user_id)
         self.add_or_update(user_authorization)
 
 

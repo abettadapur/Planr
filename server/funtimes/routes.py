@@ -8,6 +8,7 @@ from flask import make_response
 
 api = Api(app)
 api.add_resource(funtimes_api.HelloWorld, '/api')
+api.add_resource(funtimes_api.AuthResource, '/api/auth')
 api.add_resource(funtimes_api.ItineraryListResource, '/api/itineraries')
 api.add_resource(funtimes_api.ItineraryResource, '/api/itineraries/<int:id>')
 

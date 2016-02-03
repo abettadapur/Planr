@@ -22,7 +22,6 @@ class AuthResource(Resource):
                                       help="An associated Facebook User ID is required", location='json')
         super(AuthResource, self).__init__()
 
-    @property
     def post(self):
         user_repository = UserRepository()
         auth_repository = UserAuthorizationRepository()
@@ -31,7 +30,7 @@ class AuthResource(Resource):
         uid = args['user_id']
 
         graph = facebook.GraphAPI(access_token=token)
-        user = graph.get_object(id=uid)
+        user = graph.get_object("me")
         if user and user['id'] == uid:
 
             if not user_repository.user_exists(uid):
@@ -39,13 +38,17 @@ class AuthResource(Resource):
                 user_repository.add_or_update(new_user)
                 user_repository.save_changes()
 
-            user = user_repository.get(facebook_id=uid)
-            auth_repository.insert_authorization(token, user.id)
-            auth_repository.save_changes()
+            users = user_repository.get(facebook_id=uid)
+            user = users[0] if users else None
+            if user:
+                auth_repository.insert_authorization(token, user.id)
+                auth_repository.save_changes()
+            else:
+                on_server_error("Unknown error adding user")
 
-            return True, 200
+            return True
         else:
-            return False, 401
+            on_invalid_auth()
 
 
 class ItineraryResource(Resource):
@@ -87,6 +90,8 @@ class ItineraryListResource(Resource):
 def on_error(error_message):
     abort(400, message=error_message)
 
+def on_server_error(error_message):
+    abort(500, message=error_message)
 
 def on_invalid_auth():
     abort(401, message="unauthorized")
