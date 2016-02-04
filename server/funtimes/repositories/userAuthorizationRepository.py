@@ -15,7 +15,8 @@ class UserAuthorizationRepository(BaseRepository):
         return True
 
     def get_user_from_token(self, token):
-        user = self.get(token=token).first().user
+        users = self.get(token=token)
+        user = users[0].user if users else None
         return user
 
     def remove_authorization(self, user_id):

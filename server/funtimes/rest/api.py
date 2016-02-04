@@ -1,10 +1,11 @@
 import facebook
+from funtimes.rest import authenticate
 from funtimes.models.user import User
 from funtimes.repositories.itineraryRepository import ItineraryRepository
 from funtimes.repositories.userRepository import UserRepository
 from funtimes.repositories.userAuthorizationRepository import UserAuthorizationRepository
 from flask import request
-from flask_restful import Resource, abort
+from flask_restful import abort, Resource
 from flask_restful.reqparse import RequestParser
 from sqlalchemy.exc import InvalidRequestError
 
@@ -31,8 +32,13 @@ class AuthResource(Resource):
 
         graph = facebook.GraphAPI(access_token=token)
         user = graph.get_object("me")
-        if user and user['id'] == uid:
 
+        if 'email' not in user:
+            on_invalid_auth(
+                "The provided key does not have email permissions. Obtain a key with extended email permissions"
+            )
+
+        if user and user['id'] == uid:
             if not user_repository.user_exists(uid):
                 new_user = User(uid, user['first_name'], user['last_name'], user['email'])
                 user_repository.add_or_update(new_user)
@@ -57,7 +63,7 @@ class ItineraryResource(Resource):
         self.update_parser = RequestParser()
 
     # Get an itinerary by id
-    def get(self, id):
+    def get(self, id, **kwargs):
         itinerary_repository = ItineraryRepository()
         itinerary = itinerary_repository.find(id)
         return itinerary
@@ -73,8 +79,10 @@ class ItineraryListResource(Resource):
         self.create_parser = RequestParser()
 
     # List all itineraries
-    def get(self):
+    @authenticate
+    def get(self, **kwargs):
         try:
+            user = kwargs['user']
             filter_args = request.args.to_dict()
             itinerary_repository = ItineraryRepository()
             itineraries = itinerary_repository.get(**filter_args)
@@ -90,8 +98,13 @@ class ItineraryListResource(Resource):
 def on_error(error_message):
     abort(400, message=error_message)
 
+
 def on_server_error(error_message):
     abort(500, message=error_message)
 
-def on_invalid_auth():
-    abort(401, message="unauthorized")
+
+def on_invalid_auth(message=None):
+    if message:
+        abort(401, message=message)
+    else:
+        abort(401, message="unauthorized")
