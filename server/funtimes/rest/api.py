@@ -63,13 +63,17 @@ class ItineraryResource(Resource):
         self.update_parser = RequestParser()
 
     # Get an itinerary by id
+    @authenticate
     def get(self, id, **kwargs):
+        user = kwargs['user']
         itinerary_repository = ItineraryRepository()
         itinerary = itinerary_repository.find(id)
         return itinerary
 
     # Update an itinerary by id
-    def put(self, id):
+    @authenticate
+    def put(self, id, **kwargs):
+        user = kwargs['user']
         args = self.update_parser.parse_args()
 
 
@@ -91,8 +95,9 @@ class ItineraryListResource(Resource):
             on_error(str(ireq))
 
     # Create a new itinerary
-    def post(self):
-        pass
+    @authenticate
+    def post(self, **kwargs):
+        user = kwargs['user']
 
 
 def on_error(error_message):
