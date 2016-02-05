@@ -81,6 +81,9 @@ class ItineraryResource(Resource):
         if not itinerary:
             abort(404, "No itinerary with that id exists")
 
+        if itinerary.user.id != user.id:
+            abort(404, "No itinerary with that id exists")
+
         return itinerary
 
     # Update an itinerary by id
@@ -94,11 +97,29 @@ class ItineraryResource(Resource):
         if not itinerary:
             abort(404, "No itinerary with that id exists")
 
+        if itinerary.user.id != user.id:
+            abort(404, "No itinerary with that id exists")
+
         itinerary.update_from_dict(args)
         self.itinerary_repository.add_or_update(itinerary)
         self.itinerary_repository.save_changes()
 
         return itinerary
+
+    @authenticate
+    def delete(self, id, **kwargs):
+        user = kwargs['user']
+        itinerary = self.itinerary_repository.find(id)
+
+        if not itinerary:
+            abort(404, "No itinerary with that id exists")
+
+        if itinerary.user.id != user.id:
+            abort(404, "No itinerary with that id exists")
+
+        self.itinerary_repository.delete(id)
+        return {"message": "Deleted itinerary"}
+
 
 
 class ItineraryListResource(Resource):
