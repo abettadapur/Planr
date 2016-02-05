@@ -118,6 +118,7 @@ class ItineraryResource(Resource):
             abort(404, "No itinerary with that id exists")
 
         self.itinerary_repository.delete(id)
+        self.itinerary_repository.save_changes()
         return {"message": "Deleted itinerary"}
 
 

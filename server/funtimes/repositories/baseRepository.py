@@ -30,7 +30,7 @@ class BaseRepository(metaclass=ABCMeta):
         return entities
 
     def delete(self, id):
-        pass
+        self.model_class.query.filter_by(id=id).delete()
 
     @abstractmethod
     def validate(self, entity):
