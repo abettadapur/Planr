@@ -59,15 +59,28 @@ class AuthResource(Resource):
 
 class ItineraryResource(Resource):
     def __init__(self):
-        super(ItineraryResource, self).__init__()
         self.update_parser = RequestParser()
+        self.update_parser.add_argument('name', type=str, required=True, location='json', help='No name provided')
+        self.update_parser.add_argument('date', type=str, required=True, location='json', help='No date provided')
+        self.update_parser.add_argument('start_time', type=str, required=True, location='json',
+                                        help='No start_time provided')
+        self.update_parser.add_argument('end_time', type=str, required=True, location='json',
+                                        help='No end_time provided')
+        self.update_parser.add_argument('city', type=str, required=True, location='json', help='No city provided')
+        self.update_parser.add_argument('public', type=bool, required=True, location='json',
+                                        help='No publicity provided')
+        self.itinerary_repository = ItineraryRepository()
+        super(ItineraryResource, self).__init__()
 
     # Get an itinerary by id
     @authenticate
     def get(self, id, **kwargs):
         user = kwargs['user']
-        itinerary_repository = ItineraryRepository()
-        itinerary = itinerary_repository.find(id)
+        itinerary = self.itinerary_repository.find(id)
+
+        if not itinerary:
+            abort(404, "No itinerary with that id exists")
+
         return itinerary
 
     # Update an itinerary by id
@@ -76,11 +89,33 @@ class ItineraryResource(Resource):
         user = kwargs['user']
         args = self.update_parser.parse_args()
 
+        itinerary = self.itinerary_repository.find(id)
+
+        if not itinerary:
+            abort(404, "No itinerary with that id exists")
+
+        itinerary.update_from_dict(args)
+        self.itinerary_repository.add_or_update(itinerary)
+        self.itinerary_repository.save_changes()
+
+        return itinerary
+
 
 class ItineraryListResource(Resource):
     def __init__(self):
-        super(ItineraryListResource, self).__init__()
         self.create_parser = RequestParser()
+        self.create_parser.add_argument('name', type=str, required=True, location='json', help='No name provided')
+        self.create_parser.add_argument('date', type=str, required=True, location='json', help='No date provided')
+        self.create_parser.add_argument('start_time', type=str, required=True, location='json',
+                                        help='No start_time provided')
+        self.create_parser.add_argument('end_time', type=str, required=True, location='json',
+                                        help='No end_time provided')
+        self.create_parser.add_argument('city', type=str, required=True, location='json', help='No city provided')
+        self.create_parser.add_argument('public', type=bool, required=True, location='json',
+                                        help='No publicity provided')
+        self.itinerary_repository = ItineraryRepository()
+
+        super(ItineraryListResource, self).__init__()
 
     # List all itineraries
     @authenticate
@@ -88,8 +123,7 @@ class ItineraryListResource(Resource):
         try:
             user = kwargs['user']
             filter_args = request.args.to_dict()
-            itinerary_repository = ItineraryRepository()
-            itineraries = itinerary_repository.get(**filter_args)
+            itineraries = self.itinerary_repository.get(user_id=user.id, **filter_args)
             return itineraries
         except InvalidRequestError as ireq:
             on_error(str(ireq))
@@ -98,7 +132,11 @@ class ItineraryListResource(Resource):
     @authenticate
     def post(self, **kwargs):
         user = kwargs['user']
-
+        args = self.create_parser.parse_args()
+        itinerary = self.itinerary_repository.create_from_dict(args, user)
+        self.itinerary_repository.add_or_update(itinerary)
+        self.itinerary_repository.save_changes()
+        return itinerary
 
 def on_error(error_message):
     abort(400, message=error_message)

@@ -14,3 +14,11 @@ class ItineraryRepository(BaseRepository):
     def validate(self, entity):
         return True
 
+    def create_from_dict(self, create_dict, user):
+        return Itinerary.create_from_dict(create_dict, user)
+
+    def get(self, user_id=None, **kwargs):
+        if user_id:
+            kwargs['user_id'] = user_id
+        return super(ItineraryRepository, self).get(**kwargs)
+
