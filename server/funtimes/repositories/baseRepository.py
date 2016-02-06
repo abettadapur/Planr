@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from funtimes.models.base import BaseModel
+from funtimes.models.change_result import ChangeResult
 from funtimes.models.itinerary import Itinerary
 from funtimes.models.item import Item
 from funtimes.models.user import User
@@ -20,10 +21,10 @@ class BaseRepository(metaclass=ABCMeta):
 
     # Add an entity if it doesn't exist, or update an existing entity
     def add_or_update(self, entity):
-        if self.validate(entity):
+        result = self.validate(entity)
+        if result.success():
             db.session.add(entity)
-        else:
-            pass
+        return result
 
     def get(self, **kwargs):
         entities = self.model_class.query.filter_by(**kwargs).all()

@@ -11,6 +11,8 @@ api.add_resource(funtimes_api.HelloWorld, '/api')
 api.add_resource(funtimes_api.AuthResource, '/api/auth')
 api.add_resource(funtimes_api.ItineraryListResource, '/api/itineraries')
 api.add_resource(funtimes_api.ItineraryResource, '/api/itineraries/<int:id>')
+api.add_resource(funtimes_api.ItemListResource, '/api/itineraries/<int:itinerary_id>/items')
+api.add_resource(funtimes_api.ItemResource, '/api/itineraries/<int:itinerary_id>/items/<int:item_id>')
 
 
 def default(obj):

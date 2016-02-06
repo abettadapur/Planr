@@ -1,5 +1,8 @@
+from asq.initiators import query
 from funtimes.models.item import Item
+from funtimes.models.change_result import ChangeResult
 from funtimes.repositories.baseRepository import BaseRepository
+from funtimes.repositories.categoryRepository import CategoryRepository
 
 
 class ItemRepository(BaseRepository):
@@ -8,8 +11,11 @@ class ItemRepository(BaseRepository):
         super(ItemRepository, self).__init__(Item)
 
     def add_or_update(self, entity):
-        super(ItemRepository, self).add_or_update(entity)
+        return super(ItemRepository, self).add_or_update(entity)
 
     def validate(self, entity):
-        return True
+        return ChangeResult()
+
+    def create_from_dict(self, args):
+        return Item.create_from_dict(args)
 

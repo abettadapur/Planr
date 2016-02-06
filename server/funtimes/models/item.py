@@ -1,3 +1,4 @@
+from datetime import datetime
 from funtimes import db
 from funtimes.models.base import BaseModel
 
@@ -13,5 +14,16 @@ class Item(BaseModel):
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
 
-    def __init__(self, name):
-        self.name = name
+    def update_from_dict(self, args):
+        self.name = args['name']
+        self.start_time = datetime.strptime(args['start_time'], "%Y-%m-%d %H:%M:%S")
+        self.end_time = datetime.strptime(args['end_time'], "%Y-%m-%d %H:%M:%S")
+
+    @staticmethod
+    def create_from_dict(args):
+        item = Item()
+        item.name = args['name']
+        item.start_time = datetime.strptime(args['start_time'], "%Y-%m-%d %H:%M:%S")
+        item.end_time = datetime.strptime(args['end_time'], "%Y-%m-%d %H:%M:%S")
+        return item
+
