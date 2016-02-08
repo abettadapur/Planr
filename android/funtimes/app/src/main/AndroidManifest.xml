@@ -23,8 +23,8 @@
 
     <activity
         android:name=".activities.SplashActivity"
-        android:label="DayTripper" >
-        <intent-filter android:label="DayTripper">
+        android:label="PlanFun" >
+        <intent-filter android:label="PlanFun">
             <action android:name="android.intent.action.MAIN" />
 
             <category android:name="android.intent.category.LAUNCHER" />
