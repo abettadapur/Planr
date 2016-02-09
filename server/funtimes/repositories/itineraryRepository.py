@@ -23,3 +23,14 @@ class ItineraryRepository(BaseRepository):
             kwargs['user_id'] = user_id
         return super(ItineraryRepository, self).get(**kwargs)
 
+    def search(self, query, city):
+        itineraries = Itinerary.query().filter_by(public=True)
+        if city:
+            itineraries = itineraries.filter_by(city=city)
+        if query:
+            itineraries = itineraries.filter(Itinerary.name.like(query))
+
+        return itineraries
+
+
+
