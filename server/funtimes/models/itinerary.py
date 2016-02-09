@@ -5,7 +5,7 @@ from funtimes.models.base import BaseModel
 from datetime import datetime
 
 
-ItineraryShares = db.Table("ItineraryShares",
+ItineraryShares = db.Table("itinerary_shares",
                            db.Column('id', db.Integer, primary_key=True),
                            db.Column('user_id', db.Integer, db.ForeignKey("user.id")),
                            db.Column('itinerary_id', db.Integer, db.ForeignKey("itinerary.id")),
