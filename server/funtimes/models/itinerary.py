@@ -1,6 +1,16 @@
+import enum
+
 from funtimes import db
 from funtimes.models.base import BaseModel
 from datetime import datetime
+
+
+ItineraryShares = db.Table("ItineraryShares",
+                           db.Column('id', db.Integer, primary_key=True),
+                           db.Column('user_id', db.Integer, db.ForeignKey("user.id")),
+                           db.Column('itinerary_id', db.Integer, db.ForeignKey("itinerary.id")),
+                           db.Column('permissions', db.Enum("READ", "EDIT"), nullable=False)
+                           )
 
 
 class Itinerary(BaseModel):

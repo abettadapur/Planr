@@ -4,6 +4,7 @@ from funtimes import db
 from funtimes import app
 from funtimes.etc import config
 from funtimes.models.itinerary import Itinerary
+from funtimes.models.itinerary import ItineraryShares
 from funtimes.models.item import Item
 from funtimes.models.user import User
 from funtimes.models.category import Category
