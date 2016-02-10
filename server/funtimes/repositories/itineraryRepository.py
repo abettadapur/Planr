@@ -1,7 +1,11 @@
 from funtimes import db
 from funtimes.models.change_result import ChangeResult
 from funtimes.models.itinerary import Itinerary
+from funtimes.models.itinerary import ItineraryShares
 from funtimes.repositories.baseRepository import BaseRepository
+from funtimes.repositories.itineraryShareRepository import ItineraryShareRepository
+from funtimes.repositories.userRepository import UserRepository
+
 
 
 class ItineraryRepository(BaseRepository):
@@ -31,6 +35,24 @@ class ItineraryRepository(BaseRepository):
             itineraries = itineraries.filter(Itinerary.name.like(query))
 
         return itineraries
+
+    def share(self, itinerary, user_id, permission):
+        user_repository = UserRepository()
+        itinerary_share_repository = ItineraryShareRepository()
+        result = ChangeResult()
+        user = user_repository.find(user_id)
+        if not user:
+            result.errors.append("No user with id {0} found".format(user_id))
+        else:
+            itinerary_share = ItineraryShares()
+            itinerary_share.itinerary_id = itinerary.id
+            itinerary_share.user_id = user.id
+            itinerary_share.permission = permission
+            result.add_child_result(itinerary_share_repository.add_or_update(itinerary_share))
+        return result
+
+
+    
 
 
 

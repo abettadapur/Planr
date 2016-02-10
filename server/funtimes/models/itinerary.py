@@ -5,12 +5,12 @@ from funtimes.models.base import BaseModel
 from datetime import datetime
 
 
-ItineraryShares = db.Table("itinerary_shares",
-                           db.Column('id', db.Integer, primary_key=True),
-                           db.Column('user_id', db.Integer, db.ForeignKey("user.id")),
-                           db.Column('itinerary_id', db.Integer, db.ForeignKey("itinerary.id")),
-                           db.Column('permissions', db.Enum("READ", "EDIT"), nullable=False)
-                           )
+class ItineraryShares(BaseModel):
+    __tablename__ = "itinerary_shares"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    itinerary_id = db.Column(db.Integer, db.ForeignKey("itinerary.id"))
+    permission = db.Column('permissions', db.Enum("READ", "EDIT"), nullable=False)
 
 
 class Itinerary(BaseModel):
@@ -25,6 +25,7 @@ class Itinerary(BaseModel):
     items = db.relationship("Item")
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     user = db.relationship("User", back_populates="itineraries")
+    shared_users = db.relationship("User", secondary="itinerary_shares")
 
     # user
     def as_dict(self):

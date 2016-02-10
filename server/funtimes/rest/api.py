@@ -184,6 +184,7 @@ class ItinerarySearchResource(Resource):
         self.search_parser.add_argument('query', type=str, required=False)
         self.search_parser.add_argument('city', type=str, required=False)
         self.itinerary_repository = ItineraryRepository()
+        super(ItinerarySearchResource, self).__init__()
 
     @authenticate
     def get(self, **kwargs):
@@ -197,6 +198,33 @@ class ItinerarySearchResource(Resource):
 
         itineraries = self.itinerary_repository.search(args['query'], args['city'])
         return itineraries
+
+
+class ItineraryShareResource(Resource):
+    def __init__(self):
+        self.share_parser = RequestParser()
+        self.share_parser.add_argument('user_id', type=str, required=True)
+        self.share_parser.add_argument('permission', type=str, required=True)
+        self.itinerary_repository = ItineraryRepository()
+        super(ItineraryShareResource, self).__init__()
+
+    @authenticate
+    def post(self, itinerary_id, **kwargs):
+        args = self.share_parser.parse_args()
+        user_id = args['user_id']
+        permission = args['permission']
+
+        itinerary = query(self.itinerary_repository.get(user_id=kwargs['user'].id, id=itinerary_id)).single_or_default(default=None)
+        if not itinerary:
+            abort(404, message="This itinerary does not exist")
+
+        result = self.itinerary_repository.share(itinerary, user_id, permission)
+
+        if not result.success():
+            on_error(error_message="Could not share itinerary", result=result)
+
+        self.itinerary_repository.save_changes()
+        return itinerary
 
 class ItemResource(Resource):
     def __init__(self):
@@ -299,7 +327,7 @@ class ItemListResource(Resource):
 
 def on_error(error_message, result=None):
     if result:
-        error_message += ": " + result.errors.join(", ")
+        error_message += ": " + ", ".join(result.errors)
     abort(400, message=error_message)
 
 
