@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="splash_color">#35A5DD</color>
+    <color name="white">#FFFFFF</color>
+    <color name="primary">#4CAF50</color>
+    <color name="primary_pressed">#388E3C</color>
+    <color name="ripple">#C8E6C9</color>
+
+
+    <color name="material_drawer_primary">#03A9F4</color>
+    <color name="material_drawer_primary_dark">#0288D1</color>
+    <color name="material_drawer_primary_light">#C4C9E8</color>
+    <color name="material_drawer_accent">#02A8F3</color>
+    <color name="material_drawer_dark_window_background">#C4C9E8</color>
+    <color name="material_drawer_dark_icons">#02A8F3</color>
+    <!-- overwrite the selected colors because the primary color is to dark -->
+    <color name="material_drawer_selected_text">#536EEA</color>
+    <color name="material_drawer_dark_selected_text">#536EEA</color>
+    <color name="dividers">#DADADA</color>
+    <color name="maps_red">#f00909</color>
+    <color name="maps_blue">#0928f0</color>
+    <color name="maps_cyan">#09e1f0</color>
+    <color name="maps_green">#1df009</color>
+    <color name="maps_orange">#f05209</color>
+    <color name="maps_purple">#c209f0</color>
+
+</resources>

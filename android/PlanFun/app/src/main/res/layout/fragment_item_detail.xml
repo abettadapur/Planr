@@ -1,0 +1,200 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="8dp"
+
+    android:weightSum="5">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="68dp"
+            android:orientation="horizontal">
+
+            <IconTextView
+                android:id="@+id/iconView"
+                android:layout_width="68dp"
+                android:layout_height="match_parent"
+                android:textColor="#000000"
+                android:textSize="48dp"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.7"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/titleView"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.8"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:text=""
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                    <TextView
+                        android:id = "@+id/startTimeView"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.2"
+                        android:layout_height="wrap_content"
+                        />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/dividers" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_weight="0.85">
+
+                        <RatingBar
+                            android:id="@+id/ratingView"
+                            style="?android:attr/ratingBarStyleSmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:id="@+id/ratingCountView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                    </LinearLayout>
+                    <TextView
+                        android:id = "@+id/endTimeView"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.2"
+                        android:layout_height="wrap_content"
+                        />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="0.05">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="$"
+
+                    android:gravity="center"
+
+                    />
+                <edu.gatech.daytripper.views.VerticalProgressBar
+                    android:layout_width="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/priceBar"
+                    style="?android:attr/progressBarStyleHorizontal"
+
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!--<TextView-->
+            <!--android:id="@+id/subtitleView"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:autoLink="phone"-->
+            <!--android:text="Medium Text"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium" />-->
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+        <info.hoang8f.widget.FButton
+            android:id="@+id/callButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            fbutton:shadowEnabled="false"
+            android:textColor="#FFFFFF"
+            android:paddingRight="@dimen/md_button_padding_horizontal"
+            android:paddingLeft="@dimen/md_button_padding_horizontal"
+            android:text="{fa-phone} Call this business"/>
+
+        <info.hoang8f.widget.FButton
+            android:id="@+id/navButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            fbutton:shadowEnabled="false"
+            android:textColor="#FFFFFF"
+            android:paddingRight="@dimen/md_button_padding_horizontal"
+            android:paddingLeft="@dimen/md_button_padding_horizontal"
+            android:text="{fa-car} Navigate to this item"/>
+        </LinearLayout>
+
+        <info.hoang8f.widget.FButton
+            android:id="@+id/webButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            fbutton:shadowEnabled="false"
+            android:textColor="#FFFFFF"
+            android:paddingRight="@dimen/md_button_padding_horizontal"
+            android:paddingLeft="@dimen/md_button_padding_horizontal"
+            android:text="{fa-yelp} View this item on Yelp"/>
+
+        <info.hoang8f.widget.FButton
+            android:id="@+id/addButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            fbutton:shadowEnabled="false"
+            android:textColor="#FFFFFF"
+            android:paddingRight="@dimen/md_button_padding_horizontal"
+            android:paddingLeft="@dimen/md_button_padding_horizontal"
+            android:layout_gravity="bottom"
+            android:text="{fa-plus} Add this item"
+            android:visibility="invisible"/>
+
+
+    </LinearLayout>
+</LinearLayout>
+
+
+
+
+
+
