@@ -28,7 +28,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.PolyUtil;
+
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 import com.melnykov.fab.FloatingActionButton;
@@ -97,7 +97,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
 
         mRestClient = RestClient.getInstance();
 
-        mRestClient.getItineraryService().getItinerary(id, Session.getActiveSession().getAccessToken(), new Callback<Itinerary>() {
+        mRestClient.getItineraryService().getItinerary(id, new Callback<Itinerary>() {
             @Override
             public void success(Itinerary itinerary, Response response) {
                 currentItinerary = itinerary;
@@ -210,7 +210,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
                         .show();
                 break;*/
             case R.id.action_refresh:
-                mRestClient.getItineraryService().getItinerary(currentItinerary.getId(), Session.getActiveSession().getAccessToken(), new Callback<Itinerary>() {
+                mRestClient.getItineraryService().getItinerary(currentItinerary.getId(), new Callback<Itinerary>() {
                     @Override
                     public void success(Itinerary itinerary, Response response) {
                         currentItinerary = itinerary;
@@ -225,27 +225,6 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
 
                 break;
             case ADD_ITINERARY:
-                mRestClient.getItineraryService().copyItinerary(currentItinerary.getId(), Session.getActiveSession().getAccessToken(), new Callback<Itinerary>() {
-                    @Override
-                    public void success(final Itinerary itinerary, Response response) {
-                        Snackbar.make(ItineraryDetailActivity.this.getWindow().getDecorView().getRootView(), "Itinerary Copied", Snackbar.LENGTH_SHORT)
-                                .setCallback(new Snackbar.Callback() {
-
-                                    public void onActionClicked(Snackbar snackbar) {
-                                        Intent i = new Intent(ItineraryDetailActivity.this, ItineraryDetailActivity.class);
-                                        i.putExtra("itinerary_id", itinerary.getId());
-                                        startActivity(i);
-                                        finish();
-                                    }
-                                }).show();
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-
-                    }
-                });
-                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -285,7 +264,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
                     Log.i("POLY", polyline);
                     Log.i("RESPONSE", response.getBody().toString());
 
-                    List<LatLng> points = PolyUtil.decode(polyline);
+                    List<LatLng> points = null;//TODO PolyUtil.decode(polyline);
                     PolylineOptions line = new PolylineOptions().geodesic(true);
                     for (LatLng point : points) {
                         line.add(point);

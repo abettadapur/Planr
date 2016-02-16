@@ -9,7 +9,7 @@ import retrofit.http.POST;
  * Created by Alex on 2/19/2015.
  */
 public interface AuthService {
-    @POST("/auth/login")
+    @POST("/auth")
     void verifyAuthentication(@Body AuthRequest postBody, Callback<Boolean> callback);
 
 }

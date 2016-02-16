@@ -51,7 +51,7 @@ public class EditItineraryActivity extends ActionBarActivity
 
 
         mRestClient = RestClient.getInstance();
-        mRestClient.getItineraryService().getItinerary(getIntent().getIntExtra("itinerary_id", 0), Session.getActiveSession().getAccessToken(), new Callback<Itinerary>() {
+        mRestClient.getItineraryService().getItinerary(getIntent().getIntExtra("itinerary_id", 0), new Callback<Itinerary>() {
             @Override
             public void success(Itinerary itinerary, Response response) {
                 mCurrentItinerary = itinerary;

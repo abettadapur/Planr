@@ -85,8 +85,6 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
         mSwipeRefresh = (SwipeRefreshLayout)rootView.findViewById(R.id.swipe_refresh);
         mSwipeRefresh.setOnRefreshListener(this);
 
-
-
         mRecycleView = (RecyclerView)rootView.findViewById(R.id.recycle_view);
         mAdapter = new ItineraryAdapter(mItineraryList, getActivity());
         mRecycleView.setAdapter(mAdapter);
@@ -133,7 +131,6 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
     {
         if(mItineraryList == null)
             mItineraryList = new ArrayList<>();
-
 
         mItineraryList.clear();
         mItineraryList.addAll(items);

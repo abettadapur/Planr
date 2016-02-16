@@ -3,12 +3,14 @@ package devpost.yelp.planfun.net;
 import android.app.Application;
 import android.util.Log;
 
+import com.facebook.Session;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
+import com.squareup.okhttp.Authenticator;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
@@ -16,6 +18,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+import java.net.Proxy;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.Executor;
@@ -47,6 +50,7 @@ public class RestClient {
 
     private static RestClient client;
     private static Application context;
+
     private long SIZE_OF_CACHE = 1024 * 1024 * 10;//10 Meg, not so much
 
     public static RestClient init(Application context)
@@ -69,7 +73,7 @@ public class RestClient {
 
     private RestClient(Application context)
     {
-        this.context = context;
+        RestClient.context = context;
         OkHttpClient caching_client = new OkHttpClient();
         try {
             Cache responseCache = new Cache(context.getCacheDir(), SIZE_OF_CACHE);
@@ -110,8 +114,7 @@ public class RestClient {
                     }
                 })
                 .create();
-
-        caching_client.networkInterceptors().add(mCacheControlInterceptor);
+        caching_client.networkInterceptors().add(mAuthCacheInterceptor);
 
         // Create Executor
         Executor executor = Executors.newCachedThreadPool();
@@ -140,29 +143,19 @@ public class RestClient {
     public DirectionsService getDirectionsService() { return directionsService; }
     public CategoryService getCategoryService(){ return categoryService; }
 
-    private static final Interceptor mCacheControlInterceptor = new Interceptor() {
+    private static final Interceptor mAuthCacheInterceptor = new Interceptor() {
         @Override
         public Response intercept(Chain chain) throws IOException {
             //See https://docs.google.com/presentation/d/1eJa0gBZLpZRQ5vjW-eqLyekEgB54n4fQ1N4jDcgMZ1E/edit#slide=id.g75a45c04a_079
             Request request = chain.request();
-            if(request.httpUrl().toString().contains("realtime"))
-                return chain.proceed(request).newBuilder().build();
-
+            Request.Builder requestBuilder = request.newBuilder().addHeader("token", Session.getActiveSession().getAccessToken());
             // Add Cache Control only for GET methods
             if (request.method().equals("GET")) {
-                // 4 weeks stale
-                request.newBuilder()
-                        .header("Cache-Control", "public, max-stale=2419200")
-                        .build();
+                // 1000 s
+                requestBuilder.addHeader("Cache-Control", "public, max-stale=1000");
             }
-
-            Response response = chain.proceed(request);
-
-            // Re-write response CC header to force use of cache
-            //This should be on server side really
-            return response.newBuilder()
-                    .header("Cache-Control", "public, max-age=86400") // 1 day
-                    .build();
+            Request headerRequest = requestBuilder.method(request.method(), request.body()).build();
+            return chain.proceed(headerRequest);
         }
     };
 }

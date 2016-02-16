@@ -45,6 +45,7 @@ public class SplashActivity extends FragmentActivity {
 
     private UiLifecycleHelper helper;
     private boolean started;
+    private boolean requesting;
 
 
     @Override
@@ -64,6 +65,8 @@ public class SplashActivity extends FragmentActivity {
     protected void onResume()
     {
         super.onResume();
+        requesting=false;
+
         Bundle extras = getIntent().getExtras();
         if(extras==null || extras.getBoolean("delay", true)) {
             new Handler().postDelayed(new Runnable() {
@@ -145,19 +148,20 @@ public class SplashActivity extends FragmentActivity {
 
     private void onSessionStateChange(final Session session, SessionState state, Exception exception)
     {
-        if(state.isOpened()){
+        if(state.isOpened() && !requesting){
             //authenticated
-            Log.i("LOGIN", "FB Authenticated");
+            requesting=true;
             Request request = Request.newMeRequest(session, new Request.GraphUserCallback() {
                 @Override
                 public void onCompleted(GraphUser user, Response response)
                 {
                     if(user!=null)
                     {
+                        Log.i("LOGIN", "FB Authenticated");
+
                         final String user_ID = user.getId();
                         final String token = session.getAccessToken();
                         Log.i("LOGIN", "Sending server auth request");
-
                         //check this authentication
                         AuthService auth = RestClient.getInstance().getAuthService();
                         try {
@@ -180,7 +184,7 @@ public class SplashActivity extends FragmentActivity {
 
                                 @Override
                                 public void failure(RetrofitError error) {
-                                    Log.e("LOGIN", error.getMessage());
+                                    Log.e("LOGIN", error.toString());
                                     Log.e("LOGIN", "Login failed, verification was ");
                                     Log.e("Token", token);
                                     Log.e("User", user_ID);

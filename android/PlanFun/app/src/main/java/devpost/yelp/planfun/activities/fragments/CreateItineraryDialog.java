@@ -61,7 +61,7 @@ public class CreateItineraryDialog extends DialogFragment
                         ItineraryService service = RestClient.getInstance().getItineraryService();
 
                         final ProgressDialog progress  = ProgressDialog.show(CreateItineraryDialog.this.getActivity(), "Creating", "Creating a custom itinerary....", true);
-                        service.createItinerary(newItinerary, Session.getActiveSession().getAccessToken(), new Callback<Itinerary>() {
+                        service.createItinerary(newItinerary,new Callback<Itinerary>() {
                             @Override
                             public void success(Itinerary itinerary, Response response) {
                                 progress.dismiss();
@@ -98,10 +98,6 @@ public class CreateItineraryDialog extends DialogFragment
         mEnd.set(Calendar.MINUTE, 0);
 
         mDate = Calendar.getInstance();
-
-
-
-
 
         mNameBox = (EditText)v.findViewById(R.id.nameBox);
         mStartPicker = (EditText)v.findViewById(R.id.startPicker);
