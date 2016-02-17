@@ -102,10 +102,10 @@ class ItineraryResource(Resource):
         itinerary = self.itinerary_repository.find(id)
 
         if not itinerary:
-            abort(404, "No itinerary with that id exists")
+            abort(404, message="No itinerary with that id exists")
 
         if itinerary.user.id != user.id:
-            abort(404, "No itinerary with that id exists")
+            abort(404, message="No itinerary with that id exists")
 
         itinerary.update_from_dict(args)
         result = self.itinerary_repository.add_or_update(itinerary)
@@ -122,10 +122,10 @@ class ItineraryResource(Resource):
         itinerary = self.itinerary_repository.find(id)
 
         if not itinerary:
-            abort(404, "No itinerary with that id exists")
+            abort(404, message="No itinerary with that id exists")
 
         if itinerary.user.id != user.id:
-            abort(404, "No itinerary with that id exists")
+            abort(404, message="No itinerary with that id exists")
 
         result = self.itinerary_repository.delete(id)
         if not result.success:
@@ -214,7 +214,8 @@ class ItineraryShareResource(Resource):
         user_id = args['user_id']
         permission = args['permission']
 
-        itinerary = query(self.itinerary_repository.get(user_id=kwargs['user'].id, id=itinerary_id)).single_or_default(default=None)
+        itinerary = query(self.itinerary_repository.get(user_id=kwargs['user'].id, id=itinerary_id)).single_or_default(
+            default=None)
         if not itinerary:
             abort(404, message="This itinerary does not exist")
 
@@ -225,6 +226,7 @@ class ItineraryShareResource(Resource):
 
         self.itinerary_repository.save_changes()
         return itinerary
+
 
 class ItemResource(Resource):
     def __init__(self):
