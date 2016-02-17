@@ -14,6 +14,7 @@ class Item(BaseModel):
     itinerary = db.relationship("Itinerary", back_populates="items")
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
+    type = db.Column(db.Enum("YELP", "USER"), nullable=False)
 
     def update_from_dict(self, args):
         self.name = args['name']

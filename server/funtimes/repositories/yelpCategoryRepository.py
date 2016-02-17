@@ -14,3 +14,6 @@ class YelpCategoryRepository(BaseRepository):
 
     def validate(self, entity):
         return ChangeResult()
+
+    def get_categories_for_time(self, start_time, end_time):
+        pass
