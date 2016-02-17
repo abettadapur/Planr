@@ -1,12 +1,6 @@
-from abc import ABCMeta, abstractmethod
 from funtimes.models.base import BaseModel
-from funtimes.models.change_result import ChangeResult
-from funtimes.models.itinerary import Itinerary
-from funtimes.models.item import Item
-from funtimes.models.user import User
-from funtimes.models.yelpcategory import YelpCategory
-from funtimes.models.yelp_search_filter import YelpSearchFilter
-from funtimes.models.user_authorization import UserAuthorization
+
+from abc import ABCMeta, abstractmethod
 from funtimes import db
 
 
