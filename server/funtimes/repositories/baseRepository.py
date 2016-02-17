@@ -4,8 +4,8 @@ from funtimes.models.change_result import ChangeResult
 from funtimes.models.itinerary import Itinerary
 from funtimes.models.item import Item
 from funtimes.models.user import User
-from funtimes.models.category import Category
-from funtimes.models.search_filter import SearchFilter
+from funtimes.models.yelpcategory import YelpCategory
+from funtimes.models.yelp_search_filter import YelpSearchFilter
 from funtimes.models.user_authorization import UserAuthorization
 from funtimes import db
 

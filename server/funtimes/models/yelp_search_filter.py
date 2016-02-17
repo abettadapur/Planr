@@ -2,11 +2,11 @@ from funtimes import db
 from funtimes.models.base import BaseModel
 
 
-class SearchFilter(BaseModel):
-    __tablename__ = "search_filter"
+class YelpSearchFilter(BaseModel):
+    __tablename__ = "yelp_search_filter"
     id = db.Column(db.Integer, primary_key=True)
     filter = db.Column(db.String(200), nullable=False)
-    category_id = db.Column(db.Integer, db.ForeignKey("category.id"))
+    category_id = db.Column(db.Integer, db.ForeignKey("yelp_category.id"))
 
     def __init__(self, name, filter):
         self.name = name

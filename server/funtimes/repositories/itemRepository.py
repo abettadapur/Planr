@@ -2,7 +2,7 @@ from asq.initiators import query
 from funtimes.models.item import Item
 from funtimes.models.change_result import ChangeResult
 from funtimes.repositories.baseRepository import BaseRepository
-from funtimes.repositories.categoryRepository import CategoryRepository
+from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
 
 
 class ItemRepository(BaseRepository):

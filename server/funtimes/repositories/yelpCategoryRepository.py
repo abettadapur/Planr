@@ -1,15 +1,15 @@
-from funtimes.models.category import Category
+from funtimes.models.yelpcategory import YelpCategory
 from funtimes.models.change_result import ChangeResult
 from funtimes.repositories.baseRepository import BaseRepository
 
 
-class CategoryRepository(BaseRepository):
+class YelpCategoryRepository(BaseRepository):
 
     def __init__(self):
-        super(CategoryRepository, self).__init__(Category)
+        super(YelpCategoryRepository, self).__init__(YelpCategory)
 
     def add_or_update(self, entity):
-        return super(CategoryRepository, self).add_or_update(entity)
+        return super(YelpCategoryRepository, self).add_or_update(entity)
 
     def validate(self, entity):
         return ChangeResult()
