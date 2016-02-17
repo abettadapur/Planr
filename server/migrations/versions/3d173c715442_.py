@@ -58,27 +58,27 @@ def upgrade():
                        {
                            "id": 1,
                            "name": "breakfast",
-                           "search_filter": "breakfast"
+                           "search_term": "breakfast"
                        },
                        {
                            "id": 2,
                            "name": "lunch",
-                           "search_filter": "lunch"
+                           "search_term": "lunch"
                        },
                        {
                            "id": 3,
                            "name": "attraction",
-                           "search_filter": "fun"
+                           "search_term": "fun"
                        },
                        {
                            "id": 4,
                            "name": "dinner",
-                           "search_filter": "dinner"
+                           "search_term": "dinner"
                        },
                        {
                            "id": 5,
                            "name": "nightlife",
-                           "search_filter": ""
+                           "search_term": ""
                        }
 
                    ])
