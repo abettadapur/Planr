@@ -25,6 +25,15 @@ class Itinerary(BaseModel):
     user = db.relationship("User", back_populates="itineraries")
     shared_users = db.relationship("User", secondary="itinerary_shares")
 
+    def __init__(self, name=None, start_time=None, end_time=None, city=None, public=False, items=None, user=None):
+        self.name = name
+        self.start_time = start_time
+        self.end_time = end_time
+        self.city = city
+        self.public = public
+        self.items = items
+        self.user = user
+
     # user
     def as_dict(self):
         itinerary_dict = super(Itinerary, self).as_dict()

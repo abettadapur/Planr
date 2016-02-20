@@ -1,4 +1,5 @@
 from funtimes.models.entities.item import Item
+from funtimes.models.entities.itinerary import Itinerary
 from funtimes.models.entities.yelp_item import YelpItem
 from funtimes.models.util.enums import StrategyType
 from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
@@ -6,10 +7,12 @@ from funtimes.models.util.strategy import DistanceStrategy, FirstStrategy, First
 from funtimes.yelp import yelpapi
 
 
-def fetch_sample_itinerary(city, start_time, end_time):
+def fetch_sample_itinerary(name, user, city, start_time, end_time):
     category_repository = YelpCategoryRepository()
     categories = category_repository.get_categories_for_time(start_time, end_time)
     items = fetch_items(city, categories)
+    itinerary = Itinerary(name=name, city=city, start_time=start_time, end_time=end_time, user=user, items=items)
+    return itinerary
 
 
 def fetch_items(city, categories):
@@ -17,7 +20,7 @@ def fetch_items(city, categories):
     coordinate = None
     for category in categories:
         yelp_item = get_yelp_item(city, category, coordinate)
-        item = Item(name=yelp_item.Name, yelp_category=category, type="YELP", yelp_item=yelp_item)
+        item = Item(name=yelp_item.Name, yelp_category=category, type="YELP", yelp_item=yelp_item, start_time=category.start_time, end_time=category.end_time)
         items.append(item)
 
     return items
