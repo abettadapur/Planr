@@ -2,6 +2,7 @@ from datetime import datetime
 
 from funtimes import db
 from funtimes.models.entities.base import BaseModel
+from funtimes.models.entities.yelp_item import YelpItem
 
 
 class Item(BaseModel):

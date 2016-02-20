@@ -3,7 +3,7 @@ from funtimes import db
 from funtimes.models.entities.base import BaseModel
 
 
-class YelpItem(object):
+class YelpItem(BaseModel):
     __tablename__ = "yelp_item"
     id = db.Column(db.Integer, primary_key=True, autoincrement=False)
     name = db.Column(db.String(200), nullable=False)
