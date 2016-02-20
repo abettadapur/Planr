@@ -108,7 +108,7 @@ public class EditItineraryFragment extends Fragment {
         mDateBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DatePickerDialog(EditItineraryFragment.this.getActivity(), dateSetListener, mCurrentItinerary.getDate().get(Calendar.YEAR), mCurrentItinerary.getDate().get(Calendar.MONTH), mCurrentItinerary.getDate().get(Calendar.DAY_OF_MONTH)).show();
+                new DatePickerDialog(EditItineraryFragment.this.getActivity(), dateSetListener, mCurrentItinerary.getStart_time().get(Calendar.YEAR), mCurrentItinerary.getStart_time().get(Calendar.MONTH), mCurrentItinerary.getStart_time().get(Calendar.DAY_OF_MONTH)).show();
             }
         });
         mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -126,10 +126,6 @@ public class EditItineraryFragment extends Fragment {
     DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            mCurrentItinerary.getDate().set(Calendar.YEAR, year);
-            mCurrentItinerary.getDate().set(Calendar.MONTH, monthOfYear);
-            mCurrentItinerary.getDate().set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
             mCurrentItinerary.getStart_time().set(Calendar.YEAR, year);
             mCurrentItinerary.getStart_time().set(Calendar.MONTH, monthOfYear);
             mCurrentItinerary.getStart_time().set(Calendar.DAY_OF_MONTH, dayOfMonth);
@@ -164,7 +160,7 @@ public class EditItineraryFragment extends Fragment {
     private void updateView() {
         mNameBox.setText(mCurrentItinerary.getName());
         mCityBox.setText(mCurrentItinerary.getCity());
-        mDateBox.setText(dateSdf.format(mCurrentItinerary.getDate().getTime()));
+        mDateBox.setText(dateSdf.format(mCurrentItinerary.getStart_time().getTime()));
         mStartTimeBox.setText(timeSdf.format(mCurrentItinerary.getStart_time().getTime()));
         mEndTimeBox.setText(timeSdf.format(mCurrentItinerary.getEnd_time().getTime()));
     }

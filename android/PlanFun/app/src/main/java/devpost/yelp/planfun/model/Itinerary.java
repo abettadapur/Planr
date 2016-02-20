@@ -13,7 +13,6 @@ public class Itinerary implements Comparable<Itinerary>
 {
     private int id;
     private String name;
-    private Calendar date;
     private Calendar start_time;
     private Calendar end_time;
     private String city;
@@ -27,11 +26,10 @@ public class Itinerary implements Comparable<Itinerary>
 
     public Itinerary(){}
 
-    public Itinerary(String name, Calendar date, Calendar start_time, Calendar end_time, String city, boolean isPublic, List<Item> items)
+    public Itinerary(String name, Calendar start_time, Calendar end_time, String city, boolean isPublic, List<Item> items)
     {
         this.id = 0;
         this.name = name;
-        this.date = date;
         this.start_time = start_time;
         this.end_time = end_time;
         this.city = city;
@@ -43,7 +41,6 @@ public class Itinerary implements Comparable<Itinerary>
 
         this.id = id;
         this.name = name;
-        this.date = date;
         this.start_time = start_time;
         this.end_time = end_time;
         this.city = city;
@@ -73,14 +70,6 @@ public class Itinerary implements Comparable<Itinerary>
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Calendar getDate() {
-        return date;
-    }
-
-    public void setDate(Calendar date) {
-        this.date = date;
     }
 
     public Calendar getStart_time() {
@@ -125,6 +114,6 @@ public class Itinerary implements Comparable<Itinerary>
 
     @Override
     public int compareTo(Itinerary another) {
-        return this.getDate().compareTo(another.getDate());
+        return this.getStart_time().compareTo(another.getStart_time());
     }
 }

@@ -196,7 +196,14 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
                 @Override
                 public void success(List<Itinerary> itineraries, Response response) {
                     ItineraryActivity.this.itineraries = itineraries;
-                    fragment.updateItems(itineraries);
+                    ItineraryActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // This code will always run on the UI thread, therefore is safe to modify UI elements.
+                            fragment.updateItems(ItineraryActivity.this.itineraries);
+                        }
+                    });
+
                 }
 
                 @Override
@@ -217,7 +224,12 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
                     @Override
                     public void success(List<Itinerary> itineraries, Response response) {
                         ItineraryActivity.this.itineraries = itineraries;
-                        itineraryListFragment.updateItems(itineraries);
+                        ItineraryActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                itineraryListFragment.updateItems(ItineraryActivity.this.itineraries);
+                            }
+                        });
                     }
 
                     @Override
@@ -242,8 +254,14 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
             }
             mRestClient.getItineraryService().searchItinerary(s, new Callback<List<Itinerary>>() {
                 @Override
-                public void success(List<Itinerary> itineraries, Response response) {
-                    searchItineraryFragment.updateItems(itineraries);
+                public void success(final List<Itinerary> itineraries, Response response) {
+
+                    ItineraryActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            searchItineraryFragment.updateItems(itineraries);
+                        }
+                    });
                 }
 
                 @Override

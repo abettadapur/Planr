@@ -1,4 +1,4 @@
-from funtimes.models.change_result import ChangeResult
+from funtimes.models.entities.change_result import ChangeResult
 
 from funtimes.models.entities.itinerary import ItineraryShares
 from funtimes.repositories.baseRepository import BaseRepository
