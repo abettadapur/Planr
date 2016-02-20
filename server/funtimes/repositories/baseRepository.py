@@ -4,6 +4,7 @@ from abc import ABCMeta, abstractmethod
 from funtimes import db
 
 
+
 class BaseRepository(metaclass=ABCMeta):
     def __init__(self, model_class: BaseModel):
         self.model_class = model_class
