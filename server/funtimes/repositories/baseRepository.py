@@ -1,4 +1,4 @@
-from funtimes.models.base import BaseModel
+from funtimes.models.entities.base import BaseModel
 
 from abc import ABCMeta, abstractmethod
 from funtimes import db

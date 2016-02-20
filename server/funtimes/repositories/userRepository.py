@@ -1,4 +1,4 @@
-from funtimes.models.change_result import ChangeResult
+from funtimes.models.entities.change_result import ChangeResult
 
 from asq.initiators import query
 from funtimes.models.entities.user import User
