@@ -1,8 +1,7 @@
-import enum
+from datetime import datetime
 
 from funtimes import db
-from funtimes.models.base import BaseModel
-from datetime import datetime
+from funtimes.models.entities.base import BaseModel
 
 
 class ItineraryShares(BaseModel):

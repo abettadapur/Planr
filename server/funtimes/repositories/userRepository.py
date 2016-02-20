@@ -1,8 +1,7 @@
-from funtimes import db
-from asq.initiators import query
 from funtimes.models.change_result import ChangeResult
-from funtimes.models.user import User
-from funtimes.repositories.userAuthorizationRepository import UserAuthorizationRepository
+
+from asq.initiators import query
+from funtimes.models.entities.user import User
 from funtimes.repositories.baseRepository import BaseRepository
 
 

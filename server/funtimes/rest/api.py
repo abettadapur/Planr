@@ -1,15 +1,16 @@
 import facebook
+
 from asq.initiators import query
-from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
-from funtimes.rest import authenticate
-from funtimes.models.user import User
-from funtimes.repositories.itineraryRepository import ItineraryRepository
-from funtimes.repositories.itemRepository import ItemRepository
-from funtimes.repositories.userRepository import UserRepository
-from funtimes.repositories.userAuthorizationRepository import UserAuthorizationRepository
 from flask import request
 from flask_restful import abort, Resource
 from flask_restful.reqparse import RequestParser
+from funtimes.models.entities.user import User
+from funtimes.repositories.itemRepository import ItemRepository
+from funtimes.repositories.itineraryRepository import ItineraryRepository
+from funtimes.repositories.userAuthorizationRepository import UserAuthorizationRepository
+from funtimes.repositories.userRepository import UserRepository
+from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
+from funtimes.rest import authenticate
 from sqlalchemy.exc import InvalidRequestError
 
 

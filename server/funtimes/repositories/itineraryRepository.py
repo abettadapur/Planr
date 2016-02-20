@@ -1,11 +1,10 @@
-from funtimes import db
 from funtimes.models.change_result import ChangeResult
-from funtimes.models.itinerary import Itinerary
-from funtimes.models.itinerary import ItineraryShares
+
+from funtimes.models.entities.itinerary import Itinerary
+from funtimes.models.entities.itinerary import ItineraryShares
 from funtimes.repositories.baseRepository import BaseRepository
 from funtimes.repositories.itineraryShareRepository import ItineraryShareRepository
 from funtimes.repositories.userRepository import UserRepository
-
 
 
 class ItineraryRepository(BaseRepository):

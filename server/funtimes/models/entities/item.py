@@ -1,6 +1,7 @@
 from datetime import datetime
+
 from funtimes import db
-from funtimes.models.base import BaseModel
+from funtimes.models.entities.base import BaseModel
 
 
 class Item(BaseModel):

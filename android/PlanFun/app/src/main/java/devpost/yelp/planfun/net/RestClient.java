@@ -10,7 +10,6 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
-import com.squareup.okhttp.Authenticator;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
@@ -18,7 +17,6 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
-import java.net.Proxy;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.Executor;
@@ -41,7 +39,7 @@ import retrofit.converter.GsonConverter;
  */
 public class RestClient {
     private static final String BASE_URL="http://funtimes.bettadapur.com:5000/api";
-    private String TAG = "REST";
+    private static String TAG = "REST";
     private AuthService authService;
     private ItineraryService itineraryService;
     private ItemService itemService;
@@ -88,7 +86,6 @@ public class RestClient {
                 .registerTypeAdapter(Calendar.class, new CalendarSerializer())
                 .registerTypeAdapter(GregorianCalendar.class, new CalendarSerializer())
                 .registerTypeAdapter(LatLng.class, new LatLngSerializer())
-                .setDateFormat("yyyy-MM-dd'T'HH:mmZ")
                 .addSerializationExclusionStrategy(new ExclusionStrategy() {
                     @Override
                     public boolean shouldSkipField(FieldAttributes fieldAttributes) {
@@ -112,8 +109,7 @@ public class RestClient {
                     public boolean shouldSkipClass(Class<?> aClass) {
                         return false;
                     }
-                })
-                .create();
+                }).create();
         caching_client.networkInterceptors().add(mAuthCacheInterceptor);
 
         // Create Executor
@@ -148,13 +144,15 @@ public class RestClient {
         public Response intercept(Chain chain) throws IOException {
             //See https://docs.google.com/presentation/d/1eJa0gBZLpZRQ5vjW-eqLyekEgB54n4fQ1N4jDcgMZ1E/edit#slide=id.g75a45c04a_079
             Request request = chain.request();
-            Request.Builder requestBuilder = request.newBuilder().addHeader("token", Session.getActiveSession().getAccessToken());
+            Request.Builder requestBuilder = request.newBuilder().addHeader("Authorization", Session.getActiveSession().getAccessToken());
             // Add Cache Control only for GET methods
             if (request.method().equals("GET")) {
                 // 1000 s
                 requestBuilder.addHeader("Cache-Control", "public, max-stale=1000");
             }
             Request headerRequest = requestBuilder.method(request.method(), request.body()).build();
+            Log.d(TAG,"Request: "+headerRequest);
+            Log.d(TAG,"Request headers: "+headerRequest.headers());
             return chain.proceed(headerRequest);
         }
     };

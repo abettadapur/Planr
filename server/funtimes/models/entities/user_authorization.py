@@ -1,5 +1,5 @@
 from funtimes import db
-from funtimes.models.base import BaseModel
+from funtimes.models.entities.base import BaseModel
 
 
 class UserAuthorization(BaseModel):

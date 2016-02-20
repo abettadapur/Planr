@@ -1,5 +1,6 @@
-from funtimes.models.yelpcategory import YelpCategory
 from funtimes.models.change_result import ChangeResult
+
+from funtimes.models.entities.yelpcategory import YelpCategory
 from funtimes.repositories.baseRepository import BaseRepository
 
 
