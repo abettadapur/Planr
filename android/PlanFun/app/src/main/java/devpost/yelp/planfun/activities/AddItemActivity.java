@@ -149,16 +149,10 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
             public void success(Itinerary itinerary, Response response) {
                 mCurrentItinerary = itinerary;
                 Calendar startTime = Calendar.getInstance();
-                startTime.set(Calendar.YEAR, mCurrentItinerary.getDate().get(Calendar.YEAR));
-                startTime.set(Calendar.MONTH, mCurrentItinerary.getDate().get(Calendar.MONTH));
-                startTime.set(Calendar.DAY_OF_MONTH, mCurrentItinerary.getDate().get(Calendar.DAY_OF_MONTH));
                 startTime.set(Calendar.HOUR_OF_DAY, 10);
                 startTime.set(Calendar.MINUTE, 0);
 
                 Calendar endTime = Calendar.getInstance();
-                endTime.set(Calendar.YEAR, mCurrentItinerary.getDate().get(Calendar.YEAR));
-                endTime.set(Calendar.MONTH, mCurrentItinerary.getDate().get(Calendar.MONTH));
-                endTime.set(Calendar.DAY_OF_MONTH, mCurrentItinerary.getDate().get(Calendar.DAY_OF_MONTH));
                 endTime.set(Calendar.HOUR_OF_DAY, 11);
                 endTime.set(Calendar.MINUTE, 0);
 

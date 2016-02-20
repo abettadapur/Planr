@@ -41,7 +41,7 @@ public class CreateItineraryDialog extends DialogFragment
 {
     private EditText mNameBox, mStartPicker, mEndPicker, mDatePicker, mCitySpinner;
     private CheckBox publicBox;
-    private Calendar mDate, mStart, mEnd;
+    private Calendar mStart, mEnd;
     private ArrayAdapter<String> mCityAdapter;
     private final String[] cities = {"Atlanta", "Austin", "Miami", "Portland", "Philadelphia", "Seattle" };
 
@@ -57,7 +57,7 @@ public class CreateItineraryDialog extends DialogFragment
                         String name = mNameBox.getText().toString();
                         String city = mCitySpinner.getText().toString();
                         boolean isPublic = publicBox.isChecked();
-                        Itinerary newItinerary = new Itinerary(name, mDate, mStart, mEnd, city, isPublic, new ArrayList<Item>());
+                        Itinerary newItinerary = new Itinerary(name, mStart, mEnd, city, isPublic, new ArrayList<Item>());
                         ItineraryService service = RestClient.getInstance().getItineraryService();
 
                         final ProgressDialog progress  = ProgressDialog.show(CreateItineraryDialog.this.getActivity(), "Creating", "Creating a custom itinerary....", true);
@@ -96,8 +96,6 @@ public class CreateItineraryDialog extends DialogFragment
         mEnd = Calendar.getInstance();
         mEnd.set(Calendar.HOUR_OF_DAY, 21);
         mEnd.set(Calendar.MINUTE, 0);
-
-        mDate = Calendar.getInstance();
 
         mNameBox = (EditText)v.findViewById(R.id.nameBox);
         mStartPicker = (EditText)v.findViewById(R.id.startPicker);
@@ -141,7 +139,7 @@ public class CreateItineraryDialog extends DialogFragment
         mDatePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DatePickerDialog(CreateItineraryDialog.this.getActivity(), dateSetListener, mDate.get(Calendar.YEAR), mDate.get(Calendar.MONTH), mDate.get(Calendar.DAY_OF_MONTH)).show();
+                new DatePickerDialog(CreateItineraryDialog.this.getActivity(), dateSetListener, mStart.get(Calendar.YEAR), mStart.get(Calendar.MONTH), mStart.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
         updateView();
@@ -152,10 +150,6 @@ public class CreateItineraryDialog extends DialogFragment
     DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            mDate.set(Calendar.YEAR, year);
-            mDate.set(Calendar.MONTH, monthOfYear);
-            mDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
             mStart.set(Calendar.YEAR, year);
             mStart.set(Calendar.MONTH, monthOfYear);
             mStart.set(Calendar.DAY_OF_MONTH, dayOfMonth);
@@ -194,7 +188,7 @@ public class CreateItineraryDialog extends DialogFragment
 
         mStartPicker.setText(timeSdf.format(mStart.getTime()));
         mEndPicker.setText(timeSdf.format(mEnd.getTime()));
-        mDatePicker.setText(dateSdf.format(mDate.getTime()));
+        mDatePicker.setText(dateSdf.format(mStart.getTime()));
     }
 
 }
