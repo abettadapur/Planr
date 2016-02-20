@@ -1,15 +1,16 @@
 import facebook
+
 from asq.initiators import query
-from funtimes.repositories.categoryRepository import CategoryRepository
-from funtimes.rest import authenticate
-from funtimes.models.user import User
-from funtimes.repositories.itineraryRepository import ItineraryRepository
-from funtimes.repositories.itemRepository import ItemRepository
-from funtimes.repositories.userRepository import UserRepository
-from funtimes.repositories.userAuthorizationRepository import UserAuthorizationRepository
 from flask import request
 from flask_restful import abort, Resource
 from flask_restful.reqparse import RequestParser
+from funtimes.models.entities.user import User
+from funtimes.repositories.itemRepository import ItemRepository
+from funtimes.repositories.itineraryRepository import ItineraryRepository
+from funtimes.repositories.userAuthorizationRepository import UserAuthorizationRepository
+from funtimes.repositories.userRepository import UserRepository
+from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
+from funtimes.rest import authenticate
 from sqlalchemy.exc import InvalidRequestError
 
 
@@ -102,10 +103,10 @@ class ItineraryResource(Resource):
         itinerary = self.itinerary_repository.find(id)
 
         if not itinerary:
-            abort(404, "No itinerary with that id exists")
+            abort(404, message="No itinerary with that id exists")
 
         if itinerary.user.id != user.id:
-            abort(404, "No itinerary with that id exists")
+            abort(404, message="No itinerary with that id exists")
 
         itinerary.update_from_dict(args)
         result = self.itinerary_repository.add_or_update(itinerary)
@@ -122,10 +123,10 @@ class ItineraryResource(Resource):
         itinerary = self.itinerary_repository.find(id)
 
         if not itinerary:
-            abort(404, "No itinerary with that id exists")
+            abort(404, message="No itinerary with that id exists")
 
         if itinerary.user.id != user.id:
-            abort(404, "No itinerary with that id exists")
+            abort(404, message="No itinerary with that id exists")
 
         result = self.itinerary_repository.delete(id)
         if not result.success:
@@ -214,7 +215,8 @@ class ItineraryShareResource(Resource):
         user_id = args['user_id']
         permission = args['permission']
 
-        itinerary = query(self.itinerary_repository.get(user_id=kwargs['user'].id, id=itinerary_id)).single_or_default(default=None)
+        itinerary = query(self.itinerary_repository.get(user_id=kwargs['user'].id, id=itinerary_id)).single_or_default(
+            default=None)
         if not itinerary:
             abort(404, message="This itinerary does not exist")
 
@@ -226,6 +228,7 @@ class ItineraryShareResource(Resource):
         self.itinerary_repository.save_changes()
         return itinerary
 
+
 class ItemResource(Resource):
     def __init__(self):
         self.reqparse = RequestParser()
@@ -236,7 +239,7 @@ class ItemResource(Resource):
         self.reqparse.add_argument('end_time', type=str, required=True, location='json', help='Missing end_time')
         self.itinerary_repository = ItineraryRepository()
         self.item_repository = ItemRepository()
-        self.category_repository = CategoryRepository()
+        self.category_repository = YelpCategoryRepository()
         super(ItemResource, self).__init__()
 
     @authenticate
@@ -281,13 +284,13 @@ class ItemListResource(Resource):
     def __init__(self):
         self.reqparse = RequestParser()
         self.reqparse.add_argument('yelp_id', type=str, required=True, location='json', help='Missing yelp_id')
-        self.reqparse.add_argument('category', type=str, required=True, location='json', help='Missing category')
+        self.reqparse.add_argument('yelp_category', type=str, required=True, location='json', help='Missing category')
         self.reqparse.add_argument('name', type=str, required=True, location='json', help='Missing name')
         self.reqparse.add_argument('start_time', type=str, required=True, location='json', help='Missing start_time')
         self.reqparse.add_argument('end_time', type=str, required=True, location='json', help='Missing end_time')
         self.itinerary_repository = ItineraryRepository()
         self.item_repository = ItemRepository()
-        self.category_repository = CategoryRepository()
+        self.yelp_category_repository = YelpCategoryRepository()
         super(ItemListResource, self).__init__()
 
     @authenticate
@@ -310,9 +313,9 @@ class ItemListResource(Resource):
 
         # TODO(abettadapur): Validation
         item = self.item_repository.create_from_dict(args)
-        category = query(self.category_repository.get(name=args['category'])).first_or_default(default=None)
+        category = query(self.yelp_category_repository.get(name=args['yelp_category'])).first_or_default(default=None)
         if not category:
-            on_error("No category of that name exists")
+            on_error("No yelp category of that name exists")
 
         itinerary.items.add(item)
         result = self.itinerary_repository.add_or_update(itinerary)

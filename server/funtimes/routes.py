@@ -1,10 +1,10 @@
 import json
 
-from funtimes.rest import api as funtimes_api
-from funtimes import app
-from funtimes.models.base import BaseModel
-from flask_restful import Api
 from flask import make_response
+from flask_restful import Api
+from funtimes import app
+from funtimes.models.entities.base import BaseModel
+from funtimes.rest import api as funtimes_api
 
 api = Api(app)
 api.add_resource(funtimes_api.HelloWorld, '/api')
@@ -19,7 +19,7 @@ api.add_resource(funtimes_api.ItemResource, '/api/itineraries/<int:itinerary_id>
 
 def default(obj):
     """Default JSON serializer."""
-    import calendar, datetime
+    import datetime
     if isinstance(obj, datetime.datetime):
         if obj.utcoffset() is not None:
             obj = obj - obj.utcoffset()

@@ -1,8 +1,7 @@
-from asq.initiators import query
-from funtimes.models.item import Item
 from funtimes.models.change_result import ChangeResult
+
+from funtimes.models.entities.item import Item
 from funtimes.repositories.baseRepository import BaseRepository
-from funtimes.repositories.categoryRepository import CategoryRepository
 
 
 class ItemRepository(BaseRepository):
