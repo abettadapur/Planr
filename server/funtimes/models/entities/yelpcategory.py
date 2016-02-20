@@ -1,5 +1,6 @@
 from funtimes import db
 from funtimes.models.entities.base import BaseModel
+from funtimes.models.entities.yelp_search_filter import YelpSearchFilter
 
 
 class YelpCategory(BaseModel):
