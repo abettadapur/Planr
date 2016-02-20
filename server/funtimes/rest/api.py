@@ -68,7 +68,6 @@ class ItineraryResource(Resource):
     def __init__(self):
         self.update_parser = RequestParser()
         self.update_parser.add_argument('name', type=str, required=True, location='json', help='No name provided')
-        self.update_parser.add_argument('date', type=str, required=True, location='json', help='No date provided')
         self.update_parser.add_argument('start_time', type=str, required=True, location='json',
                                         help='No start_time provided')
         self.update_parser.add_argument('end_time', type=str, required=True, location='json',
@@ -139,7 +138,6 @@ class ItineraryListResource(Resource):
     def __init__(self):
         self.create_parser = RequestParser()
         self.create_parser.add_argument('name', type=str, required=True, location='json', help='No name provided')
-        self.create_parser.add_argument('date', type=str, required=True, location='json', help='No date provided')
         self.create_parser.add_argument('start_time', type=str, required=True, location='json',
                                         help='No start_time provided')
         self.create_parser.add_argument('end_time', type=str, required=True, location='json',
