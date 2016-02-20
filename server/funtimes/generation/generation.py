@@ -17,7 +17,7 @@ def fetch_items(city, categories):
     coordinate = None
     for category in categories:
         yelp_item = get_yelp_item(city, category, coordinate)
-        item = Item()
+        item = Item(name=yelp_item.Name, yelp_category=category, type="YELP", yelp_item=yelp_item)
         items.append(item)
 
     return items

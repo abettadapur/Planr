@@ -16,4 +16,5 @@ class YelpCategoryRepository(BaseRepository):
         return ChangeResult()
 
     def get_categories_for_time(self, start_time, end_time):
+        categories = []
         pass

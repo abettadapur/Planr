@@ -15,6 +15,17 @@ class Item(BaseModel):
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
     type = db.Column(db.Enum("YELP", "USER"), nullable=False)
+    yelp_item_id = db.Column(db.Integer, db.ForeignKey("yelp_item.id"))
+    yelp_item = db.relationship("YelpItem")
+
+    def __init__(self, name=None, yelp_category=None, itinerary_id = None, start_time=None, end_time=None, type=None, yelp_item=None):
+        self.name = name
+        self.yelp_category = yelp_category
+        self.itinerary_id = itinerary_id
+        self.start_time = start_time
+        self.end_time = end_time
+        self.type = type
+        self.yelp_item = yelp_item
 
     def update_from_dict(self, args):
         self.name = args['name']
