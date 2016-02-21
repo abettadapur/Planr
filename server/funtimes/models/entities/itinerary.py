@@ -56,5 +56,5 @@ class Itinerary(BaseModel):
         itinerary.end_time = datetime.strptime(create_dict['end_time'], "%Y-%m-%d %H:%M:%S %z")
         itinerary.city = create_dict['city']
         itinerary.public = create_dict['public']
-        itinerary.user_id = user.id
+        itinerary.user = user
         return itinerary

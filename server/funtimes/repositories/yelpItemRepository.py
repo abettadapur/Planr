@@ -2,6 +2,7 @@ from funtimes.models.entities.change_result import ChangeResult
 
 from funtimes.models.entities.yelp_item import YelpItem
 from funtimes.repositories.baseRepository import BaseRepository
+from funtimes import db
 
 
 class YelpItemRepository(BaseRepository):
@@ -14,4 +15,7 @@ class YelpItemRepository(BaseRepository):
 
     def validate(self, entity):
         return ChangeResult()
+
+    def get_or_insert(self, yelp_item):
+        return db.session.merge(yelp_item)
 

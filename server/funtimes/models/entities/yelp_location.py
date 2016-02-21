@@ -21,7 +21,7 @@ class YelpLocation(BaseModel):
     @staticmethod
     def create_from_dict(create_dict):
         location = YelpLocation(
-            address=create_dict['address'],
+            address=', '.join(create_dict['address']),
             city=create_dict['city'],
             postal_code=create_dict['postal_code'],
             coordinate=Coordinate(create_dict['coordinate']['latitude'], create_dict['coordinate']['longitude'])

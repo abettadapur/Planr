@@ -21,7 +21,7 @@ class YelpItem(BaseModel):
         self.url = url
         self.phone = phone
         self.rating = rating
-        self.location = location
+        self.yelp_location = location
 
     @staticmethod
     def create_from_dict(dict):

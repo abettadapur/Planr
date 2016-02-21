@@ -4,6 +4,7 @@ from funtimes.models.entities.yelp_item import YelpItem
 from funtimes.models.util.enums import StrategyType
 from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
 from funtimes.models.util.strategy import DistanceStrategy, FirstStrategy, FirstRandomStrategy
+from funtimes.repositories.yelpItemRepository import YelpItemRepository
 from funtimes.yelp import yelpapi
 from asq.initiators import query
 
@@ -29,6 +30,7 @@ def fetch_items(city, categories):
 
 def get_yelp_item(city, category, coordinate=None, strategy=DistanceStrategy()):
     extra_yelp_params = {}
+    yelp_item_repository = YelpItemRepository()
     if coordinate is not None:
         extra_yelp_params['cll'] = str(coordinate)
 
@@ -48,4 +50,4 @@ def get_yelp_item(city, category, coordinate=None, strategy=DistanceStrategy()):
                                      query(category.search_filters).select(lambda f: f.filter).to_list(),
                                      **extra_yelp_params)]
     yelp_item = strategy.run_strategy(search_results)
-    return yelp_item
+    return yelp_item_repository.get_or_insert(yelp_item)
