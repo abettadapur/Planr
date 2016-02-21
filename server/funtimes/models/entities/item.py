@@ -33,6 +33,11 @@ class Item(BaseModel):
         self.start_time = datetime.strptime(args['start_time'], "%Y-%m-%d %H:%M:%S")
         self.end_time = datetime.strptime(args['end_time'], "%Y-%m-%d %H:%M:%S")
 
+    def as_dict(self):
+        item_dict = super(Item, self).as_dict()
+        item_dict['yelp_item'] = self.yelp_item.as_dict()
+        return item_dict
+
     @staticmethod
     def create_from_dict(args):
         item = Item()

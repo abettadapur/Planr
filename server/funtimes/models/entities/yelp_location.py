@@ -18,6 +18,11 @@ class YelpLocation(BaseModel):
         self.postal_code = postal_code
         self.coordinate = coordinate
 
+    def as_dict(self):
+        location_dict = super(YelpLocation, self).as_dict()
+        location_dict['coordinate'] = self.coordinate.as_dict()
+        return location_dict
+    
     @staticmethod
     def create_from_dict(create_dict):
         location = YelpLocation(

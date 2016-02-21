@@ -23,6 +23,11 @@ class YelpItem(BaseModel):
         self.rating = rating
         self.yelp_location = location
 
+    def as_dict(self):
+        item_dict = super(YelpItem, self).as_dict()
+        item_dict['location'] = self.yelp_location.as_dict()
+        return item_dict
+
     @staticmethod
     def create_from_dict(dict):
         item = YelpItem(
