@@ -11,13 +11,13 @@ from funtimes.repositories.userAuthorizationRepository import UserAuthorizationR
 from funtimes.repositories.userRepository import UserRepository
 from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
 from funtimes.rest import authenticate
+from funtimes.generation.generation import populate_sample_itinerary
 from sqlalchemy.exc import InvalidRequestError
 
 
 class HelloWorld(Resource):
     def get(self):
         return {"message": "Welcome to the FunTimes API"}
-
 
 class AuthResource(Resource):
     def __init__(self):
@@ -167,6 +167,7 @@ class ItineraryListResource(Resource):
         user = kwargs['user']
         args = self.create_parser.parse_args()
         itinerary = self.itinerary_repository.create_from_dict(args, user)
+        populate_sample_itinerary(itinerary)
         # TODO(abettadapur): Populate itinerary with yelp items
         result = self.itinerary_repository.add_or_update(itinerary)
 

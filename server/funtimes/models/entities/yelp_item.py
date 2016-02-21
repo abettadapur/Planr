@@ -5,7 +5,7 @@ from funtimes.models.entities.base import BaseModel
 
 class YelpItem(BaseModel):
     __tablename__ = "yelp_item"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=False)
+    id = db.Column(db.String(300), primary_key=True)
     name = db.Column(db.String(200), nullable=False)
     image_url = db.Column(db.String(300), nullable=True)
     url = db.Column(db.String(300), nullable=True)
@@ -24,13 +24,13 @@ class YelpItem(BaseModel):
         self.location = location
 
     @staticmethod
-    def create_from_dict(self, dict):
+    def create_from_dict(dict):
         item = YelpItem(
             id=dict['id'],
             name=dict['name'],
             image_url=dict['image_url'],
             url=dict['url'],
-            phone=dict['phone'],
+            phone=dict['phone'] if 'phone' in dict else None,
             rating=dict['rating'],
             location=YelpLocation.create_from_dict(dict['location'])
         )

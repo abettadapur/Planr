@@ -25,28 +25,28 @@ def upgrade():
 
     command = text("""
         UPDATE yelp_category
-        SET start_time = "11:00:00", end_time="2:00:00"
+        SET start_time = "11:00:00", end_time="14:00:00"
         WHERE name = "lunch"
     """)
     op.get_bind().execute(command)
 
     command = text("""
         UPDATE yelp_category
-        SET start_time = "2:00:00", end_time="6:00:00"
+        SET start_time = "14:00:00", end_time="18:00:00"
         WHERE name = "attraction"
     """)
     op.get_bind().execute(command)
 
     command = text("""
         UPDATE yelp_category
-        SET start_time = "6:00:00", end_time="8:00:00"
+        SET start_time = "18:00:00", end_time="20:00:00"
         WHERE name = "dinner"
     """)
     op.get_bind().execute(command)
 
     command = text("""
         UPDATE yelp_category
-        SET start_time = "8:00:00", end_time="12:00:00"
+        SET start_time = "20:00:00", end_time="0:00:00"
         WHERE name = "nightlife"
     """)
     op.get_bind().execute(command)

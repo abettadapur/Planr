@@ -16,7 +16,7 @@ class Item(BaseModel):
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
     type = db.Column(db.Enum("YELP", "USER"), nullable=False)
-    yelp_item_id = db.Column(db.Integer, db.ForeignKey("yelp_item.id"))
+    yelp_item_id = db.Column(db.String(300), db.ForeignKey("yelp_item.id"))
     yelp_item = db.relationship("YelpItem")
 
     def __init__(self, name=None, yelp_category=None, itinerary_id = None, start_time=None, end_time=None, type=None, yelp_item=None):

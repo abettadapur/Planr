@@ -3,6 +3,7 @@ from funtimes.models.entities.change_result import ChangeResult
 from funtimes.models.entities.itinerary import Itinerary
 from funtimes.models.entities.itinerary import ItineraryShares
 from funtimes.repositories.baseRepository import BaseRepository
+from funtimes.repositories.itemRepository import ItemRepository
 from funtimes.repositories.itineraryShareRepository import ItineraryShareRepository
 from funtimes.repositories.userRepository import UserRepository
 
@@ -13,7 +14,12 @@ class ItineraryRepository(BaseRepository):
         super(ItineraryRepository, self).__init__(Itinerary)
 
     def add_or_update(self, entity):
-        return super(ItineraryRepository, self).add_or_update(entity)
+        result = ChangeResult()
+        # item_repository = ItemRepository()
+        # for item in entity.items:
+        #     result.add_child_result(item_repository.add_or_update(item))
+        result.add_child_result(super(ItineraryRepository, self).add_or_update(entity))
+        return result
 
     def validate(self, entity):
         return ChangeResult()
