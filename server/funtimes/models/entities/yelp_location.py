@@ -8,7 +8,7 @@ class YelpLocation(BaseModel):
     id = db.Column(db.Integer(), primary_key=True)
     address = db.Column(db.String(500), nullable=False)
     city = db.Column(db.String(100), nullable=False)
-    postal_code = db.Column(db.String(100), nullable=False)
+    postal_code = db.Column(db.String(100), nullable=True)
     coordinate_id = db.Column(db.Integer, db.ForeignKey("coordinate.id"))
     coordinate = db.relationship("Coordinate")
 
@@ -28,7 +28,7 @@ class YelpLocation(BaseModel):
         location = YelpLocation(
             address=', '.join(create_dict['address']),
             city=create_dict['city'],
-            postal_code=create_dict['postal_code'],
+            postal_code=create_dict['postal_code'] if 'postal_code' in create_dict else None,
             coordinate=Coordinate(create_dict['coordinate']['latitude'], create_dict['coordinate']['longitude'])
         )
         return location
