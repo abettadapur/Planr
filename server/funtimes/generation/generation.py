@@ -23,6 +23,7 @@ def fetch_items(city, categories):
         yelp_item = get_yelp_item(city, category, coordinate)
         item = Item(name=yelp_item.name, yelp_category=category, type="YELP", yelp_item=yelp_item,
                     start_time=category.start_time, end_time=category.end_time)
+        coordinate = yelp_item.yelp_location.coordinate
         items.append(item)
 
     return items
@@ -45,9 +46,10 @@ def get_yelp_item(city, category, coordinate=None, strategy=DistanceStrategy()):
         extra_yelp_params['sort'] = 1
         strategy = FirstRandomStrategy()
 
-    search_results = [YelpItem.create_from_dict(result) for result in
-                      yelpapi.search(category.search_term, city,
-                                     query(category.search_filters).select(lambda f: f.filter).to_list(),
-                                     **extra_yelp_params)]
-    yelp_item = strategy.run_strategy(search_results)
+    search_results = query(yelpapi.search(category.search_term, city,
+                                          query(category.search_filters).select(lambda f: f.filter).to_list(),
+                                          **extra_yelp_params)).where(
+        lambda r: ['Food Trucks', 'foodtrucks'] not in r['categories'])
+    yelp_items = [YelpItem.create_from_dict(result) for result in search_results]
+    yelp_item = strategy.run_strategy(yelp_items)
     return yelp_item_repository.get_or_insert(yelp_item)
