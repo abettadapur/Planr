@@ -27,10 +27,15 @@ class ItineraryRepository(BaseRepository):
     def create_from_dict(self, create_dict, user):
         return Itinerary.create_from_dict(create_dict, user)
 
-    def get(self, user_id=None, **kwargs):
-        if user_id:
-            kwargs['user_id'] = user_id
-        return super(ItineraryRepository, self).get(**kwargs)
+    def get(self, user=None, shared=False, **kwargs):
+        if user:
+            kwargs['user_id'] = user.id
+
+        itineraries = super(ItineraryRepository, self).get(**kwargs)
+        if shared:
+            itineraries.append(user.shared_itineraries)
+
+        return itineraries
 
     def search(self, query, city):
         itineraries = Itinerary.query().filter_by(public=True)

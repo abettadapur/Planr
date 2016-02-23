@@ -20,6 +20,7 @@ class HelloWorld(Resource):
     def get(self):
         return {"message": "Welcome to the FunTimes API"}
 
+
 class AuthResource(Resource):
     def __init__(self):
         self.auth_parser = RequestParser()
@@ -65,18 +66,20 @@ class AuthResource(Resource):
     def delete(self, **kwargs):
         user = kwargs['user']
 
+
 class CityResource(Resource):
     def __init__(self):
         self.query_parser = RequestParser()
-        self.query_parser.add_argument('name',required=False,help='Name of city')
-        self.query_parser.add_argument('state',required=False,help='Name of state')
+        self.query_parser.add_argument('name', required=False, help='Name of city')
+        self.query_parser.add_argument('state', required=False, help='Name of state')
         self.city_repository = CityRepository()
         super(CityResource, self).__init__()
 
     def get(self, **kwargs):
         args = self.query_parser.parse_args()
-        cities = self.city_repository.search(args.name,args.state)
+        cities = self.city_repository.search(args.name, args.state)
         return cities
+
 
 class ItineraryResource(Resource):
     def __init__(self):
@@ -150,6 +153,9 @@ class ItineraryResource(Resource):
 
 class ItineraryListResource(Resource):
     def __init__(self):
+        self.get_parser = RequestParser()
+        self.get_parser.add_argument('shared', type=bool, required=False)
+
         self.create_parser = RequestParser()
         self.create_parser.add_argument('name', type=str, required=True, location='json', help='No name provided')
         self.create_parser.add_argument('start_time', type=str, required=True, location='json',
@@ -169,7 +175,9 @@ class ItineraryListResource(Resource):
         try:
             user = kwargs['user']
             filter_args = request.args.to_dict()
-            itineraries = self.itinerary_repository.get(user_id=user.id, **filter_args)
+            if 'shared' in filter_args:
+                filter_args['shared'] = bool(filter_args['shared'])
+            itineraries = self.itinerary_repository.get(user=user, **filter_args)
             return itineraries
         except InvalidRequestError as ireq:
             on_error(str(ireq))
