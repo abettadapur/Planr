@@ -7,22 +7,31 @@ from funtimes.models.util.strategy import DistanceStrategy, FirstStrategy, First
 from funtimes.repositories.yelpItemRepository import YelpItemRepository
 from funtimes.yelp import yelpapi
 from asq.initiators import query
+from datetime import datetime
 
 
 def populate_sample_itinerary(itinerary):
     category_repository = YelpCategoryRepository()
     categories = category_repository.get_categories_for_time(itinerary.start_time, itinerary.end_time)
-    items = fetch_items(itinerary.city, categories)
+    items = fetch_items(itinerary.city, categories, itinerary.start_time.date)
     itinerary.items = items
 
 
-def fetch_items(city, categories):
+def fetch_items(city, categories, date):
     items = []
     coordinate = None
     for category in categories:
         yelp_item = get_yelp_item(city, category, coordinate)
-        item = Item(name=yelp_item.name, yelp_category=category, type="YELP", yelp_item=yelp_item,
-                    start_time=category.start_time, end_time=category.end_time)
+
+        item = Item(
+            name=yelp_item.name,
+            yelp_category=category,
+            type="YELP",
+            yelp_item=yelp_item,
+            start_time=datetime.combine(date, category.start_time),
+            end_time=datetime.combine(date, category.end_time)
+        )
+
         coordinate = yelp_item.yelp_location.coordinate
         items.append(item)
 
