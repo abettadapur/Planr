@@ -10,6 +10,7 @@ from funtimes.repositories.itineraryRepository import ItineraryRepository
 from funtimes.repositories.userAuthorizationRepository import UserAuthorizationRepository
 from funtimes.repositories.userRepository import UserRepository
 from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
+from funtimes.repositories.cityRepository import CityRepository
 from funtimes.rest import authenticate
 from funtimes.generation.generation import populate_sample_itinerary
 from sqlalchemy.exc import InvalidRequestError
@@ -64,6 +65,18 @@ class AuthResource(Resource):
     def delete(self, **kwargs):
         user = kwargs['user']
 
+class CityResource(Resource):
+    def __init__(self):
+        self.query_parser = RequestParser()
+        self.query_parser.add_argument('name',required=False,help='Name of city')
+        self.query_parser.add_argument('state',required=False,help='Name of state')
+        self.city_repository = CityRepository()
+        super(CityResource, self).__init__()
+
+    def get(self, **kwargs):
+        args = self.query_parser.parse_args()
+        cities = self.city_repository.search(args.name,args.state)
+        return cities
 
 class ItineraryResource(Resource):
     def __init__(self):
