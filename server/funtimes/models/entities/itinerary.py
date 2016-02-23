@@ -39,6 +39,7 @@ class Itinerary(BaseModel):
         itinerary_dict = super(Itinerary, self).as_dict()
         itinerary_dict['user'] = self.user.as_dict()
         itinerary_dict['items'] = [i.as_dict() for i in self.items]
+        itinerary_dict['shared_users'] = [u.as_dict() for u in self.shared_users]
         return itinerary_dict
 
     def update_from_dict(self, update_dict):
