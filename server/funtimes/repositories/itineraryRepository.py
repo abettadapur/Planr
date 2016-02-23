@@ -33,7 +33,7 @@ class ItineraryRepository(BaseRepository):
 
         itineraries = super(ItineraryRepository, self).get(**kwargs)
         if shared:
-            itineraries.append(user.shared_itineraries)
+            itineraries.extend(user.shared_itineraries)
 
         return itineraries
 
