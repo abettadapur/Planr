@@ -23,6 +23,7 @@ class Location(BaseModel):
     def as_dict(self):
         location_dict = super(Location, self).as_dict()
         location_dict['coordinate'] = self.coordinate.as_dict()
+        location_dict['display'] = str(self)
         return location_dict
 
     @staticmethod
@@ -35,3 +36,11 @@ class Location(BaseModel):
             coordinate=Coordinate(create_dict['coordinate']['latitude'], create_dict['coordinate']['longitude'])
         )
         return location
+
+    def __str__(self):
+        return "{address}, {city}, {state}, {postal_code}".format(
+            address=self.address,
+            city=self.city,
+            state=self.state_code,
+            postal_code=self.postal_code
+        )
