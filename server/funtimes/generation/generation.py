@@ -13,11 +13,11 @@ from datetime import datetime
 def populate_sample_itinerary(itinerary):
     category_repository = YelpCategoryRepository()
     categories = category_repository.get_categories_for_time(itinerary.start_time, itinerary.end_time)
-    items = fetch_items(itinerary.city, categories, itinerary.start_time.date)
+    items = fetch_items(itinerary.city, categories, itinerary.start_time.date())
     itinerary.items = items
 
 
-def fetch_items(city, categories, date):
+def fetch_items(city, categories, itinerary_date):
     items = []
     coordinate = None
     for category in categories:
@@ -28,11 +28,12 @@ def fetch_items(city, categories, date):
             yelp_category=category,
             type="YELP",
             yelp_item=yelp_item,
-            start_time=datetime.combine(date, category.start_time),
-            end_time=datetime.combine(date, category.end_time)
+            start_time=datetime.combine(itinerary_date, category.start_time),
+            end_time=datetime.combine(itinerary_date, category.end_time),
+            location=yelp_item.location
         )
 
-        coordinate = yelp_item.yelp_location.coordinate
+        coordinate = item.location.coordinate
         items.append(item)
 
     return items

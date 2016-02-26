@@ -1,4 +1,4 @@
-from funtimes.models.entities.yelp_location import YelpLocation
+from funtimes.models.entities.location import Location
 from funtimes import db
 from funtimes.models.entities.base import BaseModel
 
@@ -11,8 +11,8 @@ class YelpItem(BaseModel):
     url = db.Column(db.String(300), nullable=True)
     phone = db.Column(db.String(15), nullable=True)
     rating = db.Column(db.Integer())
-    yelp_location_id = db.Column(db.Integer, db.ForeignKey("yelp_location.id"))
-    yelp_location = db.relationship("YelpLocation")
+    location_id = db.Column(db.Integer, db.ForeignKey("location.id"))
+    location = db.relationship("Location")
 
     def __init__(self, id=None, name=None, image_url=None, url=None, phone=None, rating=1, location=None):
         self.id = id
@@ -21,11 +21,11 @@ class YelpItem(BaseModel):
         self.url = url
         self.phone = phone
         self.rating = rating
-        self.yelp_location = location
+        self.location = location
 
     def as_dict(self):
         item_dict = super(YelpItem, self).as_dict()
-        item_dict['location'] = self.yelp_location.as_dict()
+        item_dict['location'] = self.location.as_dict()
         return item_dict
 
     @staticmethod
@@ -37,6 +37,6 @@ class YelpItem(BaseModel):
             url=dict['url'],
             phone=dict['phone'] if 'phone' in dict else None,
             rating=dict['rating'],
-            location=YelpLocation.create_from_dict(dict['location'])
+            location=Location.create_from_yelp_dict(dict['location'])
         )
         return item
