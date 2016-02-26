@@ -10,7 +10,7 @@ from funtimes.models.entities.itinerary import Itinerary
 from funtimes.models.entities.user import User
 from funtimes.models.entities.user_authorization import UserAuthorization
 from funtimes.models.entities.yelp_item import YelpItem
-from funtimes.models.entities.yelp_location import YelpLocation
+from funtimes.models.entities.location import Location
 from funtimes.models.entities.yelp_search_filter import YelpSearchFilter
 from funtimes.models.entities.yelpcategory import YelpCategory
 

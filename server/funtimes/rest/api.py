@@ -4,6 +4,7 @@ from asq.initiators import query
 from flask import request
 from flask_restful import abort, Resource
 from flask_restful.reqparse import RequestParser
+from funtimes.maps.maps import get_polyline
 from funtimes.models.entities.user import User
 from funtimes.repositories.itemRepository import ItemRepository
 from funtimes.repositories.itineraryRepository import ItineraryRepository
@@ -101,11 +102,18 @@ class ItineraryResource(Resource):
         user = kwargs['user']
         itinerary = self.itinerary_repository.find(id)
 
+
         if not itinerary:
             abort(404, message="No itinerary with that id exists")
 
         if itinerary.user.id != user.id:
             abort(404, message="No itinerary with that id exists")
+
+        if 'include_polyline' in request.args and request.args['include_polyline']:
+            polyline = get_polyline(itinerary)
+            itinerary_dict = itinerary.as_dict()
+            itinerary_dict['polyline'] = polyline
+            return itinerary_dict
 
         return itinerary
 

@@ -18,8 +18,10 @@ class Item(BaseModel):
     type = db.Column(db.Enum("YELP", "USER"), nullable=False)
     yelp_item_id = db.Column(db.String(300), db.ForeignKey("yelp_item.id"))
     yelp_item = db.relationship("YelpItem")
+    location_id = db.Column(db.Integer, db.ForeignKey("location.id"))
+    location = db.relationship("Location")
 
-    def __init__(self, name=None, yelp_category=None, itinerary_id = None, start_time=None, end_time=None, type=None, yelp_item=None):
+    def __init__(self, name=None, yelp_category=None, itinerary_id = None, start_time=None, end_time=None, type=None, yelp_item=None, location=None):
         self.name = name
         self.yelp_category = yelp_category
         self.itinerary_id = itinerary_id
@@ -27,6 +29,7 @@ class Item(BaseModel):
         self.end_time = end_time
         self.type = type
         self.yelp_item = yelp_item
+        self.location = location
 
     def update_from_dict(self, args):
         self.name = args['name']
@@ -36,6 +39,7 @@ class Item(BaseModel):
     def as_dict(self):
         item_dict = super(Item, self).as_dict()
         item_dict['yelp_item'] = self.yelp_item.as_dict()
+        item_dict['location'] = self.location.as_dict()
         return item_dict
 
     @staticmethod
