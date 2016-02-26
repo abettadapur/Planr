@@ -1,7 +1,8 @@
-from funtimes.models.change_result import ChangeResult
+from funtimes.models.entities.change_result import ChangeResult
 
 from funtimes.models.entities.yelpcategory import YelpCategory
 from funtimes.repositories.baseRepository import BaseRepository
+from asq.initiators import query
 
 
 class YelpCategoryRepository(BaseRepository):
@@ -14,3 +15,8 @@ class YelpCategoryRepository(BaseRepository):
 
     def validate(self, entity):
         return ChangeResult()
+
+    def get_categories_for_time(self, start_time, end_time):
+        categories = query(YelpCategory.query.all())
+        return categories.where(lambda c: start_time.time() <= c.end_time).where(
+            lambda c: end_time.time() >= c.start_time).to_list()

@@ -6,8 +6,8 @@ from requests.exceptions import HTTPError
 from urllib.parse import quote
 
 API_HOST = "api.yelp.com"
-SEARCH_PATH = "/v2/search/"
-BUSINESS_PATH = "/v2/business/"
+SEARCH_PATH = "/v2/search"
+BUSINESS_PATH = "/v2/business"
 
 CONSUMER_KEY = config.CONSUMER_KEY
 CONSUMER_SECRET = config.CONSUMER_SECRET

@@ -1,8 +1,9 @@
-from funtimes.models.change_result import ChangeResult
+from funtimes.models.entities.change_result import ChangeResult
 
 from funtimes.models.entities.itinerary import Itinerary
 from funtimes.models.entities.itinerary import ItineraryShares
 from funtimes.repositories.baseRepository import BaseRepository
+from funtimes.repositories.itemRepository import ItemRepository
 from funtimes.repositories.itineraryShareRepository import ItineraryShareRepository
 from funtimes.repositories.userRepository import UserRepository
 
@@ -13,7 +14,12 @@ class ItineraryRepository(BaseRepository):
         super(ItineraryRepository, self).__init__(Itinerary)
 
     def add_or_update(self, entity):
-        return super(ItineraryRepository, self).add_or_update(entity)
+        result = ChangeResult()
+        # item_repository = ItemRepository()
+        # for item in entity.items:
+        #     result.add_child_result(item_repository.add_or_update(item))
+        result.add_child_result(super(ItineraryRepository, self).add_or_update(entity))
+        return result
 
     def validate(self, entity):
         return ChangeResult()
@@ -21,10 +27,15 @@ class ItineraryRepository(BaseRepository):
     def create_from_dict(self, create_dict, user):
         return Itinerary.create_from_dict(create_dict, user)
 
-    def get(self, user_id=None, **kwargs):
-        if user_id:
-            kwargs['user_id'] = user_id
-        return super(ItineraryRepository, self).get(**kwargs)
+    def get(self, user=None, shared=False, **kwargs):
+        if user:
+            kwargs['user_id'] = user.id
+
+        itineraries = super(ItineraryRepository, self).get(**kwargs)
+        if shared:
+            itineraries.extend(user.shared_itineraries)
+
+        return itineraries
 
     def search(self, query, city):
         itineraries = Itinerary.query().filter_by(public=True)
