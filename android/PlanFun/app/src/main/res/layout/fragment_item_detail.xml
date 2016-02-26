@@ -110,7 +110,7 @@
                     android:gravity="center"
 
                     />
-                <edu.gatech.daytripper.views.VerticalProgressBar
+                <devpost.yelp.planfun.activities.views.VerticalProgressBar
                     android:layout_width="wrap_content"
                     android:paddingLeft="8dp"
                     android:layout_height="match_parent"

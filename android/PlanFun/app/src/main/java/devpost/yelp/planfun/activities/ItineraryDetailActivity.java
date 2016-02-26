@@ -22,6 +22,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -92,41 +93,44 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
 
         int id = getIntent().getIntExtra("itinerary_id", 0);
 
-//        mFab = (FloatingActionButton)findViewById(R.id.edit_fab);
-//        mFab.setOnClickListener(this);
+        //mFab = (FloatingActionButton)findViewById(R.id.edit_fab);
+        //mFab.setOnClickListener(this);
 
         mRestClient = RestClient.getInstance();
 
         mRestClient.getItineraryService().getItinerary(id, new Callback<Itinerary>() {
             @Override
-            public void success(Itinerary itinerary, Response response) {
+            public void success(final Itinerary itinerary, Response response) {
                 currentItinerary = itinerary;
                 if(mMenu!=null)
                 {
-                    Request request = Request.newMeRequest(Session.getActiveSession(), new Request.GraphUserCallback() {
-                        @Override
-                        public void onCompleted(GraphUser graphUser, com.facebook.Response response) {
 
-                            if(currentItinerary.getUser().getId() != Long.parseLong(graphUser.getId()))
-                            {
-                                mMenu.add(0, ADD_ITINERARY, 0, "Add to your itineraries").setIcon(new IconDrawable(ItineraryDetailActivity.this, Iconify.IconValue.fa_plus).color(0xFFFFFF).actionBarSize());
-                                mMenu.removeItem(R.id.action_edit);
-                                mMenu.removeItem(R.id.action_randomize);
-                                mMenu.removeItem(R.id.action_refresh);
-                            }
+                            Request request = Request.newMeRequest(Session.getActiveSession(), new Request.GraphUserCallback() {
+                                @Override
+                                public void onCompleted(GraphUser graphUser, com.facebook.Response response) {
+                                    if (currentItinerary.getUser().getId() != Long.parseLong(graphUser.getId())) {
+                                        ItineraryDetailActivity.this.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                mMenu.add(0, ADD_ITINERARY, 0, "Add to your itineraries").setIcon(new IconDrawable(ItineraryDetailActivity.this, Iconify.IconValue.fa_plus).color(0xFFFFFF).actionBarSize());
+                                                mMenu.removeItem(R.id.action_edit);
+                                                mMenu.removeItem(R.id.action_randomize);
+                                                mMenu.removeItem(R.id.action_refresh);
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                            request.executeAsync();
 
-                        }
-                    });
-                    request.executeAsync();
                 }
 
-                //notify fragments
-                //itemListFragment.updateItems(itinerary.getItems());
-
+                ItineraryDetailActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
                 getSupportActionBar().setTitle(itinerary.getName());
 
-                MapFragment mapFragment = (MapFragment)getFragmentManager().findFragmentById(R.id.map);
-                mapFragment.getMapAsync(ItineraryDetailActivity.this);
+                    }});
 
             }
 
@@ -136,8 +140,9 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
             }
         });
 
-
-
+        SupportMapFragment mapFragment = ((SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map));
+        mapFragment.getMapAsync(this);
     }
 
 

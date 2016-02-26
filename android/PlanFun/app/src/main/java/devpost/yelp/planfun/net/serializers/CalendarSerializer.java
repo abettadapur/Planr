@@ -21,7 +21,7 @@ public class CalendarSerializer implements JsonSerializer<Calendar>, JsonDeseria
 
     @Override
     public Calendar deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String date_str = json.getAsString();
         Calendar date = null;
         try {

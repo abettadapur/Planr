@@ -2,8 +2,8 @@
 <resources>
     <color name="splash_color">#35A5DD</color>
     <color name="white">#FFFFFF</color>
-    <color name="primary">#4CAF50</color>
-    <color name="primary_pressed">#388E3C</color>
+    <color name="primary">#76af98</color>
+    <color name="primary_pressed">#45878e</color>
     <color name="ripple">#C8E6C9</color>
 
 

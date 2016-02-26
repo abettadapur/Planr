@@ -35,7 +35,7 @@
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_below="@id/toolbar"
                 android:id="@+id/map"
-                android:name="com.google.android.gms.maps.MapFragment"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                  />
@@ -51,14 +51,6 @@
             android:focusable="false"
             android:background="#55eeeeee"
             android:id="@+id/dragView">
-            <!--<LinearLayout-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="68dp">-->
-            <!--<TextView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:text="Sliding View Here"/>-->
-            <!--</LinearLayout>-->
 
             <FrameLayout
             android:id="@+id/container"
