@@ -1,13 +1,16 @@
 package devpost.yelp.planfun.activities;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -15,9 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.facebook.Request;
-import com.facebook.Session;
-import com.facebook.model.GraphUser;
+import com.facebook.AccessToken;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -49,9 +50,9 @@ import devpost.yelp.planfun.activities.fragments.ItemListFragment;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.net.RestClient;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ItineraryDetailActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener, GoogleMap.OnMarkerClickListener {
 
@@ -63,7 +64,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
     private Map<Marker, Item> marker_to_item;
     private List<Polyline> polylines;
     private Menu mMenu;
-    private static String[] colors = {"red", "blue", "cyan", "green","purple", "orange"};
+    private static String[] colors = {"red", "blue", "cyan", "green", "purple", "orange"};
     private GoogleMap mGoogleMap;
     private final int ADD_ITINERARY = 94801;
 
@@ -75,7 +76,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
         marker_to_item = new HashMap<>();
         polylines = new ArrayList<>();
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -84,8 +85,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
 
         itemDetailFragment = ItemDetailFragment.newInstance();
 
-        if(savedInstanceState==null)
-        {
+        if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.container, itemDetailFragment)
                     .commit();
@@ -98,44 +98,27 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
 
         mRestClient = RestClient.getInstance();
 
-        mRestClient.getItineraryService().getItinerary(id, new Callback<Itinerary>() {
+        Call<Itinerary> itineraryCall = mRestClient.getItineraryService().getItinerary(id);
+        itineraryCall.enqueue(new Callback<Itinerary>() {
             @Override
-            public void success(final Itinerary itinerary, Response response) {
-                currentItinerary = itinerary;
-                if(mMenu!=null)
-                {
-
-                            Request request = Request.newMeRequest(Session.getActiveSession(), new Request.GraphUserCallback() {
-                                @Override
-                                public void onCompleted(GraphUser graphUser, com.facebook.Response response) {
-                                    if (currentItinerary.getUser().getId() != Long.parseLong(graphUser.getId())) {
-                                        ItineraryDetailActivity.this.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                mMenu.add(0, ADD_ITINERARY, 0, "Add to your itineraries").setIcon(new IconDrawable(ItineraryDetailActivity.this, Iconify.IconValue.fa_plus).color(0xFFFFFF).actionBarSize());
-                                                mMenu.removeItem(R.id.action_edit);
-                                                mMenu.removeItem(R.id.action_randomize);
-                                                mMenu.removeItem(R.id.action_refresh);
-                                            }
-                                        });
-                                    }
-                                }
+            public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
+                if (response.isSuccess()) {
+                    currentItinerary = response.body();
+                    if (mMenu != null) {
+                        if (currentItinerary.getUser().getId() != Long.parseLong(AccessToken.getCurrentAccessToken().getUserId())) {
+                            ItineraryDetailActivity.this.runOnUiThread(() -> {
+                                mMenu.add(0, ADD_ITINERARY, 0, "Add to your itineraries").setIcon(new IconDrawable(ItineraryDetailActivity.this, Iconify.IconValue.fa_plus).color(0xFFFFFF).actionBarSize());
+                                mMenu.removeItem(R.id.action_edit);
+                                mMenu.removeItem(R.id.action_randomize);
+                                mMenu.removeItem(R.id.action_refresh);
                             });
-                            request.executeAsync();
-
+                        }
+                    }
                 }
-
-                ItineraryDetailActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                getSupportActionBar().setTitle(itinerary.getName());
-
-                    }});
-
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Call<Itinerary> call, Throwable t) {
 
             }
         });
@@ -169,8 +152,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        switch (item.getItemId())
-        {
+        switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
                 return true;
@@ -215,27 +197,30 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
                         .show();
                 break;*/
             case R.id.action_refresh:
-                mRestClient.getItineraryService().getItinerary(currentItinerary.getId(), new Callback<Itinerary>() {
+                Call<Itinerary> getItineraryCall = mRestClient.getItineraryService().getItinerary(currentItinerary.getId());
+                getItineraryCall.enqueue(new Callback<Itinerary>() {
                     @Override
-                    public void success(Itinerary itinerary, Response response) {
-                        currentItinerary = itinerary;
-                        updateView();
+                    public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
+                        if (response.isSuccess()) {
+                            currentItinerary = response.body();
+                            updateView();
+                        }
                     }
 
                     @Override
-                    public void failure(RetrofitError error) {
+                    public void onFailure(Call<Itinerary> call, Throwable t) {
 
                     }
                 });
-
                 break;
+
             case ADD_ITINERARY:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void updateView()
-    {
+    private void updateView() {
         clearMap();
         Collections.sort(currentItinerary.getItems(), new Comparator<Item>() {
             @Override
@@ -243,10 +228,9 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
                 return (int) (lhs.getStart_time().getTimeInMillis() - rhs.getStart_time().getTimeInMillis());
             }
         });
-        for(int j = 0; j<currentItinerary.getItems().size(); j++)
-        {
+        for (int j = 0; j < currentItinerary.getItems().size(); j++) {
             Item i = currentItinerary.getItems().get(j);
-            String drawableName = "marker_"+colors[j%6]+"_number_"+j;
+            String drawableName = "marker_" + colors[j % 6] + "_number_" + j;
             Bitmap b = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(drawableName, "drawable", getPackageName()));
             Bitmap scaled = Bitmap.createScaledBitmap(b, b.getWidth() * 3, b.getHeight() * 3, false);
             Marker marker = mGoogleMap.addMarker(new MarkerOptions()
@@ -257,32 +241,31 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
 
             marker_to_item.put(marker, i);
         }
-        for(int j = 0; j<currentItinerary.getItems().size()-1; j++)
-        {
+        for (int j = 0; j < currentItinerary.getItems().size() - 1; j++) {
             LatLng origin = currentItinerary.getItems().get(j).getYelp_entry().getLocation().getCoordinate();
-            LatLng destination = currentItinerary.getItems().get(j+1).getYelp_entry().getLocation().getCoordinate();
-            final String color_str = "maps_"+colors[j];
-            mRestClient.getDirectionsService().getPolyline(origin.latitude + ", " + origin.longitude, destination.latitude + ", " + destination.longitude, Session.getActiveSession().getAccessToken(), new Callback<String>() {
-                @Override
-                public void success(String polyline, Response response) {
-
-                    Log.i("POLY", polyline);
-                    Log.i("RESPONSE", response.getBody().toString());
-
-                    List<LatLng> points = null;//TODO PolyUtil.decode(polyline);
-                    PolylineOptions line = new PolylineOptions().geodesic(true);
-                    for (LatLng point : points) {
-                        line.add(point);
-                    }
-                    line.color(getResources().getColor(getResources().getIdentifier(color_str,"color", getPackageName())));
-                    polylines.add(mGoogleMap.addPolyline(line));
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-
-                }
-            });
+            LatLng destination = currentItinerary.getItems().get(j + 1).getYelp_entry().getLocation().getCoordinate();
+            final String color_str = "maps_" + colors[j];
+//            mRestClient.getDirectionsService().getPolyline(origin.latitude + ", " + origin.longitude, destination.latitude + ", " + destination.longitude, Session.getActiveSession().getAccessToken(), new Callback<String>() {
+//                @Override
+//                public void success(String polyline, Response response) {
+//
+//                    Log.i("POLY", polyline);
+//                    Log.i("RESPONSE", response.getBody().toString());
+//
+//                    List<LatLng> points = null;//TODO PolyUtil.decode(polyline);
+//                    PolylineOptions line = new PolylineOptions().geodesic(true);
+//                    for (LatLng point : points) {
+//                        line.add(point);
+//                    }
+//                    line.color(getResources().getColor(getResources().getIdentifier(color_str,"color", getPackageName())));
+//                    polylines.add(mGoogleMap.addPolyline(line));
+//                }
+//
+//                @Override
+//                public void failure(RetrofitError error) {
+//
+//                }
+//            });
         }
         itemDetailFragment.updateItem(currentItinerary.getItems().get(0));
     }
@@ -293,8 +276,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
         }
         marker_to_item.clear();
 
-        for(Polyline p: polylines)
-        {
+        for (Polyline p : polylines) {
             p.remove();
         }
 
@@ -302,16 +284,25 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
     }
 
     @Override
-    public void onMapReady(final GoogleMap googleMap)
-    {
+    public void onMapReady(final GoogleMap googleMap) {
         Geocoder coder = new Geocoder(this);
         try {
             List<Address> addresses = coder.getFromLocationName(currentItinerary.getCity(), 1);
-            LatLng city =  new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+            LatLng city = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(city, 10));
+        } catch (IOException ioex) {
         }
-        catch(IOException ioex)
-        {}
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //TODO(abettadapur): check permission
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         googleMap.setMyLocationEnabled(true);
         googleMap.setOnMarkerClickListener(this);
 

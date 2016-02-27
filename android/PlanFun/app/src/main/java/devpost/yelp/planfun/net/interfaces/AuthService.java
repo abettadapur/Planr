@@ -1,15 +1,15 @@
 package devpost.yelp.planfun.net.interfaces;
 
 import devpost.yelp.planfun.net.requests.AuthRequest;
-import retrofit.Callback;
-import retrofit.http.Body;
-import retrofit.http.POST;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.POST;
 
 /**
  * Created by Alex on 2/19/2015.
  */
 public interface AuthService {
-    @POST("/auth")
-    void verifyAuthentication(@Body AuthRequest postBody, Callback<Boolean> callback);
+    @POST("auth")
+    Call<Boolean> verifyAuthentication(@Body AuthRequest postBody);
 
 }

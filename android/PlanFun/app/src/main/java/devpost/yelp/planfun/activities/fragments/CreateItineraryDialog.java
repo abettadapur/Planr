@@ -16,10 +16,7 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
-
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.facebook.Session;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,9 +27,9 @@ import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.net.RestClient;
 import devpost.yelp.planfun.net.interfaces.ItineraryService;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Alex on 3/12/2015.
@@ -50,41 +47,36 @@ public class CreateItineraryDialog extends DialogFragment
         MaterialDialog.Builder b = new MaterialDialog.Builder(getActivity())
                 .title("Create Itinerary")
                 .positiveText("Create")
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
-                        String name = mNameBox.getText().toString();
-                        String city = mCitySpinner.getText().toString();
-                        boolean isPublic = publicBox.isChecked();
-                        Itinerary newItinerary = new Itinerary(name, mStart, mEnd, city, isPublic, new ArrayList<Item>());
-                        ItineraryService service = RestClient.getInstance().getItineraryService();
+                .onPositive((dialog, which) -> {
+                    String name = mNameBox.getText().toString();
+                    String city = mCitySpinner.getText().toString();
+                    boolean isPublic = publicBox.isChecked();
+                    Itinerary newItinerary = new Itinerary(name, mStart, mEnd, city, isPublic, new ArrayList<Item>());
+                    ItineraryService service = RestClient.getInstance().getItineraryService();
 
-                        final ProgressDialog progress  = ProgressDialog.show(CreateItineraryDialog.this.getActivity(), "Creating", "Creating a custom itinerary....", true);
-                        service.createItinerary(newItinerary,new Callback<Itinerary>() {
-                            @Override
-                            public void success(Itinerary itinerary, Response response) {
+                    final ProgressDialog progress = ProgressDialog.show(CreateItineraryDialog.this.getActivity(), "Creating", "Creating a custom itinerary....", true);
+                    Call<Itinerary> createCall = service.createItinerary(newItinerary);
+                    createCall.enqueue(new Callback<Itinerary>() {
+                        @Override
+                        public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
+                            if (response.isSuccess()) {
                                 progress.dismiss();
-                                Log.e("CREATE ITINERARY", "SUCCESS " + response.getBody());
+                                Log.e("CREATE ITINERARY", "SUCCESS " + response.body());
                                 getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, new Intent());
-                            }
-
-                            @Override
-                            public void failure(RetrofitError error) {
+                            } else {
                                 progress.dismiss();
-                                Log.e("CREATE ITINERARY", "FAIL: " + error.getMessage());
+                                Log.e("CREATE ITINERARY", "FAIL: " + response.errorBody());
                             }
-                        });
-                    }
+                        }
 
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        super.onNegative(dialog);
-                        dialog.dismiss();
-                    }
+                        @Override
+                        public void onFailure(Call<Itinerary> call, Throwable t) {
+
+                        }
+                    });
                 })
+                .onNegative((dialog, which) -> dialog.dismiss())
                 .negativeText("Cancel");
-
 
         LayoutInflater i = getActivity().getLayoutInflater();
         View v = i.inflate(R.layout.dialog_create_itinerary, null);

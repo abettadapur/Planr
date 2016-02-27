@@ -18,7 +18,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.facebook.Session;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -43,9 +42,9 @@ import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.model.YelpEntry;
 import devpost.yelp.planfun.net.RestClient;
 import info.hoang8f.widget.FButton;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Alex on 4/2/2015.
@@ -144,32 +143,34 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
         mRestClient = RestClient.getInstance();
 
 
-        mRestClient.getItineraryService().getItinerary(getIntent().getIntExtra("itinerary_id", 0), new Callback<Itinerary>() {
+        Call<Itinerary> getItineraryCall = mRestClient.getItineraryService().getItinerary(getIntent().getIntExtra("itinerary_id", 0));
+        getItineraryCall.enqueue(new Callback<Itinerary>() {
             @Override
-            public void success(Itinerary itinerary, Response response) {
-                mCurrentItinerary = itinerary;
-                Calendar startTime = Calendar.getInstance();
-                startTime.set(Calendar.HOUR_OF_DAY, 10);
-                startTime.set(Calendar.MINUTE, 0);
+            public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
+                if(response.isSuccess())
+                {
+                    mCurrentItinerary = response.body();
+                    Calendar startTime = Calendar.getInstance();
+                    startTime.set(Calendar.HOUR_OF_DAY, 10);
+                    startTime.set(Calendar.MINUTE, 0);
 
-                Calendar endTime = Calendar.getInstance();
-                endTime.set(Calendar.HOUR_OF_DAY, 11);
-                endTime.set(Calendar.MINUTE, 0);
+                    Calendar endTime = Calendar.getInstance();
+                    endTime.set(Calendar.HOUR_OF_DAY, 11);
+                    endTime.set(Calendar.MINUTE, 0);
 
-                mCurrentItem.setStart_time(startTime);
-                mCurrentItem.setEnd_time(endTime);
-                mCurrentItem.setCategory("breakfast");
+                    mCurrentItem.setStart_time(startTime);
+                    mCurrentItem.setEnd_time(endTime);
+                    mCurrentItem.setCategory("breakfast");
 
-                updateView();
+                    updateView();
 
-                MapFragment mapFragment = (MapFragment)getFragmentManager().findFragmentById(R.id.map);
-                mapFragment.getMapAsync(AddItemActivity.this);
-
-                //map ready items
+                    MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+                    mapFragment.getMapAsync(AddItemActivity.this);
+                }
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Call<Itinerary> call, Throwable t) {
 
             }
         });
@@ -245,81 +246,68 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
             prevItemMarker.remove();
 
         //search for items
-        mRestClient.getCategoryService().searchCategory(mCurrentItem.getCategory(), mCurrentItinerary.getCity(), Session.getActiveSession().getAccessToken(), new Callback<List<YelpEntry>>() {
+        Call<List<YelpEntry>> getYelpItemCall = mRestClient.getCategoryService().searchCategory(mCurrentItem.getCategory(), mCurrentItinerary.getCity());
+        getYelpItemCall.enqueue(new Callback<List<YelpEntry>>() {
             @Override
-            public void success(List<YelpEntry> yelpEntries, Response response) {
-         //remove previous results
-                for(Marker m : markerToItem.keySet())
-                {
-                    if(m!=null)
-                        m.remove();
-                }
-                markerToItem.clear();
-                if(prevItemMarker!=null)
-                    prevItemMarker.remove();
-
-                Item previousItem = null;
-                int prevIndex = -1;
-                for(int j = mCurrentItinerary.getItems().size()-1; j>=0; j--)
-                {
-                    Item i = mCurrentItinerary.getItems().get(j);
-                    if(i.getStart_time().getTimeInMillis() -  mCurrentItem.getStart_time().getTimeInMillis() < 0)
-                    {
-                        previousItem = i;
-                        prevIndex = j;
+            public void onResponse(Call<List<YelpEntry>> call, Response<List<YelpEntry>> response) {
+                if(response.isSuccess()) {
+                    for (Marker m : markerToItem.keySet()) {
+                        if (m != null)
+                            m.remove();
                     }
-                    else
-                    {
-                        break;
-                    }
-                }
+                    markerToItem.clear();
+                    if (prevItemMarker != null)
+                        prevItemMarker.remove();
 
-                prevItem = previousItem;
-                //place previous item
-                if(previousItem != null) {
-                    String drawableName = "marker_blue_number_" + prevIndex;
-                    Bitmap b = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(drawableName, "drawable", getPackageName()));
-                    Bitmap scaled = Bitmap.createScaledBitmap(b, b.getWidth() * 3, b.getHeight() * 3, false);
-
-                    prevItemMarker = mGoogleMap.addMarker(new MarkerOptions()
-                            .title(previousItem.getName())
-                            .snippet(previousItem.getYelp_entry().getLocation().getAddress())
-                            .icon(BitmapDescriptorFactory.fromBitmap(scaled))
-                            .position(previousItem.getYelp_entry().getLocation().getCoordinate()));
-                }
-
-                //add search results
-                for(YelpEntry ye: yelpEntries)
-                {
-                    if(previousItem!=null)
-                    {
-                        if(previousItem.getYelp_id().equals(ye.getId()))
-                        {
-                            continue;
+                    Item previousItem = null;
+                    int prevIndex = -1;
+                    for (int j = mCurrentItinerary.getItems().size() - 1; j >= 0; j--) {
+                        Item i = mCurrentItinerary.getItems().get(j);
+                        if (i.getStart_time().getTimeInMillis() - mCurrentItem.getStart_time().getTimeInMillis() < 0) {
+                            previousItem = i;
+                            prevIndex = j;
+                        } else {
+                            break;
                         }
                     }
 
-                    Marker marker = mGoogleMap.addMarker(new MarkerOptions()
-                    .title(ye.getName())
-                    .snippet(ye.getLocation().getAddress())
-                    .position(ye.getLocation().getCoordinate()));
+                    prevItem = previousItem;
+                    //place previous item
+                    if (previousItem != null) {
+                        String drawableName = "marker_blue_number_" + prevIndex;
+                        Bitmap b = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(drawableName, "drawable", getPackageName()));
+                        Bitmap scaled = Bitmap.createScaledBitmap(b, b.getWidth() * 3, b.getHeight() * 3, false);
 
-                    markerToItem.put(marker, ye);
+                        prevItemMarker = mGoogleMap.addMarker(new MarkerOptions()
+                                .title(previousItem.getName())
+                                .snippet(previousItem.getYelp_entry().getLocation().getAddress())
+                                .icon(BitmapDescriptorFactory.fromBitmap(scaled))
+                                .position(previousItem.getYelp_entry().getLocation().getCoordinate()));
+                    }
 
+                    //add search results
+                    for (YelpEntry ye : response.body()) {
+                        if (previousItem != null) {
+                            if (previousItem.getYelp_id().equals(ye.getId())) {
+                                continue;
+                            }
+                        }
 
+                        Marker marker = mGoogleMap.addMarker(new MarkerOptions()
+                                .title(ye.getName())
+                                .snippet(ye.getLocation().getAddress())
+                                .position(ye.getLocation().getCoordinate()));
+
+                        markerToItem.put(marker, ye);
+                    }
                 }
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Call<List<YelpEntry>> call, Throwable t) {
 
             }
         });
-        //find previous item
-
-
-
-
     }
 
     @Override
@@ -398,16 +386,22 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
                 final MaterialDialog progressDialog = new MaterialDialog.Builder(AddItemActivity.this).title("Adding").content("Adding this item to your itinerary").progress(true, 0).show();
                 mCurrentItem.setYelp_entry(entry);
                 mCurrentItem.setYelp_id(entry.getId());
-                mRestClient.getItemService().createItem(mCurrentItinerary.getId(), mCurrentItem, Session.getActiveSession().getAccessToken(), new Callback<Item>() {
+                Call<Item> getItemCall = mRestClient.getItemService().createItem(mCurrentItinerary.getId(), mCurrentItem);
+                getItemCall.enqueue(new Callback<Item>() {
                     @Override
-                    public void success(Item item, Response response) {
-                        progressDialog.dismiss();
-                        finish();
+                    public void onResponse(Call<Item> call, Response<Item> response) {
+                        if(response.isSuccess()) {
+                            progressDialog.dismiss();
+                            finish();
+                        }
+                        else {
+                            progressDialog.dismiss();
+                        }
                     }
 
                     @Override
-                    public void failure(RetrofitError error) {
-                        progressDialog.dismiss();
+                    public void onFailure(Call<Item> call, Throwable t) {
+
                     }
                 });
             }

@@ -3,20 +3,21 @@ package devpost.yelp.planfun.net;
 import android.app.Application;
 import android.util.Log;
 
-import com.facebook.Session;
+import com.facebook.AccessToken;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
-import com.squareup.okhttp.Cache;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import okhttp3.Cache;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import java.io.IOException;
+import java.sql.Time;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.Executor;
@@ -30,15 +31,15 @@ import devpost.yelp.planfun.net.interfaces.ItemService;
 import devpost.yelp.planfun.net.interfaces.ItineraryService;
 import devpost.yelp.planfun.net.serializers.CalendarSerializer;
 import devpost.yelp.planfun.net.serializers.LatLngSerializer;
-import retrofit.RestAdapter;
-import retrofit.client.OkClient;
-import retrofit.converter.GsonConverter;
+import okhttp3.Interceptor;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * @author Alex Andrey
  */
 public class RestClient {
-    private static final String BASE_URL="http://funtimes.bettadapur.com:5000/api";
+    private static final String BASE_URL="http://99.112.177.81:5000/api/";
     private static String TAG = "REST";
     private AuthService authService;
     private ItineraryService itineraryService;
@@ -72,15 +73,18 @@ public class RestClient {
     private RestClient(Application context)
     {
         RestClient.context = context;
-        OkHttpClient caching_client = new OkHttpClient();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+
         try {
             Cache responseCache = new Cache(context.getCacheDir(), SIZE_OF_CACHE);
-            caching_client.setCache(responseCache);
+            builder.cache(responseCache);
         } catch (Exception e) {
             Log.d(TAG, "Unable to set http cache", e);
         }
-        caching_client.setReadTimeout(30, TimeUnit.SECONDS);
-        caching_client.setConnectTimeout(30, TimeUnit.SECONDS);
+        builder.readTimeout(30, TimeUnit.SECONDS);
+        builder.connectTimeout(30, TimeUnit.SECONDS);
+
+
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Calendar.class, new CalendarSerializer())
@@ -110,17 +114,18 @@ public class RestClient {
                         return false;
                     }
                 }).create();
-        caching_client.networkInterceptors().add(mAuthCacheInterceptor);
+
+        builder.networkInterceptors().add(mAuthCacheInterceptor);
+        OkHttpClient client = builder.build();
 
         // Create Executor
         Executor executor = Executors.newCachedThreadPool();
 
-        RestAdapter adapter = new RestAdapter.Builder()
-                .setLogLevel(RestAdapter.LogLevel.FULL)
-                .setExecutors(executor, executor)
-                .setEndpoint(BASE_URL)
-                .setClient(new OkClient(caching_client))
-                .setConverter(new GsonConverter(gson))
+        Retrofit adapter = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .callbackExecutor(executor)
                 .build();
 
         authService = adapter.create(AuthService.class);
@@ -141,10 +146,10 @@ public class RestClient {
 
     private static final Interceptor mAuthCacheInterceptor = new Interceptor() {
         @Override
-        public Response intercept(Chain chain) throws IOException {
+        public Response intercept(Interceptor.Chain chain) throws IOException {
             //See https://docs.google.com/presentation/d/1eJa0gBZLpZRQ5vjW-eqLyekEgB54n4fQ1N4jDcgMZ1E/edit#slide=id.g75a45c04a_079
             Request request = chain.request();
-            Request.Builder requestBuilder = request.newBuilder().addHeader("Authorization", Session.getActiveSession().getAccessToken());
+            Request.Builder requestBuilder = request.newBuilder().addHeader("Authorization", AccessToken.getCurrentAccessToken().getToken());
             // Add Cache Control only for GET methods
             if (request.method().equals("GET")) {
                 // 1000 s

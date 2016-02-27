@@ -3,8 +3,8 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- ...and here we setting appcompat’s color theme attrs -->
         <item name="colorPrimary">#3d97f4</item>
-        <item name="colorPrimaryDark">#007ad1</item>
-        <item name="colorAccent">#d000f3</item>
+        <item name="colorPrimaryDark">#0288D1</item>
+        <item name="colorAccent">#CDDC39</item>
 
         <!-- MaterialDrawer specific values -->
         <item name="material_drawer_window_background">@color/material_drawer_dark_window_background</item>

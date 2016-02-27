@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.facebook.Session;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -19,9 +18,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.net.RestClient;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ItemDetailActivity extends ActionBarActivity implements OnMapReadyCallback {
 
@@ -55,19 +54,22 @@ public class ItemDetailActivity extends ActionBarActivity implements OnMapReadyC
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
         mRestClient = RestClient.getInstance();
-        mRestClient.getItemService().getItem(getIntent().getIntExtra(ITINERARY_ID_EXTRA, 1), getIntent().getIntExtra(ITEM_ID_EXTRA, 1), Session.getActiveSession().getAccessToken(), new Callback<Item>() {
+
+        Call<Item> getItemCall = mRestClient.getItemService().getItem(getIntent().getIntExtra(ITINERARY_ID_EXTRA, 1), getIntent().getIntExtra(ITEM_ID_EXTRA, 1));
+        getItemCall.enqueue(new Callback<Item>() {
             @Override
-            public void success(Item item, Response response) {
-                currentItem = item;
-                initializeView();
+            public void onResponse(Call<Item> call, Response<Item> response) {
+                if(response.isSuccess()) {
+                    currentItem = response.body();
+                    initializeView();
+                }
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Call<Item> call, Throwable t) {
 
             }
         });
-
     }
 
     private void initializeView()

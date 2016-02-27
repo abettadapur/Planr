@@ -13,9 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.support.v7.widget.SearchView;
 
-import com.facebook.Request;
-import com.facebook.Session;
-import com.facebook.model.GraphUser;
+import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -29,15 +28,17 @@ import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 
+import java.io.IOException;
 import java.util.List;
 
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.activities.fragments.ItineraryListFragment;
 import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.net.RestClient;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 /**
  * @author Andrey, Alex
@@ -72,14 +73,15 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
         });
 
         mDrawer = this.build_drawer();
+//TODO(abettadapur): Profile pictures
 
-        Request request = Request.newMeRequest(Session.getActiveSession(), new Request.GraphUserCallback() {
-            @Override
-            public void onCompleted(GraphUser graphUser, com.facebook.Response response) {
-                mAccountHeader.addProfile(new ProfileDrawerItem().withName(graphUser.getName()), 0);
-            }
-        });
-        request.executeAsync();
+//        Request request = Request.newMeRequest(Session.getActiveSession(), new Request.GraphUserCallback() {
+//            @Override
+//            public void onCompleted(GraphUser graphUser, com.facebook.Response response) {
+//                mAccountHeader.addProfile(new ProfileDrawerItem().withName(graphUser.getName()), 0);
+//            }
+//        });
+//        request.executeAsync();
 
         mDrawer = build_drawer();
 
@@ -141,7 +143,7 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
                 case "Settings":
                     break;
                 case "Logout":
-                    Session.getActiveSession().closeAndClearTokenInformation();
+                    LoginManager.getInstance().logOut();
                     Intent intent = new Intent(ItineraryActivity.this, SplashActivity.class);
                     intent.putExtra("delay", false);
                     startActivity(intent);
@@ -188,59 +190,49 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
     }
 
     @Override
-    public void refresh_list(final ItineraryListFragment fragment)
-    {
+    public void refresh_list(final ItineraryListFragment fragment) {
         /** Get a listing of the itineraries for the current user and update the fragment with the items **/
-        if(fragment==itineraryListFragment) {
-            mRestClient.getItineraryService().listItineraries(new Callback<List<Itinerary>>() {
-                @Override
-                public void success(List<Itinerary> itineraries, Response response) {
+
+        Call<List<Itinerary>> getItinerariesCall = mRestClient.getItineraryService().listItineraries();
+        getItinerariesCall.enqueue(new Callback<List<Itinerary>>() {
+            @Override
+            public void onResponse(Call<List<Itinerary>> call, Response<List<Itinerary>> response) {
+                if (response.isSuccess()) {
                     ItineraryActivity.this.itineraries = itineraries;
-                    ItineraryActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // This code will always run on the UI thread, therefore is safe to modify UI elements.
-                            fragment.updateItems(ItineraryActivity.this.itineraries);
-                        }
+                    ItineraryActivity.this.runOnUiThread(() -> {
+                        // This code will always run on the UI thread, therefore is safe to modify UI elements.
+                        fragment.updateItems(ItineraryActivity.this.itineraries);
                     });
-
+                } else {
+                    try {
+                        Log.e("GET ITINERARIES", response.errorBody().string());
+                    } catch (IOException ioex) {
+                    }
                 }
+            }
 
-                @Override
-                public void failure(RetrofitError error) {
-                    Log.e("GET ITINERARIES", error.getMessage());
-                }
-            });
-        }
+            @Override
+            public void onFailure(Call<List<Itinerary>> call, Throwable t) {
 
+            }
+        });
     }
 
     @Override
     public void remove_item(int id) {
-        mRestClient.getItineraryService().deleteItinerary(id, new Callback<Boolean>() {
+
+        Call<Boolean> deleteCall = mRestClient.getItineraryService().deleteItinerary(id);
+        deleteCall.enqueue(new Callback<Boolean>() {
             @Override
-            public void success(Boolean aBoolean, Response response) {
-                mRestClient.getItineraryService().listItineraries(new Callback<List<Itinerary>>() {
-                    @Override
-                    public void success(List<Itinerary> itineraries, Response response) {
-                        ItineraryActivity.this.itineraries = itineraries;
-                        ItineraryActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                itineraryListFragment.updateItems(ItineraryActivity.this.itineraries);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-
-                    }
-                });
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if(response.isSuccess())
+                {
+                    refresh_list(itineraryListFragment);
+                }
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Call<Boolean> call, Throwable t) {
 
             }
         });
@@ -252,26 +244,22 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
             if (currentFragment == itineraryListFragment) {
                 mDrawer.setSelection(1);
             }
-            mRestClient.getItineraryService().searchItinerary(s, new Callback<List<Itinerary>>() {
+            Call<List<Itinerary>> itineraryCall = mRestClient.getItineraryService().searchItinerary(s);
+            itineraryCall.enqueue(new Callback<List<Itinerary>>() {
                 @Override
-                public void success(final List<Itinerary> itineraries, Response response) {
-
-                    ItineraryActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            searchItineraryFragment.updateItems(itineraries);
-                        }
-                    });
+                public void onResponse(Call<List<Itinerary>> call, Response<List<Itinerary>> response) {
+                    if(response.isSuccess())
+                    {
+                        ItineraryActivity.this.runOnUiThread(() -> searchItineraryFragment.updateItems(itineraries));
+                    }
                 }
 
                 @Override
-                public void failure(RetrofitError error) {
+                public void onFailure(Call<List<Itinerary>> call, Throwable t) {
 
                 }
             });
         }
-
-
         return true;
     }
 

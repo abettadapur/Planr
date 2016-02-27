@@ -10,7 +10,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.astuetz.PagerSlidingTabStrip;
-import com.facebook.Session;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,9 +20,9 @@ import devpost.yelp.planfun.activities.fragments.ItemListFragment;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.net.RestClient;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Alex on 4/1/2015.
@@ -42,46 +41,46 @@ public class EditItineraryActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_itinerary);
-        mToolbar = (Toolbar)findViewById(R.id.toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
 
-        mTabStrip = (PagerSlidingTabStrip)findViewById(R.id.tabs);
-        mViewPager = (ViewPager)findViewById(R.id.pager);
-
+        mTabStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        mViewPager = (ViewPager) findViewById(R.id.pager);
 
 
         mRestClient = RestClient.getInstance();
-        mRestClient.getItineraryService().getItinerary(getIntent().getIntExtra("itinerary_id", 0), new Callback<Itinerary>() {
+        Call<Itinerary> getItineraryCall = mRestClient.getItineraryService().getItinerary(getIntent().getIntExtra("itinerary_id", 0));
+        getItineraryCall.enqueue(new Callback<Itinerary>() {
             @Override
-            public void success(Itinerary itinerary, Response response) {
-                mCurrentItinerary = itinerary;
+            public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
+                if (response.isSuccess()) {
+                    mCurrentItinerary = response.body();
 
-                Collections.sort(mCurrentItinerary.getItems(), new Comparator<Item>() {
-                    @Override
-                    public int compare(Item lhs, Item rhs) {
-                        return (int) (lhs.getStart_time().getTimeInMillis() - rhs.getStart_time().getTimeInMillis());
-                    }
-                });
+                    Collections.sort(mCurrentItinerary.getItems(), new Comparator<Item>() {
+                        @Override
+                        public int compare(Item lhs, Item rhs) {
+                            return (int) (lhs.getStart_time().getTimeInMillis() - rhs.getStart_time().getTimeInMillis());
+                        }
+                    });
 
-                getSupportActionBar().setTitle("Editing " + itinerary.getName());
+                    getSupportActionBar().setTitle("Editing " + response.body().getName());
 
-                mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
+                    mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
 
-                mViewPager.setAdapter(mPagerAdapter);
+                    mViewPager.setAdapter(mPagerAdapter);
 
-                mTabStrip.setViewPager(mViewPager);
-                mViewPager.setCurrentItem(0);
+                    mTabStrip.setViewPager(mViewPager);
+                    mViewPager.setCurrentItem(0);
+                }
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Call<Itinerary> call, Throwable t) {
 
             }
         });
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-
     }
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
