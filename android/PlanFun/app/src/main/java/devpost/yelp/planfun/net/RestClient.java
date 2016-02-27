@@ -32,6 +32,7 @@ import devpost.yelp.planfun.net.interfaces.ItineraryService;
 import devpost.yelp.planfun.net.serializers.CalendarSerializer;
 import devpost.yelp.planfun.net.serializers.LatLngSerializer;
 import okhttp3.Interceptor;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -84,8 +85,6 @@ public class RestClient {
         builder.readTimeout(30, TimeUnit.SECONDS);
         builder.connectTimeout(30, TimeUnit.SECONDS);
 
-
-
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Calendar.class, new CalendarSerializer())
                 .registerTypeAdapter(GregorianCalendar.class, new CalendarSerializer())
@@ -116,6 +115,12 @@ public class RestClient {
                 }).create();
 
         builder.networkInterceptors().add(mAuthCacheInterceptor);
+
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        builder.addInterceptor(loggingInterceptor);
+
         OkHttpClient client = builder.build();
 
         // Create Executor

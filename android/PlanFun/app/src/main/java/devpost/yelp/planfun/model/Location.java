@@ -5,25 +5,16 @@ import com.google.android.gms.maps.model.LatLng;
 /**
  * Created by abettadapur on 3/17/2015.
  */
-public class YelpLocation
+public class Location
 {
-    private String yelp_id;
     private String address;
     private String city;
     private String postal_code;
     private String state;
     private LatLng coordinate;
 
-    public YelpLocation()
+    public Location()
     {}
-
-    public String getYelp_id() {
-        return yelp_id;
-    }
-
-    public void setYelp_id(String yelp_id) {
-        this.yelp_id = yelp_id;
-    }
 
     public String getAddress() {
         return address;

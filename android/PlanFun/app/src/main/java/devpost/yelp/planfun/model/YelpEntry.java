@@ -16,7 +16,7 @@ public class YelpEntry
 
 
 
-    private YelpLocation location;
+    private Location location;
 
 
     public YelpEntry()
@@ -71,11 +71,11 @@ public class YelpEntry
         this.rating = rating;
     }
 
-    public YelpLocation getLocation() {
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(YelpLocation location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 

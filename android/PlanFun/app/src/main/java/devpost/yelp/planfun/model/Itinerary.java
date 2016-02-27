@@ -22,6 +22,8 @@ public class Itinerary implements Comparable<Itinerary>
     private List<Item> items;
     @Expose(serialize = false)
     private User user;
+    @Expose(serialize = false)
+    private List<PolylineModel> polylines;
 
 
     public Itinerary(){}
@@ -115,5 +117,13 @@ public class Itinerary implements Comparable<Itinerary>
     @Override
     public int compareTo(Itinerary another) {
         return this.getStart_time().compareTo(another.getStart_time());
+    }
+
+    public List<PolylineModel> getPolylines() {
+        return polylines;
+    }
+
+    public void setPolylines(List<PolylineModel> polylines) {
+        this.polylines = polylines;
     }
 }

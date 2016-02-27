@@ -31,6 +31,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import com.google.maps.android.PolyUtil;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 import com.melnykov.fab.FloatingActionButton;
@@ -43,12 +44,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.activities.fragments.EditItineraryFragment;
 import devpost.yelp.planfun.activities.fragments.ItemDetailFragment;
 import devpost.yelp.planfun.activities.fragments.ItemListFragment;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Itinerary;
+import devpost.yelp.planfun.model.PolylineModel;
 import devpost.yelp.planfun.net.RestClient;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -58,8 +62,6 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
 
     private Itinerary currentItinerary;
     private RestClient mRestClient;
-    private ItemListFragment itemListFragment;
-    private FloatingActionButton mFab;
     private ItemDetailFragment itemDetailFragment;
     private Map<Marker, Item> marker_to_item;
     private List<Polyline> polylines;
@@ -68,15 +70,18 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
     private GoogleMap mGoogleMap;
     private final int ADD_ITINERARY = 94801;
 
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_itinerary_detail);
+        ButterKnife.bind(this);
 
         marker_to_item = new HashMap<>();
         polylines = new ArrayList<>();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -92,13 +97,9 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
         }
 
         int id = getIntent().getIntExtra("itinerary_id", 0);
-
-        //mFab = (FloatingActionButton)findViewById(R.id.edit_fab);
-        //mFab.setOnClickListener(this);
-
         mRestClient = RestClient.getInstance();
 
-        Call<Itinerary> itineraryCall = mRestClient.getItineraryService().getItinerary(id);
+        Call<Itinerary> itineraryCall = mRestClient.getItineraryService().getItinerary(id, true);
         itineraryCall.enqueue(new Callback<Itinerary>() {
             @Override
             public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
@@ -114,6 +115,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
                             });
                         }
                     }
+                    updateView();
                 }
             }
 
@@ -122,9 +124,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
 
             }
         });
-
-        SupportMapFragment mapFragment = ((SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map));
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
@@ -147,6 +147,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
     }
 
     @Override
+    //TODO(abettadapur): Update options menu for randomize
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -221,53 +222,42 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
     }
 
     private void updateView() {
-        clearMap();
-        Collections.sort(currentItinerary.getItems(), new Comparator<Item>() {
-            @Override
-            public int compare(Item lhs, Item rhs) {
-                return (int) (lhs.getStart_time().getTimeInMillis() - rhs.getStart_time().getTimeInMillis());
-            }
-        });
-        for (int j = 0; j < currentItinerary.getItems().size(); j++) {
-            Item i = currentItinerary.getItems().get(j);
-            String drawableName = "marker_" + colors[j % 6] + "_number_" + j;
-            Bitmap b = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(drawableName, "drawable", getPackageName()));
-            Bitmap scaled = Bitmap.createScaledBitmap(b, b.getWidth() * 3, b.getHeight() * 3, false);
-            Marker marker = mGoogleMap.addMarker(new MarkerOptions()
-                    .title(i.getName())
-                    .icon(BitmapDescriptorFactory.fromBitmap(scaled))
-                    .snippet(i.getYelp_entry().getLocation().getAddress())
-                    .position(i.getYelp_entry().getLocation().getCoordinate()));
+        this.runOnUiThread(()-> {
+            if (currentItinerary == null || mGoogleMap == null)
+                return; //wait for the other async method to call this
 
-            marker_to_item.put(marker, i);
-        }
-        for (int j = 0; j < currentItinerary.getItems().size() - 1; j++) {
-            LatLng origin = currentItinerary.getItems().get(j).getYelp_entry().getLocation().getCoordinate();
-            LatLng destination = currentItinerary.getItems().get(j + 1).getYelp_entry().getLocation().getCoordinate();
-            final String color_str = "maps_" + colors[j];
-//            mRestClient.getDirectionsService().getPolyline(origin.latitude + ", " + origin.longitude, destination.latitude + ", " + destination.longitude, Session.getActiveSession().getAccessToken(), new Callback<String>() {
-//                @Override
-//                public void success(String polyline, Response response) {
-//
-//                    Log.i("POLY", polyline);
-//                    Log.i("RESPONSE", response.getBody().toString());
-//
-//                    List<LatLng> points = null;//TODO PolyUtil.decode(polyline);
-//                    PolylineOptions line = new PolylineOptions().geodesic(true);
-//                    for (LatLng point : points) {
-//                        line.add(point);
-//                    }
-//                    line.color(getResources().getColor(getResources().getIdentifier(color_str,"color", getPackageName())));
-//                    polylines.add(mGoogleMap.addPolyline(line));
-//                }
-//
-//                @Override
-//                public void failure(RetrofitError error) {
-//
-//                }
-//            });
-        }
-        itemDetailFragment.updateItem(currentItinerary.getItems().get(0));
+            clearMap();
+            zoomToLocation(currentItinerary.getCity());
+
+            Collections.sort(currentItinerary.getItems(), (lhs, rhs) -> (int) (lhs.getStart_time().getTimeInMillis() - rhs.getStart_time().getTimeInMillis()));
+            Collections.sort(currentItinerary.getPolylines(), (lhs, rhs) -> lhs.getOrder() - rhs.getOrder());
+
+            for (int j = 0; j < currentItinerary.getItems().size(); j++) {
+                Item i = currentItinerary.getItems().get(j);
+                String drawableName = "marker_" + colors[j % 6] + "_number_" + j;
+                Bitmap b = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(drawableName, "drawable", getPackageName()));
+                Bitmap scaled = Bitmap.createScaledBitmap(b, b.getWidth() * 3, b.getHeight() * 3, false);
+                Marker marker = mGoogleMap.addMarker(new MarkerOptions()
+                        .title(i.getName())
+                        .icon(BitmapDescriptorFactory.fromBitmap(scaled))
+                        .snippet(i.getLocation().getAddress())
+                        .position(i.getLocation().getCoordinate()));
+
+                marker_to_item.put(marker, i);
+            }
+            for (int j = 0; j < currentItinerary.getPolylines().size(); j++) {
+                PolylineModel polylineModel = currentItinerary.getPolylines().get(j);
+                final String color_str = "maps_" + colors[j];
+                List<LatLng> points = PolyUtil.decode(polylineModel.getPolyline());
+                PolylineOptions line = new PolylineOptions().geodesic(true);
+                for (LatLng point : points) {
+                    line.add(point);
+                }
+                line.color(getResources().getColor(getResources().getIdentifier(color_str, "color", getPackageName())));
+                polylines.add(mGoogleMap.addPolyline(line));
+            }
+            //itemDetailFragment.updateItem(currentItinerary.getItems().get(0));
+        });
     }
 
     private void clearMap() {
@@ -279,19 +269,26 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
         for (Polyline p : polylines) {
             p.remove();
         }
-
         polylines.clear();
+    }
+
+    private void zoomToLocation(String location)
+    {
+        if(mGoogleMap!=null) {
+            Geocoder coder = new Geocoder(this);
+            try {
+                List<Address> addresses = coder.getFromLocationName(location, 1);
+                LatLng city = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(city, 10));
+            } catch (IOException ioex) {
+            }
+
+        }
     }
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        Geocoder coder = new Geocoder(this);
-        try {
-            List<Address> addresses = coder.getFromLocationName(currentItinerary.getCity(), 1);
-            LatLng city = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(city, 10));
-        } catch (IOException ioex) {
-        }
+        mGoogleMap = googleMap;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //TODO(abettadapur): check permission
@@ -303,12 +300,9 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        googleMap.setMyLocationEnabled(true);
-        googleMap.setOnMarkerClickListener(this);
-
-        mGoogleMap = googleMap;
+        mGoogleMap.setMyLocationEnabled(true);
+        mGoogleMap.setOnMarkerClickListener(this);
         updateView();
-
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,7 +31,7 @@ import retrofit2.Response;
 /**
 Main activity, that starts the app. Handles login, and if succesfull starts ItineraryActivity.
  */
-public class SplashActivity extends FragmentActivity {
+public class SplashActivity extends AppCompatActivity {
 
 
     private LoginButton authButton;
@@ -81,12 +82,7 @@ public class SplashActivity extends FragmentActivity {
         super.onResume();
         Bundle extras = getIntent().getExtras();
         if(extras==null || extras.getBoolean("delay", true)) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    checkServerLogin();
-                }
-            }, 3000);
+            new Handler().postDelayed(() -> checkServerLogin(), 1000);
         }
         else
             checkServerLogin();
@@ -120,16 +116,20 @@ public class SplashActivity extends FragmentActivity {
                         Log.e("LOGIN", "Login failed, verification was ");
                         Log.e("Token", token.getToken());
                         Log.e("User", token.getUserId());
-                        authButton.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.INVISIBLE);
+                        SplashActivity.this.runOnUiThread(()-> {
+                            authButton.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.INVISIBLE);
+                        });
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Boolean> call, Throwable t) {
                     Log.e("LOGIN", "Could not connect to the login server");
-                    authButton.setVisibility(View.VISIBLE);
-                    progressBar.setVisibility(View.INVISIBLE);
+                    SplashActivity.this.runOnUiThread(()-> {
+                        authButton.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.INVISIBLE);
+                    });
                 }
             });
         }

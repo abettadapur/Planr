@@ -27,6 +27,8 @@ public interface ItineraryService
     @GET("itineraries/{id}")
     Call<Itinerary> getItinerary(@Path("id") int id);
 
+    @GET("itineraries/{id}")
+    Call<Itinerary> getItinerary(@Path("id") int id, @Query("include_polyline") boolean polyline);
 
     @PUT("itineraries/{id}")
     Call<Itinerary> updateItinerary(@Path("id") int id, @Body Itinerary itinerary);

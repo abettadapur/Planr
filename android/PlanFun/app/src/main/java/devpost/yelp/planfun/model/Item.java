@@ -16,6 +16,9 @@ public class Item
     private Calendar start_time;
     private Calendar end_time;
 
+    @Expose(serialize=false)
+    private Location location;
+
     @Expose(serialize = false)
     private YelpEntry yelp_entry;
 
@@ -106,5 +109,13 @@ public class Item
 
     public void setYelp_entry(YelpEntry yelp_entry) {
         this.yelp_entry = yelp_entry;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 }

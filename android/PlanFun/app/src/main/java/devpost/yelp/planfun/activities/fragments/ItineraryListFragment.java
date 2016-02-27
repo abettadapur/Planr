@@ -15,12 +15,15 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.activities.ItineraryDetailActivity;
 import devpost.yelp.planfun.activities.adapters.ItineraryAdapter;
@@ -36,13 +39,20 @@ import devpost.yelp.planfun.model.Itinerary;
  */
 public class ItineraryListFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
+    @Bind(R.id.recycle_view)
+    RecyclerView mRecycleView;
+
+    @Bind(R.id.progress_circle)
+    ProgressBar mLoadingCircle;
+
+    @Bind(R.id.add_fab)
+    FloatingActionButton mAddButton;
+
+    @Bind(R.id.swipe_refresh)
+    SwipeRefreshLayout mSwipeRefresh;
 
     private ItineraryListListener mListListener;
-    private SwipeRefreshLayout mSwipeRefresh;
-
     private List<Itinerary> mItineraryList;
-    private FloatingActionButton mAddButton;
-    private RecyclerView mRecycleView;
     private ItineraryAdapter mAdapter;
     private int mContextIndex;
     private int layout, list_item;
@@ -81,11 +91,9 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
         list_item = args.getInt("list_item");
 
         View rootView = inflater.inflate(layout, container, false);
-
-        mSwipeRefresh = (SwipeRefreshLayout)rootView.findViewById(R.id.swipe_refresh);
+        ButterKnife.bind(this, rootView);
         mSwipeRefresh.setOnRefreshListener(this);
 
-        mRecycleView = (RecyclerView)rootView.findViewById(R.id.recycle_view);
         mAdapter = new ItineraryAdapter(mItineraryList, getActivity());
         mRecycleView.setAdapter(mAdapter);
 
@@ -94,13 +102,10 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
 
         mRecycleView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), this));
 
-        mAddButton = (FloatingActionButton) rootView.findViewById(R.id.add_fab);
         mAddButton.attachToRecyclerView(mRecycleView);
         mAddButton.setOnClickListener(this);
 
         registerForContextMenu(mRecycleView);
-
-
         return rootView;
     }
 
@@ -111,13 +116,20 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListListener = (ItineraryListListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Activity activity = null;
+
+        if(context instanceof Activity)
+            activity = (Activity)context;
+
+        if(activity!=null) {
+            try {
+                mListListener = (ItineraryListListener) activity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(activity.toString()
+                        + " must implement OnFragmentInteractionListener");
+            }
         }
     }
 
@@ -199,13 +211,19 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
 
             }
         }
-        mListListener.refresh_list(this);
+        this.getActivity().runOnUiThread(()-> mListListener.refresh_list(this));
     }
 
     @Override
     public void onRefresh() {
         mSwipeRefresh.setRefreshing(true);
         mListListener.refresh_list(this);
+    }
+
+    public void setLoading(boolean loading)
+    {
+        mRecycleView.setVisibility(loading?View.GONE:View.VISIBLE);
+        mLoadingCircle.setVisibility(loading ? View.VISIBLE : View.GONE);
     }
 
     /**
