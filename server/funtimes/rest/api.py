@@ -102,7 +102,6 @@ class ItineraryResource(Resource):
         user = kwargs['user']
         itinerary = self.itinerary_repository.find(id)
 
-
         if not itinerary:
             abort(404, message="No itinerary with that id exists")
 
@@ -112,7 +111,7 @@ class ItineraryResource(Resource):
         if 'include_polyline' in request.args and request.args['include_polyline']:
             polyline = get_polyline(itinerary)
             itinerary_dict = itinerary.as_dict()
-            itinerary_dict['polyline'] = polyline
+            itinerary_dict['polylines'] = polyline
             return itinerary_dict
 
         return itinerary
