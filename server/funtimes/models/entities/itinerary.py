@@ -39,7 +39,7 @@ class Itinerary(BaseModel):
         itinerary_dict = super(Itinerary, self).as_dict()
         itinerary_dict['user'] = self.user.as_dict()
         itinerary_dict['items'] = [i.as_dict() for i in self.items]
-        itinerary_dict['shared_users'] = [u.as_dict() for u in self.shared_users]
+        itinerary_dict['shared_users'] = [{"user": u.as_dict(), "permission": ""} for u in self.shared_users]
         return itinerary_dict
 
     def update_from_dict(self, update_dict):
@@ -51,11 +51,12 @@ class Itinerary(BaseModel):
 
     @staticmethod
     def create_from_dict(create_dict, user):
-        itinerary = Itinerary()
-        itinerary.name = create_dict['name']
-        itinerary.start_time = datetime.strptime(create_dict['start_time'], "%Y-%m-%d %H:%M:%S %z")
-        itinerary.end_time = datetime.strptime(create_dict['end_time'], "%Y-%m-%d %H:%M:%S %z")
-        itinerary.city = create_dict['city']
-        itinerary.public = create_dict['public']
-        itinerary.user = user
+        itinerary = Itinerary(
+            name=create_dict['name'],
+            start_time= datetime.strptime(create_dict['start_time'], "%Y-%m-%d %H:%M:%S %z"),
+            end_time=datetime.strptime(create_dict['end_time'], "%Y-%m-%d %H:%M:%S %z"),
+            city=create_dict['city'],
+            public=create_dict['public'],
+            user=user
+        )
         return itinerary

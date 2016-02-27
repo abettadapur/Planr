@@ -38,7 +38,7 @@ class AuthResource(Resource):
         uid = args['user_id']
 
         graph = facebook.GraphAPI(access_token=token)
-        user = graph.get_object("me")
+        user = graph.get_object("me", fields="email,first_name,last_name")
 
         if 'email' not in user:
             on_invalid_auth(
@@ -129,7 +129,11 @@ class ItineraryResource(Resource):
             abort(404, message="No itinerary with that id exists")
 
         if itinerary.user.id != user.id:
-            abort(404, message="No itinerary with that id exists")
+            permission = self.itinerary_repository.get_shared_user_permission(id, user.id)
+            if not permission:
+                abort(404, message="No itinerary with that id exists")
+            elif permission == 'READ':
+                abort(403, message="This user does not have edit permissions")
 
         itinerary.update_from_dict(args)
         result = self.itinerary_repository.add_or_update(itinerary)

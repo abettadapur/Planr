@@ -1,3 +1,4 @@
+from asq.initiators import query
 from funtimes.models.entities.change_result import ChangeResult
 
 from funtimes.models.entities.itinerary import Itinerary
@@ -9,7 +10,6 @@ from funtimes.repositories.userRepository import UserRepository
 
 
 class ItineraryRepository(BaseRepository):
-
     def __init__(self):
         super(ItineraryRepository, self).__init__(Itinerary)
 
@@ -61,8 +61,13 @@ class ItineraryRepository(BaseRepository):
             result.add_child_result(itinerary_share_repository.add_or_update(itinerary_share))
         return result
 
-
-    
-
+    def get_shared_user_permission(self, itinerary_id, user_id):
+        shared_user = query(
+            ItineraryShares.query.filter_by(itinerary_id=itinerary_id, user_id=user_id).all()).single_or_default(
+            default=None
+        )
+        if not shared_user:
+            return None
+        return shared_user.permission
 
 
