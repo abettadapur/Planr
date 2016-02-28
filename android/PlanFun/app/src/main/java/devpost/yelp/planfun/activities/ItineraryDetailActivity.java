@@ -106,7 +106,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
                 if (response.isSuccess()) {
                     currentItinerary = response.body();
                     if (mMenu != null) {
-                        if (currentItinerary.getUser().getId() != Long.parseLong(AccessToken.getCurrentAccessToken().getUserId())) {
+                        if (!currentItinerary.getUser().getFacebook_id().equals(AccessToken.getCurrentAccessToken().getUserId())) {
                             ItineraryDetailActivity.this.runOnUiThread(() -> {
                                 mMenu.add(0, ADD_ITINERARY, 0, "Add to your itineraries").setIcon(new IconDrawable(ItineraryDetailActivity.this, Iconify.IconValue.fa_plus).color(0xFFFFFF).actionBarSize());
                                 mMenu.removeItem(R.id.action_edit);

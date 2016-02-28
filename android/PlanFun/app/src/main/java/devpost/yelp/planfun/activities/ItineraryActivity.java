@@ -56,7 +56,6 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
 
     private Fragment currentFragment;
     private RestClient mRestClient;
-    private AccountHeader mAccountHeader;
     private Drawer mDrawer;
     private ItineraryListFragment itineraryListFragment;
     private ItineraryListFragment searchItineraryFragment;
@@ -104,12 +103,12 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
             }
         });
 
-        mAccountHeader = new AccountHeaderBuilder()
+        AccountHeader mAccountHeader = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
                 .build();
         Profile me = Profile.getCurrentProfile();
-        mAccountHeader.addProfile(new ProfileDrawerItem().withName(me.getName()).withIcon(me.getProfilePictureUri(100,100)), 0);
+        mAccountHeader.addProfile(new ProfileDrawerItem().withName(me.getName()).withIcon(me.getProfilePictureUri(100, 100)), 0);
 
         //TODO(abettadapur): add account header profile
         return new DrawerBuilder()

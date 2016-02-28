@@ -3,6 +3,7 @@ package devpost.yelp.planfun.net.interfaces;
 import java.util.List;
 
 import devpost.yelp.planfun.model.Itinerary;
+import devpost.yelp.planfun.net.requests.ShareRequest;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.http.Body;
@@ -38,5 +39,8 @@ public interface ItineraryService
 
     @GET("itineraries/search")
     Call<List<Itinerary>> searchItinerary(@Query("query") String query);
+
+    @POST("itineraries/{id}/share")
+    Call<Itinerary> shareItinerary(@Path("id") int id, @Body ShareRequest request);
 
 }

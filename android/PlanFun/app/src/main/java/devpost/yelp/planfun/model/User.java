@@ -9,12 +9,14 @@ public class User
     private String first_name;
     private String last_name;
     private String email;
+    private String facebook_id;
 
-    public User(int id, String first_name, String last_name, String email) {
+    public User(int id, String first_name, String last_name, String email, String facebook_id) {
         this.id = id;
         this.first_name = first_name;
         this.last_name = last_name;
         this.email = email;
+        this.facebook_id = facebook_id;
     }
 
     public long getId() {
@@ -48,4 +50,9 @@ public class User
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public String getFacebook_id() {
+        return facebook_id;
+    }
+
 }
