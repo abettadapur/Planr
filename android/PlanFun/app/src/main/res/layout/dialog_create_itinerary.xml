@@ -27,24 +27,8 @@
         android:textColor="#80000000"
         android:text="City" />
 
-    <EditText
-        android:id="@+id/citySpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:editable="false"
-        android:focusable="false"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textColor="#80000000"
-        android:text="Date" />
-
-    <EditText
-        android:id="@+id/datePicker"
-        android:editable="false"
-        android:focusable="false"
+    <AutoCompleteTextView
+        android:id="@+id/cityPicker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
@@ -93,6 +77,7 @@
                 android:layout_height="wrap_content"/>
         </LinearLayout>
     </LinearLayout>
+
 
     <CheckBox
         android:layout_width="wrap_content"

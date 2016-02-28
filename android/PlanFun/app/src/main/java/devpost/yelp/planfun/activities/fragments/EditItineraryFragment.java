@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
@@ -27,7 +28,8 @@ public class EditItineraryFragment extends Fragment {
 
     private Itinerary mCurrentItinerary;
 
-    private EditText mNameBox, mCityBox, mDateBox, mStartTimeBox, mEndTimeBox;
+    private EditText mNameBox, mStartTimeBox, mEndTimeBox;
+    private AutoCompleteTextView mCityPicker;
     private CheckBox mCheckBox;
 
     private String dateFormat = "MM/dd/yyyy";
@@ -35,7 +37,6 @@ public class EditItineraryFragment extends Fragment {
     private String timeFormat = "H:mm";
     private SimpleDateFormat timeSdf;
 
-    private final String[] cities = {"Atlanta", "Austin", "Miami", "Portland", "Philadelphia", "Seattle"};
 
 
     public static EditItineraryFragment newInstance()
@@ -70,25 +71,13 @@ public class EditItineraryFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_edit_itinerary, container, false);
 
         mNameBox = (EditText) v.findViewById(R.id.nameBox);
-        mCityBox = (EditText) v.findViewById(R.id.citySpinner);
-        mDateBox = (EditText) v.findViewById(R.id.datePicker);
+        mCityPicker = (AutoCompleteTextView) v.findViewById(R.id.cityPicker);
         mStartTimeBox = (EditText) v.findViewById(R.id.startPicker);
         mEndTimeBox = (EditText) v.findViewById(R.id.endPicker);
         mCheckBox = (CheckBox)v.findViewById(R.id.publicBox);
 
         dateSdf = new SimpleDateFormat(dateFormat, Locale.US);
         timeSdf = new SimpleDateFormat(timeFormat, Locale.US);
-
-        mCityBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new MaterialDialog.Builder(EditItineraryFragment.this.getActivity())
-                        .title("Cities")
-                        .content("At this time, you cannot change the city of your itinerary. Please create a new itinerary in the desired city")
-                        .positiveText("Ok")
-                        .show();
-            }
-        });
 
 
         mStartTimeBox.setOnClickListener(new View.OnClickListener() {
@@ -105,12 +94,7 @@ public class EditItineraryFragment extends Fragment {
             }
         });
 
-        mDateBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new DatePickerDialog(EditItineraryFragment.this.getActivity(), dateSetListener, mCurrentItinerary.getStart_time().get(Calendar.YEAR), mCurrentItinerary.getStart_time().get(Calendar.MONTH), mCurrentItinerary.getStart_time().get(Calendar.DAY_OF_MONTH)).show();
-            }
-        });
+
         mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -159,8 +143,7 @@ public class EditItineraryFragment extends Fragment {
 
     private void updateView() {
         mNameBox.setText(mCurrentItinerary.getName());
-        mCityBox.setText(mCurrentItinerary.getCity());
-        mDateBox.setText(dateSdf.format(mCurrentItinerary.getStart_time().getTime()));
+        mCityPicker.setText(mCurrentItinerary.getCity());
         mStartTimeBox.setText(timeSdf.format(mCurrentItinerary.getStart_time().getTime()));
         mEndTimeBox.setText(timeSdf.format(mCurrentItinerary.getEnd_time().getTime()));
     }
