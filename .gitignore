@@ -4,3 +4,4 @@ env/
 config.py
 *.db
 __pycache__/
+*.iml
