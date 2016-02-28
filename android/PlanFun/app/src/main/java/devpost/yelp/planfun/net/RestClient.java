@@ -10,6 +10,8 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
+
+import devpost.yelp.planfun.net.interfaces.CityService;
 import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -40,13 +42,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * @author Alex Andrey
  */
 public class RestClient {
-    private static final String BASE_URL="http://99.112.177.81:5000/api/";
+    private static final String BASE_URL="http://funtimes.bettadapur.com:5000/api/";
     private static String TAG = "REST";
     private AuthService authService;
     private ItineraryService itineraryService;
     private ItemService itemService;
     private DirectionsService directionsService;
     private CategoryService categoryService;
+    private CityService cityService;
 
     private static RestClient client;
     private static Application context;
@@ -138,6 +141,7 @@ public class RestClient {
         itemService = adapter.create(ItemService.class);
         directionsService = adapter.create(DirectionsService.class);
         categoryService = adapter.create(CategoryService.class);
+        cityService = adapter.create(CityService.class);
     }
 
     public AuthService getAuthService()
@@ -148,6 +152,7 @@ public class RestClient {
     public ItemService getItemService() { return itemService; }
     public DirectionsService getDirectionsService() { return directionsService; }
     public CategoryService getCategoryService(){ return categoryService; }
+    public CityService getCityService(){ return cityService; }
 
     private static final Interceptor mAuthCacheInterceptor = new Interceptor() {
         @Override

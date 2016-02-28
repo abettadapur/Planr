@@ -9,20 +9,27 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import com.afollestad.materialdialogs.MaterialDialog;
+
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import devpost.yelp.planfun.R;
+import devpost.yelp.planfun.model.City;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.net.RestClient;
@@ -36,11 +43,10 @@ import retrofit2.Response;
  */
 public class CreateItineraryDialog extends DialogFragment
 {
-    private EditText mNameBox, mStartPicker, mEndPicker, mDatePicker, mCitySpinner;
+    private EditText mNameBox, mStartPicker, mEndPicker;
+    private AutoCompleteTextView mCityPicker;
     private CheckBox publicBox;
     private Calendar mStart, mEnd;
-    private ArrayAdapter<String> mCityAdapter;
-    private final String[] cities = {"Atlanta", "Austin", "Miami", "Portland", "Philadelphia", "Seattle" };
 
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
@@ -49,7 +55,7 @@ public class CreateItineraryDialog extends DialogFragment
                 .positiveText("Create")
                 .onPositive((dialog, which) -> {
                     String name = mNameBox.getText().toString();
-                    String city = mCitySpinner.getText().toString();
+                    String city = mCityPicker.getText().toString();
                     boolean isPublic = publicBox.isChecked();
                     Itinerary newItinerary = new Itinerary(name, mStart, mEnd, city, isPublic, new ArrayList<Item>());
                     ItineraryService service = RestClient.getInstance().getItineraryService();
@@ -59,12 +65,11 @@ public class CreateItineraryDialog extends DialogFragment
                     createCall.enqueue(new Callback<Itinerary>() {
                         @Override
                         public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
+                            progress.dismiss();
                             if (response.isSuccess()) {
-                                progress.dismiss();
                                 Log.e("CREATE ITINERARY", "SUCCESS " + response.body());
                                 getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, new Intent());
                             } else {
-                                progress.dismiss();
                                 Log.e("CREATE ITINERARY", "FAIL: " + response.errorBody());
                             }
                         }
@@ -92,27 +97,37 @@ public class CreateItineraryDialog extends DialogFragment
         mNameBox = (EditText)v.findViewById(R.id.nameBox);
         mStartPicker = (EditText)v.findViewById(R.id.startPicker);
         mEndPicker = (EditText)v.findViewById(R.id.endPicker);
-        mDatePicker = (EditText)v.findViewById(R.id.datePicker);
         publicBox = (CheckBox)v.findViewById(R.id.publicBox);
-        mCitySpinner = (EditText)v.findViewById(R.id.citySpinner);
 
 
-        mCitySpinner.setOnClickListener(new View.OnClickListener() {
+        mCityPicker = (AutoCompleteTextView)v.findViewById(R.id.cityPicker);
+        mCityPicker.setThreshold(2);
+        Call<List<City>> cities = RestClient.getInstance().getCityService().listCities();
+        cities.enqueue(new Callback<List<City>>() {
             @Override
-            public void onClick(View v) {
-                new MaterialDialog.Builder(getActivity())
-                        .title("Cities")
-                        .items(cities)
-                        .itemsCallback(new MaterialDialog.ListCallback() {
-                            @Override
-                            public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                mCitySpinner.setText(cities[which]);
-                            }
-                        })
-                        .positiveText(android.R.string.cancel)
-                        .show();
+            public void onResponse(Call<List<City>> call, Response<List<City>> response) {
+                List<City> cities = response.body();
+                String[] cityStrings = new String[cities.size()];
+                //TODO do async on app startup and cache
+                for (int in = 0; in < cities.size(); in++)
+                    cityStrings[in] = cities.get(in).getName() + ", " + cities.get(in).getState();
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(CreateItineraryDialog.this.getContext(),
+                        android.R.layout.simple_dropdown_item_1line, cityStrings);
+                CreateItineraryDialog.this.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCityPicker.setAdapter(adapter);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Call<List<City>> call, Throwable t) {
+
             }
         });
+
 
         mStartPicker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,12 +143,6 @@ public class CreateItineraryDialog extends DialogFragment
             }
         });
 
-        mDatePicker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new DatePickerDialog(CreateItineraryDialog.this.getActivity(), dateSetListener, mStart.get(Calendar.YEAR), mStart.get(Calendar.MONTH), mStart.get(Calendar.DAY_OF_MONTH)).show();
-            }
-        });
         updateView();
         b.customView(v, false);
         return b.build();
@@ -180,7 +189,6 @@ public class CreateItineraryDialog extends DialogFragment
 
         mStartPicker.setText(timeSdf.format(mStart.getTime()));
         mEndPicker.setText(timeSdf.format(mEnd.getTime()));
-        mDatePicker.setText(dateSdf.format(mStart.getTime()));
     }
 
 }

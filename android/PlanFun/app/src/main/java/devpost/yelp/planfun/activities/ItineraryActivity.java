@@ -97,7 +97,6 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName("My Itineraries").withIcon(new IconDrawable(this, Iconify.IconValue.fa_list).color(0x8A000000)),
                         new PrimaryDrawerItem().withName("Search Itineraries").withIcon(new IconDrawable(this, Iconify.IconValue.fa_search).color(0x8A000000)),
-
                         new SectionDrawerItem(),
                         new SecondaryDrawerItem().withName("Settings").withIcon(new IconDrawable(this, Iconify.IconValue.fa_cog).color(0x8A000000)),
                         new SecondaryDrawerItem().withName("Logout").withIcon(new IconDrawable(this, Iconify.IconValue.fa_sign_out).color(0x8A000000))
