@@ -8,15 +8,19 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -29,6 +33,8 @@ import java.util.List;
 import java.util.Locale;
 
 import devpost.yelp.planfun.R;
+import devpost.yelp.planfun.activities.adapters.CityAutoCompleteAdapter;
+import devpost.yelp.planfun.activities.views.WebAutoCompleteTextView;
 import devpost.yelp.planfun.model.City;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Itinerary;
@@ -44,7 +50,8 @@ import retrofit2.Response;
 public class CreateItineraryDialog extends DialogFragment
 {
     private EditText mNameBox, mStartPicker, mEndPicker;
-    private AutoCompleteTextView mCityPicker;
+    private WebAutoCompleteTextView mCityPicker;
+    private ProgressBar mProgressBar;
     private CheckBox publicBox;
     private Calendar mStart, mEnd;
 
@@ -98,35 +105,35 @@ public class CreateItineraryDialog extends DialogFragment
         mStartPicker = (EditText)v.findViewById(R.id.startPicker);
         mEndPicker = (EditText)v.findViewById(R.id.endPicker);
         publicBox = (CheckBox)v.findViewById(R.id.publicBox);
-
-
-        mCityPicker = (AutoCompleteTextView)v.findViewById(R.id.cityPicker);
+        mCityPicker = (WebAutoCompleteTextView)v.findViewById(R.id.cityPicker);
         mCityPicker.setThreshold(2);
-        Call<List<City>> cities = RestClient.getInstance().getCityService().listCities();
-        cities.enqueue(new Callback<List<City>>() {
-            @Override
-            public void onResponse(Call<List<City>> call, Response<List<City>> response) {
-                List<City> cities = response.body();
-                String[] cityStrings = new String[cities.size()];
-                //TODO do async on app startup and cache
-                for (int in = 0; in < cities.size(); in++)
-                    cityStrings[in] = cities.get(in).getName() + ", " + cities.get(in).getState();
-
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(CreateItineraryDialog.this.getContext(),
-                        android.R.layout.simple_dropdown_item_1line, cityStrings);
-                CreateItineraryDialog.this.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mCityPicker.setAdapter(adapter);
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(Call<List<City>> call, Throwable t) {
-
-            }
+        mCityPicker.setAdapter(new CityAutoCompleteAdapter(this.getContext()));
+        mCityPicker.setLoadingIndicator((ProgressBar)v.findViewById(R.id.autoCompleteProgressBar));
+        mCityPicker.setOnItemClickListener((parent, view, position, id) -> {
+            City city = (City)parent.getItemAtPosition(position);
+            mCityPicker.setText(city.getName()+", "+city.getState());
         });
+//
+//        Call<List<City>> cities = RestClient.getInstance().getCityService().listCities();
+//        cities.enqueue(new Callback<List<City>>() {
+//            @Override
+//            public void onResponse(Call<List<City>> call, Response<List<City>> response) {
+//                List<City> cities = response.body();
+//                String[] cityStrings = new String[cities.size()];
+//                //TODO do async on app startup and cache
+//                for (int in = 0; in < cities.size(); in++)
+//                    cityStrings[in] = cities.get(in).getName() + ", " + cities.get(in).getState();
+//
+//                ArrayAdapter<String> adapter = new ArrayAdapter<String>(CreateItineraryDialog.this.getContext(),
+//                        android.R.layout.simple_dropdown_item_1line, cityStrings);
+//                CreateItineraryDialog.this.getActivity().runOnUiThread(() -> mCityPicker.setAdapter(adapter));
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<City>> call, Throwable t) {
+//
+//            }
+//        });
 
 
         mStartPicker.setOnClickListener(new View.OnClickListener() {

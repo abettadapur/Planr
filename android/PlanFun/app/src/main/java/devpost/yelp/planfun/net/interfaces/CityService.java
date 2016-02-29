@@ -20,6 +20,6 @@ public interface CityService
     Call<List<City>> listCities();
 
     @GET("cities")
-    Call<List<City>> listCities(@Query("prefix") String prefix);
+    Call<List<City>> listCities(@Query("name") String name);
 }
 
