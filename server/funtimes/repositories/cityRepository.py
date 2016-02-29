@@ -1,3 +1,4 @@
+from asq.initiators import query
 from funtimes.models.entities.change_result import ChangeResult
 
 from funtimes.models.entities.city import City
@@ -5,7 +6,6 @@ from funtimes.repositories.baseRepository import BaseRepository
 
 
 class CityRepository(BaseRepository):
-
     def __init__(self):
         super(CityRepository, self).__init__(City)
 
@@ -25,5 +25,5 @@ class CityRepository(BaseRepository):
         if zip_code:
             cities = cities.filter_by(zip=zip_code)
 
-        return cities.all()
-
+        return query(cities.all()).group_by(lambda c: (c.city, c.state),
+                                            result_selector=lambda key, group: group.first()).to_list()
