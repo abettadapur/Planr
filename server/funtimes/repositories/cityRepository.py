@@ -19,7 +19,7 @@ class CityRepository(BaseRepository):
             state = parts[1].strip()
         cities = City.query
         if name:
-            cities = cities.filter(City.city.contains(name))
+            cities = cities.filter(City.city.startswith(name))
         if state:
             cities = cities.filter_by(state=state)
         if zip_code:
