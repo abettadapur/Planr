@@ -232,8 +232,10 @@ class ItineraryRandomizeResource(Resource):
             on_error(error_message="Could not randomize itinerary", result=result)
 
         self.itinerary_repository.save_changes()
-        return itinerary
-
+        polyline = get_polyline(itinerary)
+        itinerary_dict = itinerary.as_dict()
+        itinerary_dict['polylines'] = polyline
+        return itinerary_dict
 
 
 class ItinerarySearchResource(Resource):
