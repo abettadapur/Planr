@@ -25,6 +25,9 @@ public interface ItineraryService
     @GET("itineraries")
     Call<List<Itinerary>> listItineraries();
 
+    @GET("itineraries")
+    Call<List<Itinerary>> listItineraries(@Query("shared") boolean includeShared);
+
     @GET("itineraries/{id}")
     Call<Itinerary> getItinerary(@Path("id") int id);
 

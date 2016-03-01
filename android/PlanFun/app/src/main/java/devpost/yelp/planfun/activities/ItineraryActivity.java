@@ -207,7 +207,7 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
     public void refresh_list(final ItineraryListFragment fragment) {
         /** Get a listing of the itineraries for the current user and update the fragment with the items **/
         fragment.setLoading(true);
-        Call<List<Itinerary>> getItinerariesCall = mRestClient.getItineraryService().listItineraries();
+        Call<List<Itinerary>> getItinerariesCall = mRestClient.getItineraryService().listItineraries(true);
         getItinerariesCall.enqueue(new Callback<List<Itinerary>>() {
             @Override
             public void onResponse(Call<List<Itinerary>> call, Response<List<Itinerary>> response) {

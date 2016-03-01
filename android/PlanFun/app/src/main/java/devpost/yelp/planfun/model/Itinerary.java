@@ -24,6 +24,8 @@ public class Itinerary implements Comparable<Itinerary>
     private User user;
     @Expose(serialize = false)
     private List<PolylineModel> polylines;
+    @Expose(serialize=false)
+    private List<Share> shared_users;
 
 
     public Itinerary(){}
@@ -125,5 +127,9 @@ public class Itinerary implements Comparable<Itinerary>
 
     public void setPolylines(List<PolylineModel> polylines) {
         this.polylines = polylines;
+    }
+
+    public List<Share> getShared_users() {
+        return shared_users;
     }
 }
