@@ -4,6 +4,7 @@ import java.util.List;
 
 import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.net.requests.ShareRequest;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.http.Body;
@@ -38,7 +39,7 @@ public interface ItineraryService
     Call<Itinerary> updateItinerary(@Path("id") int id, @Body Itinerary itinerary);
 
     @DELETE("itineraries/{id}")
-    Call<Boolean> deleteItinerary(@Path("id") int id);
+    Call<ResponseBody> deleteItinerary(@Path("id") int id);
 
     @GET("itineraries/search")
     Call<List<Itinerary>> searchItinerary(@Query("query") String query);

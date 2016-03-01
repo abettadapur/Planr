@@ -222,8 +222,10 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
 
     public void setLoading(boolean loading)
     {
-        mRecycleView.setVisibility(loading?View.GONE:View.VISIBLE);
-        mLoadingCircle.setVisibility(loading ? View.VISIBLE : View.GONE);
+        getActivity().runOnUiThread(() -> {
+            mRecycleView.setVisibility(loading ? View.GONE : View.VISIBLE);
+            mLoadingCircle.setVisibility(loading ? View.VISIBLE : View.GONE);
+        });
     }
 
     /**
