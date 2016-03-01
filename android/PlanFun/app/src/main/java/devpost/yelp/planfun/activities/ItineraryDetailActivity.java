@@ -71,6 +71,9 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
     private static String[] colors = {"red", "blue", "cyan", "green", "purple", "orange"};
     private GoogleMap mGoogleMap;
     private final int ADD_ITINERARY = 94801;
+    private final int REQUEST_LOCATION = 12;
+    private MaterialDialog.Builder loadingProgressDialogBuilder;
+    private MaterialDialog loadingProgressDialog;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -80,6 +83,11 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_itinerary_detail);
         ButterKnife.bind(this);
+
+        loadingProgressDialogBuilder = new MaterialDialog.Builder(this)
+                .title("Loading")
+                .content("Loading your plan...")
+                .progress(true, 0);
 
         marker_to_item = new HashMap<>();
         polylines = new ArrayList<>();
@@ -101,6 +109,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
         int id = getIntent().getIntExtra("itinerary_id", 0);
         mRestClient = RestClient.getInstance();
 
+        loadingProgressDialog = loadingProgressDialogBuilder.show();
         Call<Itinerary> itineraryCall = mRestClient.getItineraryService().getItinerary(id, true);
         itineraryCall.enqueue(new Callback<Itinerary>() {
             @Override
@@ -206,6 +215,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
                 break;
 
             case R.id.action_refresh:
+                loadingProgressDialog = loadingProgressDialogBuilder.show();
                 Call<Itinerary> getItineraryCall = mRestClient.getItineraryService().getItinerary(currentItinerary.getId(), true);
                 getItineraryCall.enqueue(new Callback<Itinerary>() {
                     @Override
@@ -266,7 +276,12 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
                 line.color(getResources().getColor(getResources().getIdentifier(color_str, "color", getPackageName())));
                 polylines.add(mGoogleMap.addPolyline(line));
             }
-            //itemDetailFragment.updateItem(currentItinerary.getItems().get(0));
+            itemDetailFragment.updateItem(currentItinerary.getItems().get(0));
+            if(loadingProgressDialog!=null)
+            {
+                loadingProgressDialog.dismiss();
+                loadingProgressDialog = null;
+            }
         });
     }
 
@@ -299,6 +314,8 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        mGoogleMap.setOnMarkerClickListener(this);
+        updateView();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //TODO(abettadapur): check permission
@@ -308,11 +325,21 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_LOCATION);
             return;
         }
-        mGoogleMap.setMyLocationEnabled(true);
-        mGoogleMap.setOnMarkerClickListener(this);
-        updateView();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if(requestCode == REQUEST_LOCATION)
+        {
+            if(mGoogleMap!=null)
+            {
+                mGoogleMap.setMyLocationEnabled(true);
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -326,7 +353,6 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
     {
         marker.showInfoWindow();
         Item i = marker_to_item.get(marker);
-
         itemDetailFragment.updateItem(i);
         return true;
     }

@@ -81,7 +81,7 @@ public class ItemDetailFragment extends Fragment
             public void onClick(View v)
             {
                 Intent intent = new Intent(Intent.ACTION_VIEW,
-                Uri.parse("google.navigation:q=" + currentItem.getYelp_entry().getLocation().getCoordinate().latitude + "," + currentItem.getYelp_entry().getLocation().getCoordinate().longitude));
+                Uri.parse("google.navigation:q=" + currentItem.getYelp_item().getLocation().getCoordinate().latitude + "," + currentItem.getYelp_item().getLocation().getCoordinate().longitude));
                 startActivity(intent);
             }
         });
@@ -90,19 +90,14 @@ public class ItemDetailFragment extends Fragment
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:" + currentItem.getYelp_entry().getPhone()));
+                intent.setData(Uri.parse("tel:" + currentItem.getYelp_item().getPhone()));
                 startActivity(intent);
             }
         });
 
-        mWebButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentItem.getYelp_entry().getUrl()));
-                startActivity(browserIntent);
-            }
+        mWebButton.setOnClickListener(v1 -> {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentItem.getYelp_item().getUrl()));
+            startActivity(browserIntent);
         });
 
         return v;
@@ -114,17 +109,17 @@ public class ItemDetailFragment extends Fragment
 
         mTitleView.setText(currentItem.getName());
         //ImageLoader loader = new ImageLoader(mImageView);
-        //loader.execute(currentItem.getYelp_entry().getImage_url());
-        mRatingView.setRating(currentItem.getYelp_entry().getRating());
-        //mSubtitleView.setText(PhoneNumberUtils.formatNumber(currentItem.getYelp_entry().getPhone(), "US"));
-        mReviewCountView.setText(" - "+currentItem.getYelp_entry().getReview_count()+" reviews");
+        //loader.execute(currentItem.getYelp_item().getImage_url());
+        mRatingView.setRating(currentItem.getYelp_item().getRating());
+        //mSubtitleView.setText(PhoneNumberUtils.formatNumber(currentItem.getYelp_item().getPhone(), "US"));
+        mReviewCountView.setText(" - "+currentItem.getYelp_item().getReview_count()+" reviews");
 
         mStartTimeView.setText(timeSdf.format(currentItem.getStart_time().getTime()));
         mEndTimeView.setText(timeSdf.format(currentItem.getEnd_time().getTime()));
 
-        mPriceBar.setProgress(item.getYelp_entry().getPrice());
+        mPriceBar.setProgress(item.getYelp_item().getPrice());
 
-        switch(item.getCategory())
+        switch(item.getYelp_category().getName())
         {
             case "breakfast":
                 Iconify.setIcon(mIconView, Iconify.IconValue.fa_coffee);

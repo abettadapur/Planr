@@ -76,12 +76,12 @@ public class ItemDetailActivity extends ActionBarActivity implements OnMapReadyC
     {
         mTitleView.setText(currentItem.getName());
         //ImageLoader loader = new ImageLoader(mImageView);
-        //loader.execute(currentItem.getYelp_entry().getImage_url());
-        mRatingView.setRating(currentItem.getYelp_entry().getRating());
-        //mSubtitleView.setText(PhoneNumberUtils.formatNumber(currentItem.getYelp_entry().getPhone(), "US"));
-        mReviewCountView.setText(" - "+currentItem.getYelp_entry().getReview_count()+" reviews");
+        //loader.execute(currentItem.getYelp_item().getImage_url());
+        mRatingView.setRating(currentItem.getYelp_item().getRating());
+        //mSubtitleView.setText(PhoneNumberUtils.formatNumber(currentItem.getYelp_item().getPhone(), "US"));
+        mReviewCountView.setText(" - "+currentItem.getYelp_item().getReview_count()+" reviews");
 
-        getSupportActionBar().setTitle(currentItem.getCategory());
+        getSupportActionBar().setTitle(currentItem.getYelp_category().getName());
 
         MapFragment mapFragment = (MapFragment)getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -119,10 +119,10 @@ public class ItemDetailActivity extends ActionBarActivity implements OnMapReadyC
     {
         googleMap.addMarker(new MarkerOptions()
                 .title(currentItem.getName())
-                .snippet(currentItem.getYelp_entry().getLocation().getAddress())
-                .position(currentItem.getYelp_entry().getLocation().getCoordinate()));
+                .snippet(currentItem.getYelp_item().getLocation().getAddress())
+                .position(currentItem.getYelp_item().getLocation().getCoordinate()));
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentItem.getYelp_entry().getLocation().getCoordinate(), 13));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentItem.getYelp_item().getLocation().getCoordinate(), 13));
 
     }
 }

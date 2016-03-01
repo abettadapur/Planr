@@ -48,7 +48,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>
     {
         Item item = mItems.get(i);
         viewHolder.mTitleView.setText(item.getName());
-        viewHolder.mSubtitleView.setText(item.getCategory());
+        viewHolder.mSubtitleView.setText(item.getYelp_category().getName());
     }
 
     @Override

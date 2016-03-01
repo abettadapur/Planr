@@ -101,7 +101,7 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
             public void onClick(View v)
             {
                 Intent intent = new Intent(Intent.ACTION_VIEW,
-                Uri.parse("google.navigation:q=" + mCurrentItem.getYelp_entry().getLocation().getCoordinate().latitude + "," + mCurrentItem.getYelp_entry().getLocation().getCoordinate().longitude));
+                Uri.parse("google.navigation:q=" + mCurrentItem.getYelp_item().getLocation().getCoordinate().latitude + "," + mCurrentItem.getYelp_item().getLocation().getCoordinate().longitude));
                 startActivity(intent);
             }
         });
@@ -110,7 +110,7 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:" + mCurrentItem.getYelp_entry().getPhone()));
+                intent.setData(Uri.parse("tel:" + mCurrentItem.getYelp_item().getPhone()));
                 startActivity(intent);
             }
         });
@@ -120,7 +120,7 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
             @Override
             public void onClick(View v)
             {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mCurrentItem.getYelp_entry().getUrl()));
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mCurrentItem.getYelp_item().getUrl()));
                 startActivity(browserIntent);
             }
         });
@@ -143,55 +143,55 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
         mRestClient = RestClient.getInstance();
 
 
-        Call<Itinerary> getItineraryCall = mRestClient.getItineraryService().getItinerary(getIntent().getIntExtra("itinerary_id", 0));
-        getItineraryCall.enqueue(new Callback<Itinerary>() {
-            @Override
-            public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
-                if(response.isSuccess())
-                {
-                    mCurrentItinerary = response.body();
-                    Calendar startTime = Calendar.getInstance();
-                    startTime.set(Calendar.HOUR_OF_DAY, 10);
-                    startTime.set(Calendar.MINUTE, 0);
+//        Call<Itinerary> getItineraryCall = mRestClient.getItineraryService().getItinerary(getIntent().getIntExtra("itinerary_id", 0));
+//        getItineraryCall.enqueue(new Callback<Itinerary>() {
+//            @Override
+//            public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
+//                if(response.isSuccess())
+//                {
+//                    mCurrentItinerary = response.body();
+//                    Calendar startTime = Calendar.getInstance();
+//                    startTime.set(Calendar.HOUR_OF_DAY, 10);
+//                    startTime.set(Calendar.MINUTE, 0);
+//
+//                    Calendar endTime = Calendar.getInstance();
+//                    endTime.set(Calendar.HOUR_OF_DAY, 11);
+//                    endTime.set(Calendar.MINUTE, 0);
+//
+//                    mCurrentItem.setStart_time(startTime);
+//                    mCurrentItem.setEnd_time(endTime);
+//                    mCurrentItem.setYelp_category("breakfast");
+//
+//                    updateView();
+//
+//                    MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+//                    mapFragment.getMapAsync(AddItemActivity.this);
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Itinerary> call, Throwable t) {
+//
+//            }
+//        });
 
-                    Calendar endTime = Calendar.getInstance();
-                    endTime.set(Calendar.HOUR_OF_DAY, 11);
-                    endTime.set(Calendar.MINUTE, 0);
-
-                    mCurrentItem.setStart_time(startTime);
-                    mCurrentItem.setEnd_time(endTime);
-                    mCurrentItem.setCategory("breakfast");
-
-                    updateView();
-
-                    MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
-                    mapFragment.getMapAsync(AddItemActivity.this);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Itinerary> call, Throwable t) {
-
-            }
-        });
-
-        mCategoryView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new MaterialDialog.Builder(AddItemActivity.this)
-                        .title("Cities")
-                        .items(categories)
-                        .positiveText("Ok")
-                        .itemsCallback(new MaterialDialog.ListCallback() {
-                            @Override
-                            public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                mCurrentItem.setCategory(text.toString());
-                                updateView();
-                            }
-                        })
-                        .show();
-            }
-        });
+//        mCategoryView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                new MaterialDialog.Builder(AddItemActivity.this)
+//                        .title("Cities")
+//                        .items(categories)
+//                        .positiveText("Ok")
+//                        .itemsCallback(new MaterialDialog.ListCallback() {
+//                            @Override
+//                            public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+//                                mCurrentItem.setYelp_category(text.toString());
+//                                updateView();
+//                            }
+//                        })
+//                        .show();
+//            }
+//        });
 
 
         mStartTimeView.setOnClickListener(new View.OnClickListener() {
@@ -232,7 +232,7 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
     {
         mStartTimeView.setText(timeSdf.format(mCurrentItem.getStart_time().getTime()));
         mEndTimeView.setText(timeSdf.format(mCurrentItem.getEnd_time().getTime()));
-        mCategoryView.setText(Character.toUpperCase(mCurrentItem.getCategory().charAt(0))+mCurrentItem.getCategory().substring(1));
+        mCategoryView.setText(Character.toUpperCase(mCurrentItem.getYelp_category().getName().charAt(0))+mCurrentItem.getYelp_category().getName().substring(1));
         updateMap();
     }
 
@@ -246,7 +246,7 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
             prevItemMarker.remove();
 
         //search for items
-        Call<List<YelpEntry>> getYelpItemCall = mRestClient.getCategoryService().searchCategory(mCurrentItem.getCategory(), mCurrentItinerary.getCity());
+        Call<List<YelpEntry>> getYelpItemCall = mRestClient.getCategoryService().searchCategory(mCurrentItem.getYelp_category(), mCurrentItinerary.getCity());
         getYelpItemCall.enqueue(new Callback<List<YelpEntry>>() {
             @Override
             public void onResponse(Call<List<YelpEntry>> call, Response<List<YelpEntry>> response) {
@@ -280,15 +280,15 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
 
                         prevItemMarker = mGoogleMap.addMarker(new MarkerOptions()
                                 .title(previousItem.getName())
-                                .snippet(previousItem.getYelp_entry().getLocation().getAddress())
+                                .snippet(previousItem.getYelp_item().getLocation().getAddress())
                                 .icon(BitmapDescriptorFactory.fromBitmap(scaled))
-                                .position(previousItem.getYelp_entry().getLocation().getCoordinate()));
+                                .position(previousItem.getYelp_item().getLocation().getCoordinate()));
                     }
 
                     //add search results
                     for (YelpEntry ye : response.body()) {
                         if (previousItem != null) {
-                            if (previousItem.getYelp_id().equals(ye.getId())) {
+                            if (previousItem.getYelp_item_id().equals(ye.getId())) {
                                 continue;
                             }
                         }
@@ -343,13 +343,13 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
     private void updateItemView(Item item)
     {
         mTitleView.setText(item.getName());
-        mRatingView.setRating(item.getYelp_entry().getRating());
-        mReviewCountView.setText(" - " + item.getYelp_entry().getReview_count()+" reviews");
+        mRatingView.setRating(item.getYelp_item().getRating());
+        mReviewCountView.setText(" - " + item.getYelp_item().getReview_count()+" reviews");
         mAddButton.setVisibility(View.INVISIBLE);
-        mPriceBar.setProgress(item.getYelp_entry().getPrice());
-       // mSubtitleView.setText(PhoneNumberUtils.formatNumber(item.getYelp_entry().getPhone()));
+        mPriceBar.setProgress(item.getYelp_item().getPrice());
+       // mSubtitleView.setText(PhoneNumberUtils.formatNumber(item.getYelp_item().getPhone()));
 
-        switch(item.getCategory())
+        switch(item.getYelp_category().getName())
         {
             case "breakfast":
                 Iconify.setIcon(mIconView, Iconify.IconValue.fa_coffee);
@@ -384,8 +384,8 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
             {
                 mCurrentItem.setName(entry.getName());
                 final MaterialDialog progressDialog = new MaterialDialog.Builder(AddItemActivity.this).title("Adding").content("Adding this item to your itinerary").progress(true, 0).show();
-                mCurrentItem.setYelp_entry(entry);
-                mCurrentItem.setYelp_id(entry.getId());
+                mCurrentItem.setYelp_item(entry);
+                mCurrentItem.setYelp_item_id(entry.getId());
                 Call<Item> getItemCall = mRestClient.getItemService().createItem(mCurrentItinerary.getId(), mCurrentItem);
                 getItemCall.enqueue(new Callback<Item>() {
                     @Override
@@ -409,7 +409,7 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
         mPriceBar.setProgress(entry.getPrice());
        // mSubtitleView.setText(PhoneNumberUtils.formatNumber(entry.getPhone()));
 
-        switch(mCurrentItem.getCategory())
+        switch(mCurrentItem.getYelp_category().getName())
         {
             case "breakfast":
                 Iconify.setIcon(mIconView, Iconify.IconValue.fa_coffee);
