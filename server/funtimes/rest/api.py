@@ -46,14 +46,19 @@ class AuthResource(Resource):
             )
 
         if user and user['id'] == uid:
-            if not user_repository.user_exists(uid):
+            if not user_repository.user_exists(user['email']):
                 new_user = User(uid, user['first_name'], user['last_name'], user['email'])
                 user_repository.add_or_update(new_user)
                 user_repository.save_changes()
 
-            users = user_repository.get(facebook_id=uid)
+            users = user_repository.get(email=user['email'])
             user = users[0] if users else None
+
             if user:
+                user.facebook_id = uid
+                user_repository.add_or_update(user)
+                user_repository.save_changes()
+
                 auth_repository.insert_authorization(token, user.id)
                 auth_repository.save_changes()
             else:

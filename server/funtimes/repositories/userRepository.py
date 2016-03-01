@@ -15,5 +15,5 @@ class UserRepository(BaseRepository):
     def validate(self, entity):
         return ChangeResult()
 
-    def user_exists(self, facebook_id):
-        return query(self.get(facebook_id=facebook_id)).any()
+    def user_exists(self, email):
+        return query(self.get(email=email)).any()
