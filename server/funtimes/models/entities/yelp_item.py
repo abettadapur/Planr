@@ -33,7 +33,7 @@ class YelpItem(BaseModel):
         item = YelpItem(
             id=dict['id'],
             name=dict['name'],
-            image_url=dict['image_url'],
+            image_url=dict['image_url'] if 'image_url' in dict else None,
             url=dict['url'],
             phone=dict['phone'] if 'phone' in dict else None,
             rating=dict['rating'],
