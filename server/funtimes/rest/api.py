@@ -159,10 +159,7 @@ class ItineraryResource(Resource):
         if itinerary.user.id != user.id:
             abort(404, message="No itinerary with that id exists")
 
-        result = self.itinerary_repository.delete(id)
-        if not result.success:
-            on_error(error_message="Could not delete itinerary", result=result)
-
+        self.itinerary_repository.delete(id)
         self.itinerary_repository.save_changes()
         return {"message": "Deleted itinerary"}
 
@@ -213,6 +210,30 @@ class ItineraryListResource(Resource):
 
         self.itinerary_repository.save_changes()
         return itinerary
+
+
+class ItineraryRandomizeResource(Resource):
+    def __init__(self):
+        self.itinerary_repository = ItineraryRepository()
+
+    @authenticate
+    def post(self, id, **kwargs):
+        user = kwargs['user']
+        itinerary = query(self.itinerary_repository.get(user=user, id=id)).single_or_default(default=None)
+
+        if itinerary is None:
+            abort(404, message="No itinerary with that id was found")
+
+        self.itinerary_repository.clear_itinerary(itinerary)
+        populate_sample_itinerary(itinerary)
+        result = self.itinerary_repository.add_or_update(itinerary)
+
+        if not result.success:
+            on_error(error_message="Could not randomize itinerary", result=result)
+
+        self.itinerary_repository.save_changes()
+        return itinerary
+
 
 
 class ItinerarySearchResource(Resource):

@@ -27,6 +27,9 @@ class BaseRepository(metaclass=ABCMeta):
     def delete(self, id):
         self.model_class.query.filter_by(id=id).delete()
 
+    def expunge(self, entity):
+        db.session.expunge(entity)
+
     @abstractmethod
     def validate(self, entity):
         pass

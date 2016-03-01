@@ -20,7 +20,7 @@ class Itinerary(BaseModel):
     end_time = db.Column(db.DateTime, nullable=False)
     city = db.Column(db.String(200), nullable=False)
     public = db.Column(db.Boolean)
-    items = db.relationship("Item")
+    items = db.relationship("Item", cascade="all, delete")
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     user = db.relationship("User", back_populates="itineraries")
     shared_users = db.relationship("User", secondary="itinerary_shares")
