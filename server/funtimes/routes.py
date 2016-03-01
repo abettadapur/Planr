@@ -29,6 +29,8 @@ def default(obj):
 
     if isinstance(obj, datetime.date):
         return obj.strftime("%Y-%m-%d")
+    if isinstance(obj, datetime.time):
+        return obj.strftime("%H:%M:%S")
     if isinstance(obj, BaseModel):
         return obj.as_dict()
     raise TypeError('Not sure how to serialize %s' % (obj,))
