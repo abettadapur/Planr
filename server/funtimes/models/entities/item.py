@@ -40,6 +40,7 @@ class Item(BaseModel):
         item_dict = super(Item, self).as_dict()
         item_dict['yelp_item'] = self.yelp_item.as_dict()
         item_dict['location'] = self.location.as_dict()
+        item_dict['yelp_category'] = self.yelp_category.as_dict()
         return item_dict
 
     @staticmethod
