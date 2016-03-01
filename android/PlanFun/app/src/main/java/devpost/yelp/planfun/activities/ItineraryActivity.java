@@ -132,7 +132,7 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
         public boolean onItemClick(View view, int i, IDrawerItem iDrawerItem) {
             String item = ((Nameable) iDrawerItem).getName().toString();
             switch (item) {
-                case "My Itineraries":
+                case "My Plans":
                     if(currentFragment != itineraryListFragment) {
                         getSupportFragmentManager()
                                 .beginTransaction()
@@ -143,7 +143,7 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
                         getSupportActionBar().setTitle("Your Itineraries");
                     }
                     break;
-                case "Search Itineraries":
+                case "Search Plans":
                     if(currentFragment != searchItineraryFragment) {
                         getSupportFragmentManager()
                                 .beginTransaction()

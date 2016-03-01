@@ -46,4 +46,7 @@ public interface ItineraryService
     @POST("itineraries/{id}/share")
     Call<Itinerary> shareItinerary(@Path("id") int id, @Body ShareRequest request);
 
+    @POST("itineraries/{id}/randomize")
+    Call<Itinerary> randomizeItinerary(@Path("id") int id);
+
 }
