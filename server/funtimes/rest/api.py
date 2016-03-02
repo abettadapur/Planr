@@ -397,6 +397,7 @@ class RatingResource(Resource):
         self.create_parser.add_argument('content', type=str, required=True, location='json', help='Missing content')
         self.rating_repository = RatingRepository()
         self.itinerary_repository = ItineraryRepository()
+        super(RatingResource, self).__init__()
 
     @authenticate
     def post(self, itinerary_id, **kwargs):
@@ -426,6 +427,24 @@ class RatingResource(Resource):
     def get(self, itinerary_id, **kwargs):
         ratings = self.rating_repository.get(itinerary_id=itinerary_id)
         return ratings
+
+
+class FriendsResource(Resource):
+    def __init__(self):
+        self.user_repository = UserRepository()
+        super(FriendsResource, self).__init__()
+
+    @authenticate
+    def get(self, **kwargs):
+        graph = facebook.GraphAPI(access_token=kwargs['token'])
+        friends = graph.get_connections(kwargs['user'].facebook_id, "friends")['data']
+        users = []
+        for friend in friends:
+            user = query(self.user_repository.get(facebook_id=friend['id'])).single_or_default(default=None)
+            if user:
+                users.append(user)
+                
+        return users
 
 
 def on_error(error_message, result=None):

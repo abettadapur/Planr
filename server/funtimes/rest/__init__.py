@@ -17,6 +17,7 @@ def authenticate(func):
 
         if user:
             kwargs['user'] = user
+            kwargs['token'] = authorization_token
             return func(*args, **kwargs)
         else:
             abort(401, message="Invalid authorization token")

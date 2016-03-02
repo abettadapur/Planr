@@ -17,6 +17,7 @@ api.add_resource(funtimes_api.ItinerarySearchResource, '/api/itineraries/search'
 api.add_resource(funtimes_api.ItineraryShareResource, '/api/itineraries/<int:itinerary_id>/share')
 api.add_resource(funtimes_api.ItemListResource, '/api/itineraries/<int:itinerary_id>/items')
 api.add_resource(funtimes_api.ItemResource, '/api/itineraries/<int:itinerary_id>/items/<int:item_id>')
+api.add_resource(funtimes_api.FriendsResource, '/api/registered_friends')
 
 
 def default(obj):
