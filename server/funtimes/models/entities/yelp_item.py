@@ -11,16 +11,18 @@ class YelpItem(BaseModel):
     url = db.Column(db.String(300), nullable=True)
     phone = db.Column(db.String(15), nullable=True)
     rating = db.Column(db.Integer())
+    review_count = db.Column(db.Integer())
     location_id = db.Column(db.Integer, db.ForeignKey("location.id"))
     location = db.relationship("Location")
 
-    def __init__(self, id=None, name=None, image_url=None, url=None, phone=None, rating=1, location=None):
+    def __init__(self, id=None, name=None, image_url=None, url=None, phone=None, rating=1, review_count = 0, location=None):
         self.id = id
         self.name = name
         self.image_url = image_url
         self.url = url
         self.phone = phone
         self.rating = rating
+        self.review_count = review_count
         self.location = location
 
     def as_dict(self):
@@ -37,6 +39,7 @@ class YelpItem(BaseModel):
             url=dict['url'],
             phone=dict['phone'] if 'phone' in dict else None,
             rating=dict['rating'],
+            review_count=dict['review_count'],
             location=Location.create_from_yelp_dict(dict['location'])
         )
         return item
