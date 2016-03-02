@@ -15,4 +15,12 @@
         <item name="actionMenuTextColor">@android:color/white</item>
     </style>
 
+    <style name="ButtonTheme" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/primaryColor</item>
+        <item name="colorButtonNormal">@color/primaryColorDark</item>
+        <item name="android:textColor">@color/white</item>
+
+    </style>
+
+
 </resources>

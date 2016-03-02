@@ -5,7 +5,9 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -24,6 +27,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.joanzapata.android.iconify.IconDrawable;
+import com.joanzapata.android.iconify.Iconify;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -32,6 +37,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.Bind;
+import butterknife.OnClick;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.activities.adapters.CityAutoCompleteAdapter;
 import devpost.yelp.planfun.activities.views.WebAutoCompleteTextView;
@@ -47,48 +54,25 @@ import retrofit2.Response;
 /**
  * Created by Alex on 3/12/2015.
  */
-public class CreateItineraryDialog extends DialogFragment
-{
-    private EditText mNameBox, mStartPicker, mEndPicker;
+public class CreateItineraryDialog extends DialogFragment {
+    private Button newButton;
+    private Button searchButton;
+    private EditText mStartPicker;
+    private EditText mEndPicker;
     private WebAutoCompleteTextView mCityPicker;
-    private ProgressBar mProgressBar;
-    private CheckBox publicBox;
     private Calendar mStart, mEnd;
+    public final static int CREATE=1;
+    public final static int SEARCH=2;
+    private static Itinerary newItinerary;
+
+    public static Itinerary getNewItinerary(){
+        return newItinerary;
+    }
 
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
         MaterialDialog.Builder b = new MaterialDialog.Builder(getActivity())
-                .title("Create Itinerary")
-                .positiveText("Create")
-                .onPositive((dialog, which) -> {
-                    String name = mNameBox.getText().toString();
-                    String city = mCityPicker.getText().toString();
-                    boolean isPublic = publicBox.isChecked();
-                    Itinerary newItinerary = new Itinerary(name, mStart, mEnd, city, isPublic, new ArrayList<Item>());
-                    ItineraryService service = RestClient.getInstance().getItineraryService();
-
-                    final ProgressDialog progress = ProgressDialog.show(CreateItineraryDialog.this.getActivity(), "Creating", "Creating a custom itinerary....", true);
-                    Call<Itinerary> createCall = service.createItinerary(newItinerary);
-                    createCall.enqueue(new Callback<Itinerary>() {
-                        @Override
-                        public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
-                            progress.dismiss();
-                            if (response.isSuccess()) {
-                                Log.e("CREATE ITINERARY", "SUCCESS " + response.body());
-                                getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, new Intent());
-                            } else {
-                                Log.e("CREATE ITINERARY", "FAIL: " + response.errorBody());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<Itinerary> call, Throwable t) {
-
-                        }
-                    });
-                })
-                .onNegative((dialog, which) -> dialog.dismiss())
-                .negativeText("Cancel");
+                .title("Add Itinerary");
 
         LayoutInflater i = getActivity().getLayoutInflater();
         View v = i.inflate(R.layout.dialog_create_itinerary, null);
@@ -101,41 +85,33 @@ public class CreateItineraryDialog extends DialogFragment
         mEnd.set(Calendar.HOUR_OF_DAY, 21);
         mEnd.set(Calendar.MINUTE, 0);
 
-        mNameBox = (EditText)v.findViewById(R.id.nameBox);
-        mStartPicker = (EditText)v.findViewById(R.id.startPicker);
-        mEndPicker = (EditText)v.findViewById(R.id.endPicker);
-        publicBox = (CheckBox)v.findViewById(R.id.publicBox);
+        newButton = (Button)v.findViewById(R.id.newItinerary);
+        newButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                createItinerary(true);
+            }
+        });
+        searchButton = (Button)v.findViewById(R.id.searchItinerary);
+        searchButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                createItinerary(false);
+            }
+        });
+
         mCityPicker = (WebAutoCompleteTextView)v.findViewById(R.id.cityPicker);
         mCityPicker.setThreshold(2);
         mCityPicker.setAdapter(new CityAutoCompleteAdapter(this.getContext()));
-        mCityPicker.setLoadingIndicator((ProgressBar)v.findViewById(R.id.autoCompleteProgressBar));
+        mCityPicker.setLoadingIndicator((ProgressBar) v.findViewById(R.id.autoCompleteProgressBar));
         mCityPicker.setOnItemClickListener((parent, view, position, id) -> {
-            City city = (City)parent.getItemAtPosition(position);
-            mCityPicker.setText(city.getName()+", "+city.getState());
+            City city = (City) parent.getItemAtPosition(position);
+            mCityPicker.setText(city.getName() + ", " + city.getState());
         });
-//
-//        Call<List<City>> cities = RestClient.getInstance().getCityService().listCities();
-//        cities.enqueue(new Callback<List<City>>() {
-//            @Override
-//            public void onResponse(Call<List<City>> call, Response<List<City>> response) {
-//                List<City> cities = response.body();
-//                String[] cityStrings = new String[cities.size()];
-//                //TODO do async on app startup and cache
-//                for (int in = 0; in < cities.size(); in++)
-//                    cityStrings[in] = cities.get(in).getName() + ", " + cities.get(in).getState();
-//
-//                ArrayAdapter<String> adapter = new ArrayAdapter<String>(CreateItineraryDialog.this.getContext(),
-//                        android.R.layout.simple_dropdown_item_1line, cityStrings);
-//                CreateItineraryDialog.this.getActivity().runOnUiThread(() -> mCityPicker.setAdapter(adapter));
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<City>> call, Throwable t) {
-//
-//            }
-//        });
 
-
+        mStartPicker = (EditText)v.findViewById(R.id.timePicker);
         mStartPicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -143,6 +119,7 @@ public class CreateItineraryDialog extends DialogFragment
             }
         });
 
+        mEndPicker = (EditText)v.findViewById(R.id.datePicker);
         mEndPicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -151,8 +128,36 @@ public class CreateItineraryDialog extends DialogFragment
         });
 
         updateView();
-        b.customView(v, false);
+        b = b.customView(v,false);
         return b.build();
+    }
+
+    private void createItinerary(boolean fromScratch) {
+        String city = mCityPicker.getText().toString();
+        ItineraryService service = RestClient.getInstance().getItineraryService();
+
+        if(fromScratch) {
+            newItinerary = new Itinerary("New Itinerary", mStart, mEnd, city, false, new ArrayList<Item>());
+            final ProgressDialog progress = ProgressDialog.show(CreateItineraryDialog.this.getActivity(), "Creating", "Creating a custom itinerary....", true);
+            Call<Itinerary> createCall = service.createItinerary(newItinerary);
+            createCall.enqueue(new Callback<Itinerary>() {
+                @Override
+                public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
+                    progress.dismiss();
+                    if (response.isSuccess()) {
+                        Log.e("CREATE ITINERARY", "SUCCESS " + response.body());
+                        getTargetFragment().onActivityResult(getTargetRequestCode(), CREATE, new Intent());
+                    } else {
+                        Log.e("CREATE ITINERARY", "FAIL: " + response.errorBody());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Itinerary> call, Throwable t) {
+
+                }
+            });
+        }
     }
 
     DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {

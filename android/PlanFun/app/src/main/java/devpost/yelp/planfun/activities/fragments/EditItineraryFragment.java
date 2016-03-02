@@ -37,8 +37,6 @@ public class EditItineraryFragment extends Fragment {
     private String timeFormat = "H:mm";
     private SimpleDateFormat timeSdf;
 
-
-
     public static EditItineraryFragment newInstance()
     {
         return new EditItineraryFragment();
@@ -70,11 +68,9 @@ public class EditItineraryFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_edit_itinerary, container, false);
 
-        mNameBox = (EditText) v.findViewById(R.id.nameBox);
         mCityPicker = (AutoCompleteTextView) v.findViewById(R.id.cityPicker);
         mStartTimeBox = (EditText) v.findViewById(R.id.startPicker);
         mEndTimeBox = (EditText) v.findViewById(R.id.endPicker);
-        mCheckBox = (CheckBox)v.findViewById(R.id.publicBox);
 
         dateSdf = new SimpleDateFormat(dateFormat, Locale.US);
         timeSdf = new SimpleDateFormat(timeFormat, Locale.US);

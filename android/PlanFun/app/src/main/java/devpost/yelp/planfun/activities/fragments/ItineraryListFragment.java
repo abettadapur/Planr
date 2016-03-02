@@ -197,18 +197,18 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
         CreateItineraryDialog dialog = new CreateItineraryDialog();
         dialog.setTargetFragment(this, ITINERARY_CREATE_CODE);
         dialog.show(getActivity().getSupportFragmentManager(), "fm");
-
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==ITINERARY_CREATE_CODE)
+        if(requestCode ==ITINERARY_CREATE_CODE)
         {
-            if(resultCode== Activity.RESULT_OK)
+            if(resultCode == CreateItineraryDialog.CREATE)
             {
-                //things
-
+                Intent i = new Intent(getActivity(), EditItineraryFragment.class);
+                i.putExtra("itinerary_id", CreateItineraryDialog.getNewItinerary().getId());
+                getActivity().startActivity(i);
             }
         }
         this.getActivity().runOnUiThread(()-> mListListener.refresh_list(this));
