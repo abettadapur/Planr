@@ -5,9 +5,11 @@ from flask import request
 from flask_restful import abort, Resource
 from flask_restful.reqparse import RequestParser
 from funtimes.maps.maps import get_polyline
+from funtimes.models.entities.rating import Rating
 from funtimes.models.entities.user import User
 from funtimes.repositories.itemRepository import ItemRepository
 from funtimes.repositories.itineraryRepository import ItineraryRepository
+from funtimes.repositories.ratingRepository import RatingRepository
 from funtimes.repositories.userAuthorizationRepository import UserAuthorizationRepository
 from funtimes.repositories.userRepository import UserRepository
 from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
@@ -385,6 +387,45 @@ class ItemListResource(Resource):
         self.itinerary_repository.save_changes()
 
         return item
+
+
+class RatingResource(Resource):
+    def __init__(self):
+        self.create_parser = RequestParser()
+        self.create_parser.add_argument('title', type=str, required=True, location='json', help='Missing title')
+        self.create_parser.add_argument('rating', type=int, required=True, location='json', help='Missing rating')
+        self.create_parser.add_argument('content', type=str, required=True, location='json', help='Missing content')
+        self.rating_repository = RatingRepository()
+        self.itinerary_repository = ItineraryRepository()
+
+    @authenticate
+    def post(self, itinerary_id, **kwargs):
+        user = kwargs['user']
+        args = self.create_parser.parse_args()
+        itinerary = self.itinerary_repository.find(itinerary_id)
+
+        if not itinerary.public:
+            abort(404, message="No itinerary with this id was found")
+
+        rating = Rating(
+            title=args['title'],
+            rating=args['rating'],
+            content=args['content'],
+            user=user,
+            itinerary=itinerary
+        )
+
+        result = self.rating_repository.add_or_update(rating)
+        if not result.success():
+            on_error(error_message="Could not save rating", result=result)
+
+        self.rating_repository.save_changes()
+        return rating
+
+    @authenticate
+    def get(self, itinerary_id, **kwargs):
+        ratings = self.rating_repository.get(itinerary_id=itinerary_id)
+        return ratings
 
 
 def on_error(error_message, result=None):
