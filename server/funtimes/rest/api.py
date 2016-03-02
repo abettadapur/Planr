@@ -5,9 +5,11 @@ from flask import request
 from flask_restful import abort, Resource
 from flask_restful.reqparse import RequestParser
 from funtimes.maps.maps import get_polyline
+from funtimes.models.entities.rating import Rating
 from funtimes.models.entities.user import User
 from funtimes.repositories.itemRepository import ItemRepository
 from funtimes.repositories.itineraryRepository import ItineraryRepository
+from funtimes.repositories.ratingRepository import RatingRepository
 from funtimes.repositories.userAuthorizationRepository import UserAuthorizationRepository
 from funtimes.repositories.userRepository import UserRepository
 from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
@@ -159,10 +161,7 @@ class ItineraryResource(Resource):
         if itinerary.user.id != user.id:
             abort(404, message="No itinerary with that id exists")
 
-        result = self.itinerary_repository.delete(id)
-        if not result.success:
-            on_error(error_message="Could not delete itinerary", result=result)
-
+        self.itinerary_repository.delete(id)
         self.itinerary_repository.save_changes()
         return {"message": "Deleted itinerary"}
 
@@ -213,6 +212,32 @@ class ItineraryListResource(Resource):
 
         self.itinerary_repository.save_changes()
         return itinerary
+
+
+class ItineraryRandomizeResource(Resource):
+    def __init__(self):
+        self.itinerary_repository = ItineraryRepository()
+
+    @authenticate
+    def post(self, id, **kwargs):
+        user = kwargs['user']
+        itinerary = query(self.itinerary_repository.get(user=user, id=id)).single_or_default(default=None)
+
+        if itinerary is None:
+            abort(404, message="No itinerary with that id was found")
+
+        self.itinerary_repository.clear_itinerary(itinerary)
+        populate_sample_itinerary(itinerary)
+        result = self.itinerary_repository.add_or_update(itinerary)
+
+        if not result.success:
+            on_error(error_message="Could not randomize itinerary", result=result)
+
+        self.itinerary_repository.save_changes()
+        polyline = get_polyline(itinerary)
+        itinerary_dict = itinerary.as_dict()
+        itinerary_dict['polylines'] = polyline
+        return itinerary_dict
 
 
 class ItinerarySearchResource(Resource):
@@ -362,6 +387,64 @@ class ItemListResource(Resource):
         self.itinerary_repository.save_changes()
 
         return item
+
+
+class RatingResource(Resource):
+    def __init__(self):
+        self.create_parser = RequestParser()
+        self.create_parser.add_argument('title', type=str, required=True, location='json', help='Missing title')
+        self.create_parser.add_argument('rating', type=int, required=True, location='json', help='Missing rating')
+        self.create_parser.add_argument('content', type=str, required=True, location='json', help='Missing content')
+        self.rating_repository = RatingRepository()
+        self.itinerary_repository = ItineraryRepository()
+        super(RatingResource, self).__init__()
+
+    @authenticate
+    def post(self, itinerary_id, **kwargs):
+        user = kwargs['user']
+        args = self.create_parser.parse_args()
+        itinerary = self.itinerary_repository.find(itinerary_id)
+
+        if not itinerary.public:
+            abort(404, message="No itinerary with this id was found")
+
+        rating = Rating(
+            title=args['title'],
+            rating=args['rating'],
+            content=args['content'],
+            user=user,
+            itinerary=itinerary
+        )
+
+        result = self.rating_repository.add_or_update(rating)
+        if not result.success():
+            on_error(error_message="Could not save rating", result=result)
+
+        self.rating_repository.save_changes()
+        return rating
+
+    @authenticate
+    def get(self, itinerary_id, **kwargs):
+        ratings = self.rating_repository.get(itinerary_id=itinerary_id)
+        return ratings
+
+
+class FriendsResource(Resource):
+    def __init__(self):
+        self.user_repository = UserRepository()
+        super(FriendsResource, self).__init__()
+
+    @authenticate
+    def get(self, **kwargs):
+        graph = facebook.GraphAPI(access_token=kwargs['token'])
+        friends = graph.get_connections(kwargs['user'].facebook_id, "friends")['data']
+        users = []
+        for friend in friends:
+            user = query(self.user_repository.get(facebook_id=friend['id'])).single_or_default(default=None)
+            if user:
+                users.append(user)
+                
+        return users
 
 
 def on_error(error_message, result=None):

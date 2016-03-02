@@ -70,4 +70,12 @@ class ItineraryRepository(BaseRepository):
             return None
         return shared_user.permission
 
+    def clear_itinerary(self, itinerary):
+        item_repository = ItemRepository()
+        for item in itinerary.items:
+            item_repository.delete(item.id)
+
+        item_repository.save_changes()
+
+
 

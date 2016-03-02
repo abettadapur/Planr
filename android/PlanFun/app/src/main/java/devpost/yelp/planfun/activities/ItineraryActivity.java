@@ -44,6 +44,7 @@ import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.activities.fragments.ItineraryListFragment;
 import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.net.RestClient;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -132,7 +133,7 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
         public boolean onItemClick(View view, int i, IDrawerItem iDrawerItem) {
             String item = ((Nameable) iDrawerItem).getName().toString();
             switch (item) {
-                case "My Itineraries":
+                case "My Plans":
                     if(currentFragment != itineraryListFragment) {
                         getSupportFragmentManager()
                                 .beginTransaction()
@@ -143,7 +144,7 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
                         getSupportActionBar().setTitle("Your Itineraries");
                     }
                     break;
-                case "Search Itineraries":
+                case "Search Plans":
                     if(currentFragment != searchItineraryFragment) {
                         getSupportFragmentManager()
                                 .beginTransaction()
@@ -241,10 +242,10 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
     @Override
     public void remove_item(int id) {
 
-        Call<Boolean> deleteCall = mRestClient.getItineraryService().deleteItinerary(id);
-        deleteCall.enqueue(new Callback<Boolean>() {
+        Call<ResponseBody> deleteCall = mRestClient.getItineraryService().deleteItinerary(id);
+        deleteCall.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if(response.isSuccess())
                 {
                     refresh_list(itineraryListFragment);
@@ -252,8 +253,8 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
             }
 
             @Override
-            public void onFailure(Call<Boolean> call, Throwable t) {
-
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("DELETE", "Error");
             }
         });
     }

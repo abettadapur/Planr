@@ -10,8 +10,8 @@ import java.util.Calendar;
 public class Item
 {
     private int id;
-    private String yelp_id;
-    private String category;
+    private String yelp_item_id;
+    private YelpCategory yelp_category;
     private String name;
     private Calendar start_time;
     private Calendar end_time;
@@ -20,35 +20,35 @@ public class Item
     private Location location;
 
     @Expose(serialize = false)
-    private YelpEntry yelp_entry;
+    private YelpEntry yelp_item;
 
-    public Item(int id, String yelp_id, String category, String name, Calendar start_time, Calendar end_time, YelpEntry yelp_entry) {
+    public Item(int id, String yelp_item_id, YelpCategory yelp_category, String name, Calendar start_time, Calendar end_time, YelpEntry yelp_entry) {
         this.id = id;
-        this.yelp_id = yelp_id;
-        this.category = category;
+        this.yelp_item_id = yelp_item_id;
+        this.yelp_category = yelp_category;
         this.name = name;
         this.start_time = start_time;
         this.end_time = end_time;
-        this.yelp_entry = yelp_entry;
+        this.yelp_item = yelp_entry;
     }
 
-    public Item(int id, String yelp_id, String category, String name, Calendar start_time, Calendar end_time) {
+    public Item(int id, String yelp_item_id, YelpCategory yelp_category, String name, Calendar start_time, Calendar end_time) {
         this.id = id;
-        this.yelp_id = yelp_id;
-        this.category = category;
+        this.yelp_item_id = yelp_item_id;
+        this.yelp_category = yelp_category;
         this.name = name;
         this.start_time = start_time;
         this.end_time = end_time;
-        this.yelp_entry = null;
+        this.yelp_item = null;
     }
 
-    public Item(String yelp_id, String category, String name, Calendar start_time, Calendar end_time) {
-        this.yelp_id = yelp_id;
-        this.category = category;
+    public Item(String yelp_item_id, YelpCategory yelp_category, String name, Calendar start_time, Calendar end_time) {
+        this.yelp_item_id = yelp_item_id;
+        this.yelp_category = yelp_category;
         this.name = name;
         this.start_time = start_time;
         this.end_time = end_time;
-        this.yelp_entry = null;
+        this.yelp_item = null;
         this.id=-1;
     }
 
@@ -63,20 +63,20 @@ public class Item
         this.id = id;
     }
 
-    public String getYelp_id() {
-        return yelp_id;
+    public String getYelp_item_id() {
+        return yelp_item_id;
     }
 
-    public void setYelp_id(String yelp_id) {
-        this.yelp_id = yelp_id;
+    public void setYelp_item_id(String yelp_item_id) {
+        this.yelp_item_id = yelp_item_id;
     }
 
-    public String getCategory() {
-        return category;
+    public YelpCategory getYelp_category() {
+        return yelp_category;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setYelp_category(YelpCategory yelp_category) {
+        this.yelp_category = yelp_category;
     }
 
     public String getName() {
@@ -103,12 +103,12 @@ public class Item
         this.end_time = end_time;
     }
 
-    public YelpEntry getYelp_entry() {
-        return yelp_entry;
+    public YelpEntry getYelp_item() {
+        return yelp_item;
     }
 
-    public void setYelp_entry(YelpEntry yelp_entry) {
-        this.yelp_entry = yelp_entry;
+    public void setYelp_item(YelpEntry yelp_item) {
+        this.yelp_item = yelp_item;
     }
 
     public Location getLocation() {

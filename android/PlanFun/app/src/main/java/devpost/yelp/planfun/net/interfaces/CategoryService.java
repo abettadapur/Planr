@@ -2,6 +2,7 @@ package devpost.yelp.planfun.net.interfaces;
 
 import java.util.List;
 
+import devpost.yelp.planfun.model.YelpCategory;
 import devpost.yelp.planfun.model.YelpEntry;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -14,5 +15,5 @@ import retrofit2.Call;
 public interface CategoryService
 {
     @GET("category/{category}/query")
-    Call<List<YelpEntry>> searchCategory(@Path("category") String category, @Query("location") String city);
+    Call<List<YelpEntry>> searchCategory(@Path("category") YelpCategory category, @Query("location") String city);
 }

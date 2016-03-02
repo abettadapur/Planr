@@ -11,7 +11,7 @@ class Item(BaseModel):
     name = db.Column(db.String(200), nullable=False)
     yelp_category_id = db.Column(db.Integer, db.ForeignKey("yelp_category.id"))
     yelp_category = db.relationship("YelpCategory")
-    itinerary_id = db.Column(db.Integer, db.ForeignKey("itinerary.id", name="fk_item_itinerary_id"))
+    itinerary_id = db.Column(db.Integer, db.ForeignKey("itinerary.id", name="fk_item_itinerary_id", ondelete="CASCADE"))
     itinerary = db.relationship("Itinerary", back_populates="items")
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
@@ -40,6 +40,7 @@ class Item(BaseModel):
         item_dict = super(Item, self).as_dict()
         item_dict['yelp_item'] = self.yelp_item.as_dict()
         item_dict['location'] = self.location.as_dict()
+        item_dict['yelp_category'] = self.yelp_category.as_dict()
         return item_dict
 
     @staticmethod

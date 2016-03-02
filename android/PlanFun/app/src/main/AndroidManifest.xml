@@ -26,7 +26,7 @@
             android:label="PlanFun"
             android:screenOrientation="portrait"
             >
-            <intent-filter android:label="PlanFun">
+            <intent-filter android:label="Plans">
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />

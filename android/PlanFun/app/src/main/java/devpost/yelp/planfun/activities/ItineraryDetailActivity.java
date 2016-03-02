@@ -18,6 +18,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.AccessToken;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -69,6 +71,9 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
     private static String[] colors = {"red", "blue", "cyan", "green", "purple", "orange"};
     private GoogleMap mGoogleMap;
     private final int ADD_ITINERARY = 94801;
+    private final int REQUEST_LOCATION = 12;
+    private MaterialDialog.Builder loadingProgressDialogBuilder;
+    private MaterialDialog loadingProgressDialog;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -78,6 +83,11 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_itinerary_detail);
         ButterKnife.bind(this);
+
+        loadingProgressDialogBuilder = new MaterialDialog.Builder(this)
+                .title("Loading")
+                .content("Loading your plan...")
+                .progress(true, 0);
 
         marker_to_item = new HashMap<>();
         polylines = new ArrayList<>();
@@ -99,6 +109,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
         int id = getIntent().getIntExtra("itinerary_id", 0);
         mRestClient = RestClient.getInstance();
 
+        loadingProgressDialog = loadingProgressDialogBuilder.show();
         Call<Itinerary> itineraryCall = mRestClient.getItineraryService().getItinerary(id, true);
         itineraryCall.enqueue(new Callback<Itinerary>() {
             @Override
@@ -165,40 +176,47 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
                 i.putExtra("itinerary_id", currentItinerary.getId());
                 startActivity(i);
                 break;
-/*
+
             case R.id.action_randomize:
                 new MaterialDialog.Builder(this)
                         .title("Confirm")
                         .content("Randomizing your itinerary will delete all items you have added and regenerate a new set of items. Are you sure you want to do this?")
                         .positiveText("Yes")
                         .negativeText("No")
-                        .callback(new MaterialDialog.ButtonCallback() {
-                            @Override
-                            public void onPositive(MaterialDialog dialog) {
-                                final MaterialDialog progressDialog = new MaterialDialog.Builder(ItineraryDetailActivity.this)
-                                        .title("Randomizing")
-                                        .content("Regenerating your itinerary...")
-                                        .progress(true, 0)
-                                        .show();
-                                mRestClient.getItineraryService().randomizeItinerary(currentItinerary.getId(), Session.getActiveSession().getAccessToken(), new Callback<Itinerary>() {
-                                    @Override
-                                    public void success(Itinerary itinerary, Response response) {
-                                        progressDialog.dismiss();
-                                        currentItinerary = itinerary;
-                                        updateView();
-                                    }
+                        .onPositive((dialog, which) -> {
+                                    final MaterialDialog progressDialog = new MaterialDialog.Builder(ItineraryDetailActivity.this)
+                                            .title("Randomizing")
+                                            .content("Regenerating your itinerary...")
+                                            .progress(true, 0)
+                                            .show();
+                                    Call<Itinerary> refreshCall = mRestClient.getItineraryService().randomizeItinerary(currentItinerary.getId());
+                                    refreshCall.enqueue(new Callback<Itinerary>() {
+                                        @Override
+                                        public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
+                                            if (response.isSuccess()) {
+                                                progressDialog.dismiss();
+                                                currentItinerary = response.body();
+                                                updateView();
+                                            } else {
+                                                progressDialog.dismiss();
+                                                //TODO(abettadapur): Show error
+                                            }
+                                        }
 
-                                    @Override
-                                    public void failure(RetrofitError error) {
-                                        progressDialog.dismiss();
-                                    }
-                                });
-                            }
-                        })
+                                        @Override
+                                        public void onFailure(Call<Itinerary> call, Throwable t) {
+
+                                        }
+                                    });
+                                }
+                        )
+
                         .show();
-                break;*/
+                break;
+
             case R.id.action_refresh:
-                Call<Itinerary> getItineraryCall = mRestClient.getItineraryService().getItinerary(currentItinerary.getId());
+                loadingProgressDialog = loadingProgressDialogBuilder.show();
+                Call<Itinerary> getItineraryCall = mRestClient.getItineraryService().getItinerary(currentItinerary.getId(), true);
                 getItineraryCall.enqueue(new Callback<Itinerary>() {
                     @Override
                     public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
@@ -225,6 +243,8 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
         this.runOnUiThread(()-> {
             if (currentItinerary == null || mGoogleMap == null)
                 return; //wait for the other async method to call this
+
+            toolbar.setTitle(currentItinerary.getName());
 
             clearMap();
             zoomToLocation(currentItinerary.getCity());
@@ -256,7 +276,12 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
                 line.color(getResources().getColor(getResources().getIdentifier(color_str, "color", getPackageName())));
                 polylines.add(mGoogleMap.addPolyline(line));
             }
-            //itemDetailFragment.updateItem(currentItinerary.getItems().get(0));
+            itemDetailFragment.updateItem(currentItinerary.getItems().get(0));
+            if(loadingProgressDialog!=null)
+            {
+                loadingProgressDialog.dismiss();
+                loadingProgressDialog = null;
+            }
         });
     }
 
@@ -289,6 +314,8 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        mGoogleMap.setOnMarkerClickListener(this);
+        updateView();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //TODO(abettadapur): check permission
@@ -298,11 +325,21 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_LOCATION);
             return;
         }
-        mGoogleMap.setMyLocationEnabled(true);
-        mGoogleMap.setOnMarkerClickListener(this);
-        updateView();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if(requestCode == REQUEST_LOCATION)
+        {
+            if(mGoogleMap!=null)
+            {
+                mGoogleMap.setMyLocationEnabled(true);
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -316,7 +353,6 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
     {
         marker.showInfoWindow();
         Item i = marker_to_item.get(marker);
-
         itemDetailFragment.updateItem(i);
         return true;
     }

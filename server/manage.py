@@ -8,6 +8,7 @@ from funtimes.models.entities.item import Item
 from funtimes.models.entities.coordinate import Coordinate
 from funtimes.models.entities.itinerary import Itinerary
 from funtimes.models.entities.user import User
+from funtimes.models.entities.rating import Rating
 from funtimes.models.entities.user_authorization import UserAuthorization
 from funtimes.models.entities.yelp_item import YelpItem
 from funtimes.models.entities.location import Location
