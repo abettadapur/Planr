@@ -288,7 +288,7 @@ class ItineraryShareResource(Resource):
 
             shares = query(post_body)
             for shared_user in itinerary.shared_users:
-                if not shares.contains(shared_user, lambda lhs, rhs: lhs['user_id'] == rhs.id):
+                if not shares.contains(shared_user, lambda lhs, rhs: rhs['user_id'] == lhs.id):
                     result.add_child_result(self.itinerary_repository.unshare(itinerary, shared_user.id))
 
         except KeyError as ke:
