@@ -66,6 +66,19 @@ class ItineraryRepository(BaseRepository):
                 result.add_child_result(itinerary_share_repository.add_or_update(itinerary_share))
         return result
 
+    def unshare(self, itinerary, user_id):
+        user_repository = UserRepository()
+        itinerary_share_repository = ItineraryShareRepository()
+        result = ChangeResult()
+        user = user_repository.find(user_id)
+        if not user:
+            result.errors.append("No user with id {0} found".format(user_id))
+        else:
+            existing = query(ItineraryShares.query.filter_by(itinerary_id=itinerary.id, user_id=user.id).all()).single_or_default(default=None)
+            if existing:
+                itinerary_share_repository.delete(existing.id)
+        return result
+
     def get_shared_user_permission(self, itinerary_id, user_id):
         shared_user = query(
             ItineraryShares.query.filter_by(itinerary_id=itinerary_id, user_id=user_id).all()).single_or_default(

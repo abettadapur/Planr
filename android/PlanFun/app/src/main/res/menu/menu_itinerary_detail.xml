@@ -9,7 +9,7 @@
         android:title="Randomize Itinerary"
         app:showAsAction="collapseActionView|ifRoom"
         />
-    <item android:id="@+id/action_edit"
+    <item android:id="@+id/action_share"
         android:title="Edit Itinerary"
         app:showAsAction="collapseActionView|ifRoom"
         />

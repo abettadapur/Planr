@@ -52,6 +52,7 @@ import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.activities.fragments.EditItineraryFragment;
 import devpost.yelp.planfun.activities.fragments.ItemDetailFragment;
 import devpost.yelp.planfun.activities.fragments.ItemListFragment;
+import devpost.yelp.planfun.activities.fragments.ShareItineraryDialog;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.model.PolylineModel;
@@ -78,6 +79,9 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
     @Bind(R.id.toolbar)
     Toolbar toolbar;
 
+    @Bind(R.id.edit_fab)
+    FloatingActionButton mEditFab;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +97,6 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
         polylines = new ArrayList<>();
 
         setSupportActionBar(toolbar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -105,6 +108,8 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
                     .add(R.id.container, itemDetailFragment)
                     .commit();
         }
+
+        mEditFab.setOnClickListener(this);
 
         int id = getIntent().getIntExtra("itinerary_id", 0);
         mRestClient = RestClient.getInstance();
@@ -120,7 +125,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
                         if (!currentItinerary.getUser().getFacebook_id().equals(AccessToken.getCurrentAccessToken().getUserId())) {
                             ItineraryDetailActivity.this.runOnUiThread(() -> {
                                 mMenu.add(0, ADD_ITINERARY, 0, "Add to your itineraries").setIcon(new IconDrawable(ItineraryDetailActivity.this, Iconify.IconValue.fa_plus).color(0xFFFFFF).actionBarSize());
-                                mMenu.removeItem(R.id.action_edit);
+                                mMenu.removeItem(R.id.action_share);
                                 mMenu.removeItem(R.id.action_randomize);
                                 mMenu.removeItem(R.id.action_refresh);
                             });
@@ -145,7 +150,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_itinerary_detail, menu);
         mMenu = menu;
-        menu.findItem(R.id.action_edit).setIcon(new IconDrawable(this, Iconify.IconValue.fa_edit)
+        menu.findItem(R.id.action_share).setIcon(new IconDrawable(this, Iconify.IconValue.fa_user_plus)
                 .color(0xFFFFFF)
                 .actionBarSize());
         menu.findItem(R.id.action_randomize).setIcon(new IconDrawable(this, Iconify.IconValue.fa_magic)
@@ -171,10 +176,10 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
             case R.id.action_settings:
                 return true;
 
-            case R.id.action_edit:
-                Intent i = new Intent(this, EditItineraryActivity.class);
-                i.putExtra("itinerary_id", currentItinerary.getId());
-                startActivity(i);
+            case R.id.action_share:
+
+                ShareItineraryDialog shareDialog = new ShareItineraryDialog(currentItinerary);
+                shareDialog.show(this.getSupportFragmentManager(), "fm");
                 break;
 
             case R.id.action_randomize:
@@ -344,7 +349,8 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
 
     @Override
     public void onClick(View v) {
-        Intent i = new Intent(this, EditItineraryFragment.class);
+        Intent i = new Intent(this, EditItineraryActivity.class);
+        i.putExtra("itinerary_id", currentItinerary.getId());
         startActivity(i);
     }
 

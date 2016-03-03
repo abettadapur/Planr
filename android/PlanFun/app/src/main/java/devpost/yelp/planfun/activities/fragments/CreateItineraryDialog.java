@@ -113,42 +113,11 @@ public class CreateItineraryDialog extends DialogFragment
             City city = (City)parent.getItemAtPosition(position);
             mCityPicker.setText(city.getName()+", "+city.getState());
         });
-//
-//        Call<List<City>> cities = RestClient.getInstance().getCityService().listCities();
-//        cities.enqueue(new Callback<List<City>>() {
-//            @Override
-//            public void onResponse(Call<List<City>> call, Response<List<City>> response) {
-//                List<City> cities = response.body();
-//                String[] cityStrings = new String[cities.size()];
-//                //TODO do async on app startup and cache
-//                for (int in = 0; in < cities.size(); in++)
-//                    cityStrings[in] = cities.get(in).getName() + ", " + cities.get(in).getState();
-//
-//                ArrayAdapter<String> adapter = new ArrayAdapter<String>(CreateItineraryDialog.this.getContext(),
-//                        android.R.layout.simple_dropdown_item_1line, cityStrings);
-//                CreateItineraryDialog.this.getActivity().runOnUiThread(() -> mCityPicker.setAdapter(adapter));
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<City>> call, Throwable t) {
-//
-//            }
-//        });
 
 
-        mStartPicker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new TimePickerDialog(CreateItineraryDialog.this.getActivity(), startTimeSetListener, mStart.get(Calendar.HOUR_OF_DAY), mStart.get(Calendar.MINUTE), true).show();
-            }
-        });
+        mStartPicker.setOnClickListener(v1 -> new TimePickerDialog(CreateItineraryDialog.this.getActivity(), startTimeSetListener, mStart.get(Calendar.HOUR_OF_DAY), mStart.get(Calendar.MINUTE), true).show());
 
-        mEndPicker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new TimePickerDialog(CreateItineraryDialog.this.getActivity(), endTimeSetListener, mEnd.get(Calendar.HOUR_OF_DAY), mEnd.get(Calendar.MINUTE), true).show();
-            }
-        });
+        mEndPicker.setOnClickListener(v1 -> new TimePickerDialog(CreateItineraryDialog.this.getActivity(), endTimeSetListener, mEnd.get(Calendar.HOUR_OF_DAY), mEnd.get(Calendar.MINUTE), true).show());
 
         updateView();
         b.customView(v, false);

@@ -13,15 +13,10 @@ public class YelpEntry
     private float rating;
     private int review_count;
     private int price;
-
-
-
     private Location location;
-
 
     public YelpEntry()
     {}
-
 
     public String getId() {
         return id;
