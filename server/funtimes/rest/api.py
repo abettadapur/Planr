@@ -281,15 +281,15 @@ class ItineraryShareResource(Resource):
 
         result = ChangeResult()
         try:
-            for share in post_body:
-                user_id = share['user_id']
-                permission = share['permission']
-                result.add_child_result(self.itinerary_repository.share(itinerary, user_id, permission))
-
             shares = query(post_body)
             for shared_user in itinerary.shared_users:
                 if not shares.contains(shared_user, lambda lhs, rhs: rhs['user_id'] == lhs.id):
                     result.add_child_result(self.itinerary_repository.unshare(itinerary, shared_user.id))
+
+            for share in post_body:
+                user_id = share['user_id']
+                permission = share['permission']
+                result.add_child_result(self.itinerary_repository.share(itinerary, user_id, permission))
 
         except KeyError as ke:
             on_error(error_message="Invalid post body")
