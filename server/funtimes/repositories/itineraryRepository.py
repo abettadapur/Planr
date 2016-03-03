@@ -54,11 +54,16 @@ class ItineraryRepository(BaseRepository):
         if not user:
             result.errors.append("No user with id {0} found".format(user_id))
         else:
-            itinerary_share = ItineraryShares()
-            itinerary_share.itinerary_id = itinerary.id
-            itinerary_share.user_id = user.id
-            itinerary_share.permission = permission
-            result.add_child_result(itinerary_share_repository.add_or_update(itinerary_share))
+            existing = query(ItineraryShares.query.filter_by(itinerary_id=itinerary.id, user_id=user.id).all()).single_or_default(default=None)
+            if existing:
+                existing.permission = permission
+                result.add_child_result(itinerary_share_repository.add_or_update(existing))
+            else:
+                itinerary_share = ItineraryShares()
+                itinerary_share.itinerary_id = itinerary.id
+                itinerary_share.user_id = user.id
+                itinerary_share.permission = permission
+                result.add_child_result(itinerary_share_repository.add_or_update(itinerary_share))
         return result
 
     def get_shared_user_permission(self, itinerary_id, user_id):
