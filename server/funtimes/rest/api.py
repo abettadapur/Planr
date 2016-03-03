@@ -112,7 +112,7 @@ class ItineraryResource(Resource):
         if not itinerary:
             abort(404, message="No itinerary with that id exists")
 
-        if itinerary.user.id != user.id:
+        if itinerary.user.id != user.id and not query(itinerary.shared_users).contains(user, lambda lhs, rhs: lhs.id == rhs.id):
             abort(404, message="No itinerary with that id exists")
 
         if 'include_polyline' in request.args and request.args['include_polyline']:
@@ -443,7 +443,7 @@ class FriendsResource(Resource):
             user = query(self.user_repository.get(facebook_id=friend['id'])).single_or_default(default=None)
             if user:
                 users.append(user)
-                
+
         return users
 
 
