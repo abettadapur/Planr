@@ -8,7 +8,7 @@ class ItineraryShares(BaseModel):
     __tablename__ = "itinerary_shares"
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    itinerary_id = db.Column(db.Integer, db.ForeignKey("itinerary.id"))
+    itinerary_id = db.Column(db.Integer, db.ForeignKey("itinerary.id", ondelete="CASCADE"))
     permission = db.Column('permissions', db.Enum("READ", "EDIT"), nullable=False)
 
 
