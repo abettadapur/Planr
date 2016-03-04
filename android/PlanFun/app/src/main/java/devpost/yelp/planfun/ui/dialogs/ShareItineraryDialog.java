@@ -1,4 +1,4 @@
-package devpost.yelp.planfun.activities.fragments;
+package devpost.yelp.planfun.ui.dialogs;
 
 import android.app.Dialog;
 import android.support.v4.app.DialogFragment;
@@ -8,22 +8,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.mikepenz.materialize.color.Material;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import devpost.yelp.planfun.R;
-import devpost.yelp.planfun.activities.adapters.FriendsAdapter;
-import devpost.yelp.planfun.activities.adapters.RecyclerItemClickListener;
-import devpost.yelp.planfun.activities.adapters.UsersAdapter;
-import devpost.yelp.planfun.activities.views.RoundedImageView;
+import devpost.yelp.planfun.ui.adapters.FriendsAdapter;
+import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
+import devpost.yelp.planfun.ui.adapters.UsersAdapter;
 import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.model.Share;
 import devpost.yelp.planfun.model.User;

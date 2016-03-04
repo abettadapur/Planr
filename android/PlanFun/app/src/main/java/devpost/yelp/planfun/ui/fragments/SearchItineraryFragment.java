@@ -1,4 +1,4 @@
-package devpost.yelp.planfun.activities.fragments;
+package devpost.yelp.planfun.ui.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;

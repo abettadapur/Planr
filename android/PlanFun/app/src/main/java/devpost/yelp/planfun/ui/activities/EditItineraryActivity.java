@@ -1,4 +1,4 @@
-package devpost.yelp.planfun.activities;
+package devpost.yelp.planfun.ui.activities;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -15,8 +15,8 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import devpost.yelp.planfun.R;
-import devpost.yelp.planfun.activities.fragments.EditItineraryFragment;
-import devpost.yelp.planfun.activities.fragments.ItemListFragment;
+import devpost.yelp.planfun.ui.fragments.EditItineraryFragment;
+import devpost.yelp.planfun.ui.fragments.ItemListFragment;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.net.RestClient;

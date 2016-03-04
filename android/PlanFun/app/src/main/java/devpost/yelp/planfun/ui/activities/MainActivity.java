@@ -1,11 +1,13 @@
-package devpost.yelp.planfun.activities;
+package devpost.yelp.planfun.ui.activities;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -16,7 +18,6 @@ import android.view.View;
 import android.support.v7.widget.SearchView;
 import android.widget.ImageView;
 
-import com.facebook.AccessToken;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.joanzapata.android.iconify.IconDrawable;
@@ -33,6 +34,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -40,8 +42,11 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
-import devpost.yelp.planfun.activities.fragments.ItineraryListFragment;
+import devpost.yelp.planfun.ui.events.OpenItineraryRequest;
+import devpost.yelp.planfun.ui.fragments.ItineraryDetailFragment;
+import devpost.yelp.planfun.ui.fragments.ItineraryListFragment;
 import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.net.RestClient;
 import okhttp3.ResponseBody;
@@ -53,11 +58,12 @@ import retrofit2.Response;
 /**
  * @author Andrey, Alex
  */
-public class ItineraryActivity extends AppCompatActivity implements ItineraryListFragment.ItineraryListListener, SearchView.OnQueryTextListener {
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private Fragment currentFragment;
     private RestClient mRestClient;
     private Drawer mDrawer;
+
     private ItineraryListFragment itineraryListFragment;
     private ItineraryListFragment searchItineraryFragment;
 
@@ -69,14 +75,15 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_itinerary);
         ButterKnife.bind(this);
+        PlanFunApplication.getBus().register(this);
 
         itineraryListFragment = ItineraryListFragment.newInstance(R.layout.fragment_itinerary_list, R.layout.itinerary_list_item);
         searchItineraryFragment = ItineraryListFragment.newInstance(R.layout.fragment_search_itinerary, R.layout.itinerary_list_item);
-
         setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(new IconDrawable(this, Iconify.IconValue.fa_reorder).color(0xFFFFFF).sizeDp(23));
+        buildToolbar();
+
         mDrawer = this.build_drawer();
-        toolbar.setNavigationOnClickListener(v -> mDrawer.openDrawer());
+
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
@@ -115,8 +122,15 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
         return new DrawerBuilder()
                 .withActivity(this)
                 .withTranslucentStatusBar(false)
-                .withActionBarDrawerToggle(true)
+                .withToolbar(toolbar)
                 .withAccountHeader(mAccountHeader)
+                .withOnDrawerNavigationListener(new Drawer.OnDrawerNavigationListener() {
+                    @Override
+                    public boolean onNavigationClickListener(View clickedView) {
+                        onBackPressed();
+                        return true;
+                    }
+                })
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName("My Itineraries").withIcon(new IconDrawable(this, Iconify.IconValue.fa_list).color(0x8A000000)),
                         new PrimaryDrawerItem().withName("Search Itineraries").withIcon(new IconDrawable(this, Iconify.IconValue.fa_search).color(0x8A000000)),
@@ -126,6 +140,29 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
                 )
                 .withOnDrawerItemClickListener(drawer_listener)
                 .build();
+    }
+
+    public void buildToolbar()
+    {
+        getSupportFragmentManager().addOnBackStackChangedListener(() -> {
+            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                //change to back arrow
+                mDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+                //if you dont want the drawer to be opened in Fragment
+                mDrawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            } else {
+                //change to hamburger icon
+
+                mDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+                //call this method to display hamburger icon
+                mDrawer.getActionBarDrawerToggle().syncState();
+                mDrawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            }
+        });
     }
 
     private final Drawer.OnDrawerItemClickListener drawer_listener = new Drawer.OnDrawerItemClickListener() {
@@ -159,7 +196,7 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
                     break;
                 case "Logout":
                     LoginManager.getInstance().logOut();
-                    Intent intent = new Intent(ItineraryActivity.this, SplashActivity.class);
+                    Intent intent = new Intent(MainActivity.this, SplashActivity.class);
                     intent.putExtra("delay", false);
                     startActivity(intent);
                     finish();
@@ -174,17 +211,17 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_intinerary, menu);
-        menu.findItem(R.id.search).setIcon(
-                new IconDrawable(this, Iconify.IconValue.fa_search)
-                        .color(0xFFFFFF)
-                        .actionBarSize());
-
-        SearchView view = (SearchView)menu.findItem(R.id.search).getActionView();
-        if(view!=null)
-        {
-            view.setOnQueryTextListener(this);
-        }
+//        getMenuInflater().inflate(R.menu.menu_intinerary, menu);
+//        menu.findItem(R.id.search).setIcon(
+//                new IconDrawable(this, Iconify.IconValue.fa_search)
+//                        .color(0xFFFFFF)
+//                        .actionBarSize());
+//
+//        SearchView view = (SearchView)menu.findItem(R.id.search).getActionView();
+//        if(view!=null)
+//        {
+//            view.setOnQueryTextListener(this);
+//        }
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -204,60 +241,6 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void refresh_list(final ItineraryListFragment fragment) {
-        /** Get a listing of the itineraries for the current user and update the fragment with the items **/
-        fragment.setLoading(true);
-        Call<List<Itinerary>> getItinerariesCall = mRestClient.getItineraryService().listItineraries(true);
-        getItinerariesCall.enqueue(new Callback<List<Itinerary>>() {
-            @Override
-            public void onResponse(Call<List<Itinerary>> call, Response<List<Itinerary>> response) {
-                if (response.isSuccess())
-                {
-                    ItineraryActivity.this.runOnUiThread(() -> {
-                        fragment.updateItems(response.body());
-                        fragment.setLoading(false);
-                    });
-                }
-                else
-                {
-                    try
-                    {
-                        Log.e("GET ITINERARIES", response.errorBody().string());
-                    }
-                    catch (IOException ioex)
-                    {
-
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Itinerary>> call, Throwable t) {
-
-            }
-        });
-    }
-
-    @Override
-    public void remove_item(int id) {
-
-        Call<ResponseBody> deleteCall = mRestClient.getItineraryService().deleteItinerary(id);
-        deleteCall.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if(response.isSuccess())
-                {
-                    refresh_list(itineraryListFragment);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("DELETE", "Error");
-            }
-        });
-    }
 
     @Override
     public boolean onQueryTextSubmit(String s) {
@@ -271,7 +254,7 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
                 public void onResponse(Call<List<Itinerary>> call, Response<List<Itinerary>> response) {
                     if(response.isSuccess())
                     {
-                        ItineraryActivity.this.runOnUiThread(() -> searchItineraryFragment.updateItems(response.body()));
+                        MainActivity.this.runOnUiThread(() -> searchItineraryFragment.updateItems(response.body()));
                     }
                 }
 
@@ -294,5 +277,15 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 
         super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
+    @Subscribe
+    public void onOpenItineraryRequest(OpenItineraryRequest request)
+    {
+        ItineraryDetailFragment fragment = ItineraryDetailFragment.newInstance(request.itinerary_id);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("")
+                .commit();
     }
 }

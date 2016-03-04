@@ -1,8 +1,6 @@
-package devpost.yelp.planfun.activities.adapters;
+package devpost.yelp.planfun.ui.adapters;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +15,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import devpost.yelp.planfun.R;
-import devpost.yelp.planfun.activities.views.RoundedImageView;
+import devpost.yelp.planfun.ui.views.RoundedImageView;
 import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.model.Share;
 

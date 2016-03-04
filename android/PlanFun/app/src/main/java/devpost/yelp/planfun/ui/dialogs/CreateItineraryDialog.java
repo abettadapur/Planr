@@ -1,4 +1,4 @@
-package devpost.yelp.planfun.activities.fragments;
+package devpost.yelp.planfun.ui.dialogs;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -8,33 +8,24 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.TimePicker;
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 
 import devpost.yelp.planfun.R;
-import devpost.yelp.planfun.activities.adapters.CityAutoCompleteAdapter;
-import devpost.yelp.planfun.activities.views.WebAutoCompleteTextView;
+import devpost.yelp.planfun.ui.adapters.CityAutoCompleteAdapter;
+import devpost.yelp.planfun.ui.views.WebAutoCompleteTextView;
 import devpost.yelp.planfun.model.City;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Itinerary;

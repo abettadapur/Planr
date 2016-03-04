@@ -1,7 +1,6 @@
-package devpost.yelp.planfun.activities.adapters;
+package devpost.yelp.planfun.ui.adapters;
 
 import android.content.Context;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.City;
 import devpost.yelp.planfun.net.RestClient;
 import retrofit2.Call;

@@ -1,4 +1,4 @@
-package devpost.yelp.planfun.activities;
+package devpost.yelp.planfun.ui.activities;
 
 import android.app.TimePickerDialog;
 import android.content.Intent;
@@ -20,7 +20,6 @@ import android.widget.TimePicker;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -36,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 
 import devpost.yelp.planfun.R;
-import devpost.yelp.planfun.activities.views.VerticalProgressBar;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.model.YelpEntry;
@@ -62,7 +60,6 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
     private TextView mTitleView, mReviewCountView;
     private RatingBar mRatingView;
     private IconTextView mIconView;
-    private VerticalProgressBar mPriceBar;
 
     private Itinerary mCurrentItinerary;
     private Item mCurrentItem;
@@ -93,8 +90,6 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
         mNavButton = (FButton)findViewById(R.id.navButton);
         mWebButton = (FButton)findViewById(R.id.webButton);
         mAddButton = (FButton)findViewById(R.id.addButton);
-        mPriceBar = (VerticalProgressBar)findViewById(R.id.priceBar);
-        mPriceBar.setMax(4);
 
         mNavButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -344,9 +339,8 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
     {
         mTitleView.setText(item.getName());
         mRatingView.setRating(item.getYelp_item().getRating());
-        mReviewCountView.setText(" - " + item.getYelp_item().getReview_count()+" reviews");
+        mReviewCountView.setText(" - " + item.getYelp_item().getReview_count() + " reviews");
         mAddButton.setVisibility(View.INVISIBLE);
-        mPriceBar.setProgress(item.getYelp_item().getPrice());
        // mSubtitleView.setText(PhoneNumberUtils.formatNumber(item.getYelp_item().getPhone()));
 
         switch(item.getYelp_category().getName())
@@ -374,14 +368,12 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
     {
         mTitleView.setText(entry.getName());
         mRatingView.setRating(entry.getRating());
-        mReviewCountView.setText(" - " + entry.getReview_count()+" reviews");
+        mReviewCountView.setText(" - " + entry.getReview_count() + " reviews");
         mAddButton.setVisibility(View.VISIBLE);
 
-        mAddButton.setOnClickListener(new View.OnClickListener()
-        {
+        mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 mCurrentItem.setName(entry.getName());
                 final MaterialDialog progressDialog = new MaterialDialog.Builder(AddItemActivity.this).title("Adding").content("Adding this item to your itinerary").progress(true, 0).show();
                 mCurrentItem.setYelp_item(entry);
@@ -390,11 +382,10 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
                 getItemCall.enqueue(new Callback<Item>() {
                     @Override
                     public void onResponse(Call<Item> call, Response<Item> response) {
-                        if(response.isSuccess()) {
+                        if (response.isSuccess()) {
                             progressDialog.dismiss();
                             finish();
-                        }
-                        else {
+                        } else {
                             progressDialog.dismiss();
                         }
                     }
@@ -406,7 +397,6 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
                 });
             }
         });
-        mPriceBar.setProgress(entry.getPrice());
        // mSubtitleView.setText(PhoneNumberUtils.formatNumber(entry.getPhone()));
 
         switch(mCurrentItem.getYelp_category().getName())

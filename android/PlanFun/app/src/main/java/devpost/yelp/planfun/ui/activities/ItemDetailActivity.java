@@ -1,4 +1,4 @@
-package devpost.yelp.planfun.activities;
+package devpost.yelp.planfun.ui.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;

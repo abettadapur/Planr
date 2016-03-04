@@ -1,4 +1,4 @@
-package devpost.yelp.planfun.activities;
+package devpost.yelp.planfun.ui.activities;
 
 import android.Manifest;
 import android.content.Intent;
@@ -9,21 +9,17 @@ import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.AccessToken;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -41,7 +37,6 @@ import com.melnykov.fab.FloatingActionButton;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,10 +44,8 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import devpost.yelp.planfun.R;
-import devpost.yelp.planfun.activities.fragments.EditItineraryFragment;
-import devpost.yelp.planfun.activities.fragments.ItemDetailFragment;
-import devpost.yelp.planfun.activities.fragments.ItemListFragment;
-import devpost.yelp.planfun.activities.fragments.ShareItineraryDialog;
+import devpost.yelp.planfun.ui.fragments.ItemDetailFragment;
+import devpost.yelp.planfun.ui.dialogs.ShareItineraryDialog;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.model.PolylineModel;
@@ -104,7 +97,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
         itemDetailFragment = ItemDetailFragment.newInstance();
 
         if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, itemDetailFragment)
                     .commit();
         }

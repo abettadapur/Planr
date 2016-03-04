@@ -1,0 +1,74 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:sothree="http://schemas.android.com/apk/res-auto"
+        android:gravity="bottom"
+        sothree:umanoPanelHeight="68dp"
+        sothree:umanoShadowHeight="4dp"
+        sothree:umanoDragView="@+id/dragView"
+        sothree:umanoOverlay="false"
+        sothree:paddingEnd="68dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <fragment
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_below="@id/toolbar"
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+            <com.melnykov.fab.FloatingActionButton
+                android:id="@+id/edit_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="16dp"
+                android:src="@drawable/ic_mode_edit_white_24dp"
+                fab:fab_colorNormal="@color/accentColor"
+                fab:fab_colorPressed="@color/accentPressed"
+                fab:fab_colorRipple="@color/accentPressed"
+                />
+
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="false"
+            android:background="#55eeeeee"
+            android:id="@+id/dragView">
+
+            <FrameLayout
+                android:id="@+id/container"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1" />
+
+
+        </LinearLayout>
+
+
+
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+</RelativeLayout>
+
+
