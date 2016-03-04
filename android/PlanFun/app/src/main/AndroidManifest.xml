@@ -45,18 +45,6 @@
             android:label="@string/title_activity_intinerary" >
         </activity>
 
-        <activity
-            android:name=".ui.activities.ItineraryDetailActivity"
-            android:label="@string/title_activity_itinerary_detail" >
-        </activity>
-        <activity
-            android:name=".ui.activities.EditItineraryActivity"
-            android:label="@string/title_activity_edit_itinerary" >
-        </activity>
-        <activity
-            android:name=".ui.activities.ItemDetailActivity"
-            android:label="@string/title_activity_item_detail" >
-        </activity>
         <activity android:name=".ui.activities.AddItemActivity"
             android:label="Add an Item">
 

@@ -161,6 +161,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 //call this method to display hamburger icon
                 mDrawer.getActionBarDrawerToggle().syncState();
                 mDrawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                getSupportActionBar().setTitle("Your Plans");
             }
         });
     }
@@ -175,7 +176,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                         getSupportFragmentManager()
                                 .beginTransaction()
                                 .replace(R.id.container, itineraryListFragment)
-                                .addToBackStack("")
                                 .commit();
                         currentFragment = itineraryListFragment;
                         getSupportActionBar().setTitle("Your Itineraries");
@@ -186,7 +186,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                         getSupportFragmentManager()
                                 .beginTransaction()
                                 .replace(R.id.container, searchItineraryFragment)
-                                .addToBackStack("")
                                 .commit();
                         currentFragment = searchItineraryFragment;
                         getSupportActionBar().setTitle("Search Results");

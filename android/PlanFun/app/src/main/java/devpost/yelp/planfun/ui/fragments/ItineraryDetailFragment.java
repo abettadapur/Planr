@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -50,6 +51,7 @@ import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.model.PolylineModel;
 import devpost.yelp.planfun.net.RestClient;
 import devpost.yelp.planfun.ui.activities.MainActivity;
+import devpost.yelp.planfun.ui.dialogs.ShareItineraryDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -286,5 +288,86 @@ public class ItineraryDetailFragment extends Fragment implements View.OnClickLis
                 .actionBarSize());
 
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void randomize()
+    {
+        new MaterialDialog.Builder(getContext())
+                .title("Confirm")
+                .content("Randomizing your itinerary will delete all items you have added and regenerate a new set of items. Are you sure you want to do this?")
+                .positiveText("Yes")
+                .negativeText("No")
+                .onPositive((dialog, which) -> {
+                            final MaterialDialog progressDialog = new MaterialDialog.Builder(getContext())
+                                    .title("Randomizing")
+                                    .content("Regenerating your itinerary...")
+                                    .progress(true, 0)
+                                    .show();
+                            Call<Itinerary> refreshCall = mRestClient.getItineraryService().randomizeItinerary(currentItinerary.getId());
+                            refreshCall.enqueue(new Callback<Itinerary>() {
+                                @Override
+                                public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
+                                    if (response.isSuccess()) {
+                                        progressDialog.dismiss();
+                                        currentItinerary = response.body();
+                                        updateView();
+                                    } else {
+                                        progressDialog.dismiss();
+                                        //TODO(abettadapur): Show error
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Itinerary> call, Throwable t) {
+
+                                }
+                            });
+                        }
+                )
+
+                .show();
+    }
+
+    private void refreshItinerary()
+    {
+        loadingProgressDialog = loadingProgressDialogBuilder.show();
+        Call<Itinerary> getItineraryCall = mRestClient.getItineraryService().getItinerary(currentItinerary.getId(), true);
+        getItineraryCall.enqueue(new Callback<Itinerary>() {
+            @Override
+            public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
+                if (response.isSuccess()) {
+                    currentItinerary = response.body();
+                    updateView();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Itinerary> call, Throwable t) {
+
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                return true;
+
+            case R.id.action_share:
+                ShareItineraryDialog shareDialog = new ShareItineraryDialog(currentItinerary);
+                shareDialog.show(this.getChildFragmentManager(), "fm");
+                break;
+
+            case R.id.action_randomize:
+                randomize();
+                break;
+
+            case R.id.action_refresh:
+                refreshItinerary();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
