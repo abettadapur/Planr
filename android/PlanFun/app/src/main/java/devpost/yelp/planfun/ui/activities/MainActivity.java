@@ -41,7 +41,9 @@ import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.ui.events.EditPlanRequest;
+import devpost.yelp.planfun.ui.events.FindPlanRequest;
 import devpost.yelp.planfun.ui.events.OpenPlanRequest;
+import devpost.yelp.planfun.ui.events.SavePlanRequest;
 import devpost.yelp.planfun.ui.fragments.EditPlanFragment;
 import devpost.yelp.planfun.ui.fragments.PlanDetailFragment;
 import devpost.yelp.planfun.ui.fragments.PlanListFragment;
@@ -175,16 +177,6 @@ public class MainActivity extends AppCompatActivity {
                         getSupportActionBar().setTitle("Your Itineraries");
                     }
                     break;
-                case "Search Plans":
-                    if(currentFragment != searchItineraryFragment) {
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.container, searchItineraryFragment)
-                                .commit();
-                        currentFragment = searchItineraryFragment;
-                        getSupportActionBar().setTitle("Search Results");
-                    }
-                    break;
                 case "Settings":
                     break;
                 case "Logout":
@@ -269,5 +261,28 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.container, fragment)
                 .addToBackStack("")
                 .commit();
+    }
+
+    @Subscribe
+    public void onSavePlanRequest(SavePlanRequest request)
+    {
+        PlanDetailFragment fragment = PlanDetailFragment.newInstance(request.to_save.getId());
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("")
+                .commit();
+    }
+
+    @Subscribe
+    public void onFindPlanRequest(FindPlanRequest request
+    ){
+        if(currentFragment != searchItineraryFragment) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, searchItineraryFragment)
+                    .commit();
+            currentFragment = searchItineraryFragment;
+            getSupportActionBar().setTitle("Search Results");
+        }
     }
 }

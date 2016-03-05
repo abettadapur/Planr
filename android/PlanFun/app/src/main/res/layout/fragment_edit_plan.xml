@@ -120,8 +120,8 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="@dimen/md_button_height"
-            android:id="@+id/submitButton"
-            android:text="Save Itinerary"
+            android:id="@+id/save_plan"
+            android:text="Save Plan"
             android:theme="@style/ButtonTheme"
             android:layout_weight="6"/>
         </LinearLayout>

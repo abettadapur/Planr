@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
@@ -23,8 +24,10 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
+import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.ui.adapters.ItemAdapter;
+import devpost.yelp.planfun.ui.events.SavePlanRequest;
 import devpost.yelp.planfun.ui.views.WebAutoCompleteTextView;
 import devpost.yelp.planfun.model.Plan;
 
@@ -50,12 +53,21 @@ public class EditPlanFragment extends Fragment {
     CheckBox mCheckBox;
 
     @Bind(R.id.items_view)
-    RecyclerView itemsView;
+    RecyclerView mItemsView;
+
     private ItemAdapter mAdapter;
 
     @OnCheckedChanged(R.id.privateBox)
     public void privateChecked(CompoundButton buttonView, boolean isChecked) {
         mCurrentPlan.setPublic(!isChecked);
+    }
+
+    @Bind(R.id.save_plan)
+    Button mSaveButton;
+
+    @OnClick(R.id.save_plan)
+    public void saveClicked(View view){
+        PlanFunApplication.getBus().post(new SavePlanRequest(mCurrentPlan));
     }
 
     private String dateFormat = "MM/dd/yyyy";
@@ -106,7 +118,7 @@ public class EditPlanFragment extends Fragment {
         updateView();
 
         mAdapter = new ItemAdapter(mCurrentPlan ==null?null: mCurrentPlan.getItems(), getActivity(), true);
-        itemsView.setAdapter(mAdapter);
+        mItemsView.setAdapter(mAdapter);
 
         return v;
     }

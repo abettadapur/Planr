@@ -9,8 +9,10 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Item;
+import devpost.yelp.planfun.ui.events.EditItemRequest;
 
 /**
  * Created by Alex on 3/10/2015.
@@ -60,7 +62,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //TODO, dialogue?
+                    PlanFunApplication.getBus().post(new EditItemRequest(true));
                 }
             });
         }else {

@@ -34,6 +34,7 @@ import devpost.yelp.planfun.ui.adapters.ItineraryAdapter;
 import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
 import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.ui.events.EditPlanRequest;
+import devpost.yelp.planfun.ui.events.FindPlanRequest;
 import devpost.yelp.planfun.ui.events.OpenPlanRequest;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -85,6 +86,7 @@ public class PlanListFragment extends Fragment implements RecyclerItemClickListe
 
     @OnClick(R.id.find_fab)
     public void onFindClick(View button){
+        PlanFunApplication.getBus().post(new FindPlanRequest());
     }
 
     @Bind(R.id.gen_fab)
