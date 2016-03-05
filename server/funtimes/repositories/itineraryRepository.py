@@ -38,7 +38,7 @@ class ItineraryRepository(BaseRepository):
         return itineraries
 
     def search(self, query, city):
-        itineraries = Itinerary.query().filter_by(public=True)
+        itineraries = Itinerary.query.filter_by(public=True)
         if city:
             itineraries = itineraries.filter_by(city=city)
         if query:
