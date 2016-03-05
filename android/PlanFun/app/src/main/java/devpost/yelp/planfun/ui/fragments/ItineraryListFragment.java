@@ -62,7 +62,8 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
 
     private List<Itinerary> mItineraryList;
     private ItineraryAdapter mAdapter;
-    private RestClient mRestClient;
+    protected RestClient mRestClient;
+    protected boolean refreshOnStart = true;
 
     private int mContextIndex;
     private int layout, list_item;
@@ -123,7 +124,8 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
     @Override
     public void onStart() {
         super.onStart();
-        refreshList();
+        if(refreshOnStart)
+            refreshList();
     }
 
     private void refreshList()

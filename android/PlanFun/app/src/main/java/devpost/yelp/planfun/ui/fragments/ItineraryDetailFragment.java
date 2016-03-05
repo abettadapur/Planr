@@ -215,7 +215,7 @@ public class ItineraryDetailFragment extends Fragment implements View.OnClickLis
     }
 
     private void zoomToLocation(String location)
-    {
+        {
         if(mGoogleMap!=null) {
             Geocoder coder = new Geocoder(getContext());
             try {
@@ -239,14 +239,6 @@ public class ItineraryDetailFragment extends Fragment implements View.OnClickLis
         mGoogleMap.setOnMarkerClickListener(this);
         updateView();
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //TODO(abettadapur): check permission
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_LOCATION);
             return;
         }

@@ -1,14 +1,21 @@
 package devpost.yelp.planfun.ui.fragments;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+
+import com.joanzapata.android.iconify.IconDrawable;
+import com.joanzapata.android.iconify.Iconify;
+
+import java.util.List;
 
 import devpost.yelp.planfun.R;
+import devpost.yelp.planfun.model.Itinerary;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A fragment representing a list of Items.
@@ -16,92 +23,78 @@ import devpost.yelp.planfun.R;
  * <p/>
  * interface.
  */
-public class SearchItineraryFragment extends Fragment {
+public class SearchItineraryFragment extends ItineraryListFragment implements  SearchView.OnQueryTextListener
+{
 
-    private final int ITINERARY_CREATE_CODE = 86;
-
-    public static SearchItineraryFragment newInstance() {
+    public static SearchItineraryFragment newInstance(int layout, int list_item) {
         SearchItineraryFragment fragment = new SearchItineraryFragment();
+        Bundle args = new Bundle();
+        args.putInt("layout", layout);
+        args.putInt("list_item", list_item);
+        fragment.setArguments(args);
         return fragment;
-    }
-
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public SearchItineraryFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        refreshOnStart = false;
+        setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-    {
-        View rootView = inflater.inflate(R.layout.fragment_search_itinerary, container, false);
-        return rootView;
-    }
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_search, menu);
+        menu.findItem(R.id.search).setIcon(new IconDrawable(getContext(), Iconify.IconValue.fa_search)
+                .color(0xFFFFFF)
+                .actionBarSize());
 
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-
-    }
-
-
-
-
-
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==ITINERARY_CREATE_CODE)
+        SearchView view = (SearchView)menu.findItem(R.id.search).getActionView();
+        if(view!=null)
         {
-            if(resultCode== Activity.RESULT_OK)
-            {
-                //things
-
-            }
+            view.setOnQueryTextListener(this);
         }
-
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface ItineraryListListener
-    {
-        public void refresh_list(ItineraryListFragment fragment);
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId())
+        {
+            case R.id.search:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        if(!query.equals("")) {
+            setLoading(true);
+            Call<List<Itinerary>> itineraryCall = mRestClient.getItineraryService().searchItinerary(query);
+            itineraryCall.enqueue(new Callback<List<Itinerary>>() {
+                @Override
+                public void onResponse(Call<List<Itinerary>> call, Response<List<Itinerary>> response) {
+                    if(response.isSuccess())
+                    {
+                        getActivity().runOnUiThread(() -> {
+                            updateItems(response.body());
+                            setLoading(false);
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Itinerary>> call, Throwable t) {
+
+                }
+            });
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
+    }
 }

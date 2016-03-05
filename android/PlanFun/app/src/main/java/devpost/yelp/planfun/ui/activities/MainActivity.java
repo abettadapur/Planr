@@ -49,6 +49,7 @@ import devpost.yelp.planfun.ui.fragments.ItineraryDetailFragment;
 import devpost.yelp.planfun.ui.fragments.ItineraryListFragment;
 import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.net.RestClient;
+import devpost.yelp.planfun.ui.fragments.SearchItineraryFragment;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -58,7 +59,7 @@ import retrofit2.Response;
 /**
  * @author Andrey, Alex
  */
-public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class MainActivity extends AppCompatActivity {
 
     private Fragment currentFragment;
     private RestClient mRestClient;
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         PlanFunApplication.getBus().register(this);
 
         itineraryListFragment = ItineraryListFragment.newInstance(R.layout.fragment_itinerary_list, R.layout.itinerary_list_item);
-        searchItineraryFragment = ItineraryListFragment.newInstance(R.layout.fragment_search_itinerary, R.layout.itinerary_list_item);
+        searchItineraryFragment = SearchItineraryFragment.newInstance(R.layout.fragment_itinerary_list, R.layout.itinerary_list_item);
         setSupportActionBar(toolbar);
         buildToolbar();
 
@@ -124,16 +125,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 .withTranslucentStatusBar(false)
                 .withToolbar(toolbar)
                 .withAccountHeader(mAccountHeader)
-                .withOnDrawerNavigationListener(new Drawer.OnDrawerNavigationListener() {
-                    @Override
-                    public boolean onNavigationClickListener(View clickedView) {
-                        onBackPressed();
-                        return true;
-                    }
+                .withOnDrawerNavigationListener(clickedView -> {
+                    onBackPressed();
+                    return true;
                 })
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName("My Itineraries").withIcon(new IconDrawable(this, Iconify.IconValue.fa_list).color(0x8A000000)),
-                        new PrimaryDrawerItem().withName("Search Itineraries").withIcon(new IconDrawable(this, Iconify.IconValue.fa_search).color(0x8A000000)),
+                        new PrimaryDrawerItem().withName("My Plans").withIcon(new IconDrawable(this, Iconify.IconValue.fa_list).color(0x8A000000)),
+                        new PrimaryDrawerItem().withName("Search Plans").withIcon(new IconDrawable(this, Iconify.IconValue.fa_search).color(0x8A000000)),
                         new SectionDrawerItem(),
                         new SecondaryDrawerItem().withName("Settings").withIcon(new IconDrawable(this, Iconify.IconValue.fa_cog).color(0x8A000000)),
                         new SecondaryDrawerItem().withName("Logout").withIcon(new IconDrawable(this, Iconify.IconValue.fa_sign_out).color(0x8A000000))
@@ -203,80 +201,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 default:
                     return false;
             }
+            mDrawer.closeDrawer();
             return true;
         }
     };
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_intinerary, menu);
-//        menu.findItem(R.id.search).setIcon(
-//                new IconDrawable(this, Iconify.IconValue.fa_search)
-//                        .color(0xFFFFFF)
-//                        .actionBarSize());
-//
-//        SearchView view = (SearchView)menu.findItem(R.id.search).getActionView();
-//        if(view!=null)
-//        {
-//            view.setOnQueryTextListener(this);
-//        }
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
-    public boolean onQueryTextSubmit(String s) {
-        if(!s.equals("")) {
-            if (currentFragment == itineraryListFragment) {
-                mDrawer.setSelection(1);
-            }
-            Call<List<Itinerary>> itineraryCall = mRestClient.getItineraryService().searchItinerary(s);
-            itineraryCall.enqueue(new Callback<List<Itinerary>>() {
-                @Override
-                public void onResponse(Call<List<Itinerary>> call, Response<List<Itinerary>> response) {
-                    if(response.isSuccess())
-                    {
-                        MainActivity.this.runOnUiThread(() -> searchItineraryFragment.updateItems(response.body()));
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<List<Itinerary>> call, Throwable t) {
-
-                }
-            });
-        }
-        return true;
-    }
-
-
-    @Override
-    public boolean onQueryTextChange(String s) {
-        return false;
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-
-        super.onCreateContextMenu(menu, v, menuInfo);
-    }
 
     @Subscribe
     public void onOpenItineraryRequest(OpenItineraryRequest request)
