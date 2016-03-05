@@ -1,13 +1,13 @@
+from datetime import datetime
+
+from asq.initiators import query
+from funtimes.integrations.yelp import yelpapi
 from funtimes.models.entities.item import Item
-from funtimes.models.entities.itinerary import Itinerary
 from funtimes.models.entities.yelp_item import YelpItem
 from funtimes.models.util.enums import StrategyType
-from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
 from funtimes.models.util.strategy import DistanceStrategy, FirstStrategy, FirstRandomStrategy
+from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
 from funtimes.repositories.yelpItemRepository import YelpItemRepository
-from funtimes.yelp import yelpapi
-from asq.initiators import query
-from datetime import datetime
 
 
 def populate_sample_itinerary(itinerary):
