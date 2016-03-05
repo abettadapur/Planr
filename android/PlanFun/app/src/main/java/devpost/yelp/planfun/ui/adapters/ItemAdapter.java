@@ -32,6 +32,10 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>
     private Context mContext;
     private boolean addButton;
 
+    public ItemAdapter(List<Item> items, Context context){
+        this(items,context,false);
+    }
+
     public ItemAdapter(List<Item> items, Context context, boolean addButton)
     {
         this.mItems = items;

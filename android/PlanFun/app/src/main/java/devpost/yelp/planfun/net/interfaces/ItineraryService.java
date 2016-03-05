@@ -2,11 +2,10 @@ package devpost.yelp.planfun.net.interfaces;
 
 import java.util.List;
 
-import devpost.yelp.planfun.model.Itinerary;
+import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.net.requests.ShareRequest;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -21,33 +20,33 @@ import retrofit2.http.Query;
 public interface ItineraryService
 {
     @POST("itineraries")
-    Call<Itinerary> createItinerary(@Body Itinerary itinerary);
+    Call<Plan> createItinerary(@Body Plan plan);
 
     @GET("itineraries")
-    Call<List<Itinerary>> listItineraries();
+    Call<List<Plan>> listItineraries();
 
     @GET("itineraries")
-    Call<List<Itinerary>> listItineraries(@Query("shared") boolean includeShared);
+    Call<List<Plan>> listItineraries(@Query("shared") boolean includeShared);
 
     @GET("itineraries/{id}")
-    Call<Itinerary> getItinerary(@Path("id") int id);
+    Call<Plan> getItinerary(@Path("id") int id);
 
     @GET("itineraries/{id}")
-    Call<Itinerary> getItinerary(@Path("id") int id, @Query("include_polyline") boolean polyline);
+    Call<Plan> getItinerary(@Path("id") int id, @Query("include_polyline") boolean polyline);
 
     @PUT("itineraries/{id}")
-    Call<Itinerary> updateItinerary(@Path("id") int id, @Body Itinerary itinerary);
+    Call<Plan> updateItinerary(@Path("id") int id, @Body Plan plan);
 
     @DELETE("itineraries/{id}")
     Call<ResponseBody> deleteItinerary(@Path("id") int id);
 
     @GET("itineraries/search")
-    Call<List<Itinerary>> searchItinerary(@Query("query") String query);
+    Call<List<Plan>> searchItinerary(@Query("query") String query);
 
     @POST("itineraries/{id}/share")
-    Call<Itinerary> shareItinerary(@Path("id") int id, @Body List<ShareRequest> request);
+    Call<Plan> shareItinerary(@Path("id") int id, @Body List<ShareRequest> request);
 
     @POST("itineraries/{id}/randomize")
-    Call<Itinerary> randomizeItinerary(@Path("id") int id);
+    Call<Plan> randomizeItinerary(@Path("id") int id);
 
 }

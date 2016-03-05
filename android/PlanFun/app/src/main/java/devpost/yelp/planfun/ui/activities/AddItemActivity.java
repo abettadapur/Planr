@@ -36,7 +36,7 @@ import java.util.Map;
 
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Item;
-import devpost.yelp.planfun.model.Itinerary;
+import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.model.YelpEntry;
 import devpost.yelp.planfun.net.RestClient;
 import info.hoang8f.widget.FButton;
@@ -61,7 +61,7 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
     private RatingBar mRatingView;
     private IconTextView mIconView;
 
-    private Itinerary mCurrentItinerary;
+    private Plan mCurrentPlan;
     private Item mCurrentItem;
 
     private RestClient mRestClient;
@@ -138,13 +138,13 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
         mRestClient = RestClient.getInstance();
 
 
-//        Call<Itinerary> getItineraryCall = mRestClient.getItineraryService().getItinerary(getIntent().getIntExtra("itinerary_id", 0));
-//        getItineraryCall.enqueue(new Callback<Itinerary>() {
+//        Call<Plan> getItineraryCall = mRestClient.getItineraryService().getItinerary(getIntent().getIntExtra("plan_id", 0));
+//        getItineraryCall.enqueue(new Callback<Plan>() {
 //            @Override
-//            public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
+//            public void onResponse(Call<Plan> call, Response<Plan> response) {
 //                if(response.isSuccess())
 //                {
-//                    mCurrentItinerary = response.body();
+//                    mCurrentPlan = response.body();
 //                    Calendar startTime = Calendar.getInstance();
 //                    startTime.set(Calendar.HOUR_OF_DAY, 10);
 //                    startTime.set(Calendar.MINUTE, 0);
@@ -165,7 +165,7 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
 //            }
 //
 //            @Override
-//            public void onFailure(Call<Itinerary> call, Throwable t) {
+//            public void onFailure(Call<Plan> call, Throwable t) {
 //
 //            }
 //        });
@@ -241,7 +241,7 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
             prevItemMarker.remove();
 
         //search for items
-        Call<List<YelpEntry>> getYelpItemCall = mRestClient.getCategoryService().searchCategory(mCurrentItem.getYelp_category(), mCurrentItinerary.getCity());
+        Call<List<YelpEntry>> getYelpItemCall = mRestClient.getCategoryService().searchCategory(mCurrentItem.getYelp_category(), mCurrentPlan.getCity());
         getYelpItemCall.enqueue(new Callback<List<YelpEntry>>() {
             @Override
             public void onResponse(Call<List<YelpEntry>> call, Response<List<YelpEntry>> response) {
@@ -256,8 +256,8 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
 
                     Item previousItem = null;
                     int prevIndex = -1;
-                    for (int j = mCurrentItinerary.getItems().size() - 1; j >= 0; j--) {
-                        Item i = mCurrentItinerary.getItems().get(j);
+                    for (int j = mCurrentPlan.getItems().size() - 1; j >= 0; j--) {
+                        Item i = mCurrentPlan.getItems().get(j);
                         if (i.getStart_time().getTimeInMillis() - mCurrentItem.getStart_time().getTimeInMillis() < 0) {
                             previousItem = i;
                             prevIndex = j;
@@ -311,7 +311,7 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
         mGoogleMap.setOnMarkerClickListener(this);
         Geocoder coder = new Geocoder(this);
         try {
-            List<Address> addresses = coder.getFromLocationName(mCurrentItinerary.getCity(), 1);
+            List<Address> addresses = coder.getFromLocationName(mCurrentPlan.getCity(), 1);
             LatLng city =  new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(city, 10));
         }
@@ -378,7 +378,7 @@ public class AddItemActivity extends ActionBarActivity implements OnMapReadyCall
                 final MaterialDialog progressDialog = new MaterialDialog.Builder(AddItemActivity.this).title("Adding").content("Adding this item to your itinerary").progress(true, 0).show();
                 mCurrentItem.setYelp_item(entry);
                 mCurrentItem.setYelp_item_id(entry.getId());
-                Call<Item> getItemCall = mRestClient.getItemService().createItem(mCurrentItinerary.getId(), mCurrentItem);
+                Call<Item> getItemCall = mRestClient.getItemService().createItem(mCurrentPlan.getId(), mCurrentItem);
                 getItemCall.enqueue(new Callback<Item>() {
                     @Override
                     public void onResponse(Call<Item> call, Response<Item> response) {

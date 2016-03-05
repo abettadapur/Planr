@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
@@ -21,35 +20,33 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import devpost.yelp.planfun.R;
-import devpost.yelp.planfun.activities.adapters.ItemAdapter;
-import devpost.yelp.planfun.activities.adapters.ItineraryAdapter;
-import devpost.yelp.planfun.activities.views.WebAutoCompleteTextView;
-import devpost.yelp.planfun.model.Itinerary;
+import devpost.yelp.planfun.ui.adapters.ItemAdapter;
+import devpost.yelp.planfun.ui.views.WebAutoCompleteTextView;
+import devpost.yelp.planfun.model.Plan;
 
-public class EditItineraryFragment extends Fragment {
+public class EditPlanFragment extends Fragment {
 
-    private Itinerary mCurrentItinerary;
+    private Plan mCurrentPlan;
 
     @Bind(R.id.input_name)
     EditText mNameBox;
 
-    @Bind(R.id.timePicker)
+    @Bind(R.id.time_picker)
     EditText mStartTimeBox;
 
-    @OnClick(R.id.timePicker)
+    @OnClick(R.id.time_picker)
     public void startClickListener(View view){
-        new TimePickerDialog(EditItineraryFragment.this.getActivity(), startTimeSetListener,
-                mCurrentItinerary.getStart_time().get(Calendar.HOUR_OF_DAY),
-                mCurrentItinerary.getStart_time().get(Calendar.MINUTE), true).show();
+        new TimePickerDialog(EditPlanFragment.this.getActivity(), startTimeSetListener,
+                mCurrentPlan.getStart_time().get(Calendar.HOUR_OF_DAY),
+                mCurrentPlan.getStart_time().get(Calendar.MINUTE), true).show();
     }
 
-    @Bind(R.id.cityPicker)
+    @Bind(R.id.city_picker)
     WebAutoCompleteTextView mCityPicker;
-
-    @Bind(R.id.privateBox)
     CheckBox mCheckBox;
 
     @Bind(R.id.items_view)
@@ -58,7 +55,7 @@ public class EditItineraryFragment extends Fragment {
 
     @OnCheckedChanged(R.id.privateBox)
     public void privateChecked(CompoundButton buttonView, boolean isChecked) {
-        mCurrentItinerary.setPublic(!isChecked);
+        mCurrentPlan.setPublic(!isChecked);
     }
 
     private String dateFormat = "MM/dd/yyyy";
@@ -66,22 +63,30 @@ public class EditItineraryFragment extends Fragment {
     private String timeFormat = "H:mm";
     private SimpleDateFormat timeSdf;
 
-    public static EditItineraryFragment newInstance()
+    public static EditPlanFragment newInstance()
     {
-        return new EditItineraryFragment();
+        return new EditPlanFragment();
     }
 
-    public EditItineraryFragment()
+    public static EditPlanFragment newInstance(int plan_id) {
+        EditPlanFragment fragment = new EditPlanFragment();
+        Bundle args = new Bundle();
+        args.putInt("plan_id", plan_id);
+        fragment.setArguments(args);;
+        return fragment;
+    }
+
+    public EditPlanFragment()
     {}
 
-    public void setItinerary(Itinerary itinerary)
+    public void setPlan(Plan plan)
     {
-        mCurrentItinerary = itinerary;
+        mCurrentPlan = plan;
     }
 
-    public void setItineraryAndUpdate(Itinerary itinerary)
+    public void setPlanAndUpdate(Plan plan)
     {
-        mCurrentItinerary = itinerary;
+        mCurrentPlan = plan;
         updateView();
     }
 
@@ -93,15 +98,14 @@ public class EditItineraryFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        View v = inflater.inflate(R.layout.fragment_edit_itinerary, container, false);
-
+        View v = inflater.inflate(R.layout.fragment_edit_plan, container, false);
+        ButterKnife.bind(this,v);
         dateSdf = new SimpleDateFormat(dateFormat, Locale.US);
         timeSdf = new SimpleDateFormat(timeFormat, Locale.US);
 
         updateView();
 
-        mAdapter = new ItemAdapter(mCurrentItinerary==null?null:mCurrentItinerary.getItems(), getActivity(), true);
+        mAdapter = new ItemAdapter(mCurrentPlan ==null?null: mCurrentPlan.getItems(), getActivity(), true);
         itemsView.setAdapter(mAdapter);
 
         return v;
@@ -110,13 +114,13 @@ public class EditItineraryFragment extends Fragment {
     DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            mCurrentItinerary.getStart_time().set(Calendar.YEAR, year);
-            mCurrentItinerary.getStart_time().set(Calendar.MONTH, monthOfYear);
-            mCurrentItinerary.getStart_time().set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            mCurrentPlan.getStart_time().set(Calendar.YEAR, year);
+            mCurrentPlan.getStart_time().set(Calendar.MONTH, monthOfYear);
+            mCurrentPlan.getStart_time().set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-            mCurrentItinerary.getEnd_time().set(Calendar.YEAR, year);
-            mCurrentItinerary.getEnd_time().set(Calendar.MONTH, monthOfYear);
-            mCurrentItinerary.getEnd_time().set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            mCurrentPlan.getEnd_time().set(Calendar.YEAR, year);
+            mCurrentPlan.getEnd_time().set(Calendar.MONTH, monthOfYear);
+            mCurrentPlan.getEnd_time().set(Calendar.DAY_OF_MONTH, dayOfMonth);
             updateView();
         }
     };
@@ -124,8 +128,8 @@ public class EditItineraryFragment extends Fragment {
     TimePickerDialog.OnTimeSetListener startTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            mCurrentItinerary.getStart_time().set(Calendar.HOUR_OF_DAY, hourOfDay);
-            mCurrentItinerary.getStart_time().set(Calendar.MINUTE, minute);
+            mCurrentPlan.getStart_time().set(Calendar.HOUR_OF_DAY, hourOfDay);
+            mCurrentPlan.getStart_time().set(Calendar.MINUTE, minute);
             updateView();
         }
     };
@@ -133,16 +137,15 @@ public class EditItineraryFragment extends Fragment {
     TimePickerDialog.OnTimeSetListener endTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            mCurrentItinerary.getEnd_time().set(Calendar.HOUR_OF_DAY, hourOfDay);
-            mCurrentItinerary.getEnd_time().set(Calendar.MINUTE, minute);
+            mCurrentPlan.getEnd_time().set(Calendar.HOUR_OF_DAY, hourOfDay);
+            mCurrentPlan.getEnd_time().set(Calendar.MINUTE, minute);
             updateView();
         }
     };
 
-
     private void updateView() {
-        mNameBox.setText(mCurrentItinerary.getName());
-        mCityPicker.setText(mCurrentItinerary.getCity());
-        mStartTimeBox.setText(timeSdf.format(mCurrentItinerary.getStart_time().getTime()));
+        mNameBox.setText(mCurrentPlan.getName());
+        mCityPicker.setText(mCurrentPlan.getCity());
+        mStartTimeBox.setText(timeSdf.format(mCurrentPlan.getStart_time().getTime()));
     }
 }

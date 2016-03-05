@@ -1,6 +1,5 @@
 package devpost.yelp.planfun.ui.activities;
 
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.drawable.Drawable;
@@ -10,12 +9,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.support.v7.widget.SearchView;
 import android.widget.ImageView;
 
 import com.facebook.Profile;
@@ -37,20 +33,20 @@ import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
-import devpost.yelp.planfun.ui.events.OpenItineraryRequest;
-import devpost.yelp.planfun.ui.fragments.ItineraryDetailFragment;
-import devpost.yelp.planfun.ui.fragments.ItineraryListFragment;
-import devpost.yelp.planfun.model.Itinerary;
+import devpost.yelp.planfun.model.Plan;
+import devpost.yelp.planfun.ui.events.EditPlanRequest;
+import devpost.yelp.planfun.ui.events.OpenPlanRequest;
+import devpost.yelp.planfun.ui.fragments.EditPlanFragment;
+import devpost.yelp.planfun.ui.fragments.PlanDetailFragment;
+import devpost.yelp.planfun.ui.fragments.PlanListFragment;
 import devpost.yelp.planfun.net.RestClient;
-import devpost.yelp.planfun.ui.fragments.SearchItineraryFragment;
-import okhttp3.ResponseBody;
+import devpost.yelp.planfun.ui.fragments.SearchPlanFragment;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -65,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
     private RestClient mRestClient;
     private Drawer mDrawer;
 
-    private ItineraryListFragment itineraryListFragment;
-    private ItineraryListFragment searchItineraryFragment;
+    private PlanListFragment planListFragment;
+    private PlanListFragment searchItineraryFragment;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -74,12 +70,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_itinerary);
+        setContentView(R.layout.activity_plan);
         ButterKnife.bind(this);
         PlanFunApplication.getBus().register(this);
 
-        itineraryListFragment = ItineraryListFragment.newInstance(R.layout.fragment_itinerary_list, R.layout.itinerary_list_item);
-        searchItineraryFragment = SearchItineraryFragment.newInstance(R.layout.fragment_itinerary_list, R.layout.itinerary_list_item);
+        planListFragment = PlanListFragment.newInstance(R.layout.fragment_plan_list, R.layout.plan_list_item);
+        searchItineraryFragment = SearchPlanFragment.newInstance(R.layout.fragment_plan_list, R.layout.plan_list_item);
         setSupportActionBar(toolbar);
         buildToolbar();
 
@@ -90,9 +86,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, itineraryListFragment)
+                    .add(R.id.container, planListFragment)
                     .commit();
-            currentFragment = itineraryListFragment;
+            currentFragment = planListFragment;
 
         }
         mRestClient = RestClient.getInstance();
@@ -170,12 +166,12 @@ public class MainActivity extends AppCompatActivity {
             String item = ((Nameable) iDrawerItem).getName().toString();
             switch (item) {
                 case "My Plans":
-                    if(currentFragment != itineraryListFragment) {
+                    if(currentFragment != planListFragment) {
                         getSupportFragmentManager()
                                 .beginTransaction()
-                                .replace(R.id.container, itineraryListFragment)
+                                .replace(R.id.container, planListFragment)
                                 .commit();
-                        currentFragment = itineraryListFragment;
+                        currentFragment = planListFragment;
                         getSupportActionBar().setTitle("Your Itineraries");
                     }
                     break;
@@ -209,18 +205,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_intinerary, menu);
-        menu.findItem(R.id.search).setIcon(
-                new IconDrawable(this, Iconify.IconValue.fa_search)
-                        .color(0xFFFFFF)
-                        .actionBarSize());
-
-        SearchView view = (SearchView)menu.findItem(R.id.search).getActionView();
-        if(view!=null)
-        {
-            view.setOnQueryTextListener(this);
-        }
-
+        getMenuInflater().inflate(R.menu.menu_home, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -239,78 +224,23 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void refresh_list(final ItineraryListFragment fragment) {
-        /** Get a listing of the itineraries for the current user and update the fragment with the items **/
-        fragment.setLoading(true);
-        Call<List<Itinerary>> getItinerariesCall = mRestClient.getItineraryService().listItineraries(true);
-        getItinerariesCall.enqueue(new Callback<List<Itinerary>>() {
-            @Override
-            public void onResponse(Call<List<Itinerary>> call, Response<List<Itinerary>> response) {
-                if (response.isSuccess())
-                {
-                    ItineraryActivity.this.runOnUiThread(() -> {
-                        fragment.updateItems(response.body());
-                        fragment.setLoading(false);
-                    });
-                }
-                else
-                {
-                    try
-                    {
-                        Log.e("GET ITINERARIES", response.errorBody().string());
-                    }
-                    catch (IOException ioex)
-                    {
-
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Itinerary>> call, Throwable t) {
-
-            }
-        });
-    }
-
-    @Override
-    public void remove_item(int id) {
-
-        Call<ResponseBody> deleteCall = mRestClient.getItineraryService().deleteItinerary(id);
-        deleteCall.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if(response.isSuccess())
-                {
-                    refresh_list(itineraryListFragment);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("DELETE", "Error");
-            }
-        });
-    }
-
     public boolean onQueryTextSubmit(String s) {
         if(!s.equals("")) {
-            if (currentFragment == itineraryListFragment) {
+            if (currentFragment == planListFragment) {
                 mDrawer.setSelection(1);
             }
-            Call<List<Itinerary>> itineraryCall = mRestClient.getItineraryService().searchItinerary(s);
-            itineraryCall.enqueue(new Callback<List<Itinerary>>() {
+            Call<List<Plan>> itineraryCall = mRestClient.getItineraryService().searchItinerary(s);
+            itineraryCall.enqueue(new Callback<List<Plan>>() {
                 @Override
-                public void onResponse(Call<List<Itinerary>> call, Response<List<Itinerary>> response) {
+                public void onResponse(Call<List<Plan>> call, Response<List<Plan>> response) {
                     if(response.isSuccess())
                     {
-                        ItineraryActivity.this.runOnUiThread(() -> searchItineraryFragment.updateItems(response.body()));
+                        MainActivity.this.runOnUiThread(() -> searchItineraryFragment.updateItems(response.body()));
                     }
                 }
 
                 @Override
-                public void onFailure(Call<List<Itinerary>> call, Throwable t) {
+                public void onFailure(Call<List<Plan>> call, Throwable t) {
 
                 }
             });
@@ -319,16 +249,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onQueryTextChange(String s) {
-        return false;
+    @Subscribe
+    public void onOpenPlanRequest(OpenPlanRequest request)
+    {
+        PlanDetailFragment fragment = PlanDetailFragment.newInstance(request.plan_id);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("")
+                .commit();
     }
 
-
     @Subscribe
-    public void onOpenItineraryRequest(OpenItineraryRequest request)
+    public void onEditPlanRequest(EditPlanRequest request)
     {
-        ItineraryDetailFragment fragment = ItineraryDetailFragment.newInstance(request.itinerary_id);
+        EditPlanFragment fragment = EditPlanFragment.newInstance();
+        if(!request.new_plan)
+            fragment = EditPlanFragment.newInstance(request.plan_id);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)
                 .addToBackStack("")

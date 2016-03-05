@@ -35,8 +35,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <devpost.yelp.planfun.activities.views.WebAutoCompleteTextView
-            android:id="@+id/cityPicker"
+        <devpost.yelp.planfun.ui.views.WebAutoCompleteTextView
+            android:id="@+id/city_picker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="City"/>
@@ -57,7 +57,7 @@
                 android:layout_weight="1">
 
             <EditText
-                android:id="@+id/timePicker"
+                android:id="@+id/time_picker"
                 android:editable="false"
                 android:focusable="false"
                 android:layout_width="match_parent"

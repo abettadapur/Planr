@@ -43,7 +43,7 @@ dependencies {
     compile('com.github.afollestad.material-dialogs:core:0.8.5.6@aar') {
         transitive = true
     }
-    compile 'com.getbase:floatingactionbutton:1.10.1'
+    compile 'com.github.clans:fab:1.6.2'
     compile 'com.daimajia.swipelayout:library:1.1.9@aar'
     compile 'info.hoang8f:fbutton:1.0.5'
     compile 'com.google.code.gson:gson:2.6.2'

@@ -17,10 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import devpost.yelp.planfun.R;
+import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.ui.adapters.FriendsAdapter;
 import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
 import devpost.yelp.planfun.ui.adapters.UsersAdapter;
-import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.model.Share;
 import devpost.yelp.planfun.model.User;
 import devpost.yelp.planfun.net.RestClient;
@@ -44,14 +44,14 @@ public class ShareItineraryDialog extends DialogFragment implements RecyclerItem
     private List<User> sharedFriends;
     private FriendsAdapter mFriendsAdapter;
     private UsersAdapter mUsersAdapter;
-    private Itinerary itinerary;
+    private Plan plan;
 
-    public ShareItineraryDialog(Itinerary itinerary)
+    public ShareItineraryDialog(Plan plan)
     {
-        this.itinerary = itinerary;
+        this.plan = plan;
         friends = new ArrayList<>();
         sharedFriends = new ArrayList<>();
-        for(Share s: itinerary.getShared_users())
+        for(Share s: plan.getShared_users())
         {
             sharedFriends.add(s.getUser());
         }
@@ -70,15 +70,15 @@ public class ShareItineraryDialog extends DialogFragment implements RecyclerItem
                     {
                         shares.add(new ShareRequest(u.getId()+"", "READ"));
                     }
-                    Call<Itinerary> shareCall = mRestClient.getItineraryService().shareItinerary(itinerary.getId(), shares);
+                    Call<Plan> shareCall = mRestClient.getItineraryService().shareItinerary(plan.getId(), shares);
                     final MaterialDialog loading = new MaterialDialog.Builder(getActivity())
                             .title("Sharing")
                             .content("Sharing your plan...")
                             .progress(true, 0)
                             .show();
-                    shareCall.enqueue(new Callback<Itinerary>() {
+                    shareCall.enqueue(new Callback<Plan>() {
                         @Override
-                        public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
+                        public void onResponse(Call<Plan> call, Response<Plan> response) {
                             loading.dismiss();
                             if(response.isSuccess())
                             {
@@ -87,7 +87,7 @@ public class ShareItineraryDialog extends DialogFragment implements RecyclerItem
                         }
 
                         @Override
-                        public void onFailure(Call<Itinerary> call, Throwable t) {
+                        public void onFailure(Call<Plan> call, Throwable t) {
 
                         }
                     });
@@ -97,7 +97,7 @@ public class ShareItineraryDialog extends DialogFragment implements RecyclerItem
                 });
 
         LayoutInflater i = getActivity().getLayoutInflater();
-        View v = i.inflate(R.layout.dialog_share_itinerary, null);
+        View v = i.inflate(R.layout.dialog_share_plan, null);
         mShareLayout = (LinearLayout)v.findViewById(R.id.shareLayout);
         mFriendsListView = (RecyclerView)v.findViewById(R.id.friendsListView);
         mSharedFriendsListView = (RecyclerView)v.findViewById(R.id.sharedUsersView);
