@@ -1,9 +1,8 @@
-package devpost.yelp.planfun.activities;
+package devpost.yelp.planfun.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -29,7 +28,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
-Main activity, that starts the app. Handles login, and if succesfull starts ItineraryActivity.
+Main activity, that starts the app. Handles login, and if succesfull starts MainActivity.
  */
 public class SplashActivity extends AppCompatActivity {
 
@@ -104,7 +103,7 @@ public class SplashActivity extends AppCompatActivity {
                         Log.i("User", token.getUserId());
 
                         if (!started) {
-                            Intent i = new Intent(SplashActivity.this, ItineraryActivity.class);
+                            Intent i = new Intent(SplashActivity.this, MainActivity.class);
                             i.addCategory(Intent.CATEGORY_HOME);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             SplashActivity.this.startActivity(i);

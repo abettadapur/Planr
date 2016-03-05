@@ -5,6 +5,7 @@ from flask import request
 from flask_restful import abort, Resource
 from flask_restful.reqparse import RequestParser
 from funtimes.maps.maps import get_polyline
+from funtimes.models.entities.change_result import ChangeResult
 from funtimes.models.entities.rating import Rating
 from funtimes.models.entities.user import User
 from funtimes.repositories.itemRepository import ItemRepository
@@ -112,7 +113,7 @@ class ItineraryResource(Resource):
         if not itinerary:
             abort(404, message="No itinerary with that id exists")
 
-        if itinerary.user.id != user.id:
+        if itinerary.user.id != user.id and not query(itinerary.shared_users).contains(user, lambda lhs, rhs: lhs.id == rhs.id):
             abort(404, message="No itinerary with that id exists")
 
         if 'include_polyline' in request.args and request.args['include_polyline']:
@@ -264,24 +265,34 @@ class ItinerarySearchResource(Resource):
 
 class ItineraryShareResource(Resource):
     def __init__(self):
-        self.share_parser = RequestParser()
-        self.share_parser.add_argument('user_id', type=str, required=True)
-        self.share_parser.add_argument('permission', type=str, required=True)
         self.itinerary_repository = ItineraryRepository()
         super(ItineraryShareResource, self).__init__()
 
     @authenticate
     def post(self, itinerary_id, **kwargs):
-        args = self.share_parser.parse_args()
-        user_id = args['user_id']
-        permission = args['permission']
-
         itinerary = query(self.itinerary_repository.get(user_id=kwargs['user'].id, id=itinerary_id)).single_or_default(
             default=None)
         if not itinerary:
             abort(404, message="This itinerary does not exist")
 
-        result = self.itinerary_repository.share(itinerary, user_id, permission)
+        post_body = request.json
+        if type(post_body) is not list:
+            on_error(error_message="Invalid post body")
+
+        result = ChangeResult()
+        try:
+            shares = query(post_body)
+            for shared_user in itinerary.shared_users:
+                if not shares.contains(shared_user, lambda lhs, rhs: rhs['user_id'] == lhs.id):
+                    result.add_child_result(self.itinerary_repository.unshare(itinerary, shared_user.id))
+
+            for share in post_body:
+                user_id = share['user_id']
+                permission = share['permission']
+                result.add_child_result(self.itinerary_repository.share(itinerary, user_id, permission))
+
+        except KeyError as ke:
+            on_error(error_message="Invalid post body")
 
         if not result.success():
             on_error(error_message="Could not share itinerary", result=result)
@@ -443,7 +454,7 @@ class FriendsResource(Resource):
             user = query(self.user_repository.get(facebook_id=friend['id'])).single_or_default(default=None)
             if user:
                 users.append(user)
-                
+
         return users
 
 

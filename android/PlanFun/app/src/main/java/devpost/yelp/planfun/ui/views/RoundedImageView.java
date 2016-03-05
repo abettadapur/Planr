@@ -1,4 +1,4 @@
-package devpost.yelp.planfun.activities.views;
+package devpost.yelp.planfun.ui.views;
 
 import android.content.Context;
 import android.graphics.Bitmap;

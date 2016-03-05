@@ -1,7 +1,7 @@
-package devpost.yelp.planfun.activities.fragments;
+package devpost.yelp.planfun.ui.fragments;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,7 +17,6 @@ import com.joanzapata.android.iconify.Iconify;
 import java.text.SimpleDateFormat;
 
 import devpost.yelp.planfun.R;
-import devpost.yelp.planfun.activities.views.VerticalProgressBar;
 import devpost.yelp.planfun.model.Item;
 import info.hoang8f.widget.FButton;
 
@@ -30,7 +29,6 @@ public class ItemDetailFragment extends Fragment
     private Item currentItem;
     private TextView mTitleView, mReviewCountView, mStartTimeView, mEndTimeView;
     private FButton mCallButton, mNavButton, mWebButton;
-    private VerticalProgressBar mPriceBar;
     private RatingBar mRatingView;
     private IconTextView mIconView;
 
@@ -68,9 +66,6 @@ public class ItemDetailFragment extends Fragment
         mIconView = (IconTextView)v.findViewById(R.id.iconView);
         mStartTimeView = (TextView)v.findViewById(R.id.startTimeView);
         mEndTimeView = (TextView)v.findViewById(R.id.endTimeView);
-        mPriceBar = (VerticalProgressBar)v.findViewById(R.id.priceBar);
-
-        mPriceBar.setMax(4);
 
         timeSdf = new SimpleDateFormat(timeFormat);
 
@@ -116,8 +111,6 @@ public class ItemDetailFragment extends Fragment
 
         mStartTimeView.setText(timeSdf.format(currentItem.getStart_time().getTime()));
         mEndTimeView.setText(timeSdf.format(currentItem.getEnd_time().getTime()));
-
-        mPriceBar.setProgress(item.getYelp_item().getPrice());
 
         switch(item.getYelp_category().getName())
         {

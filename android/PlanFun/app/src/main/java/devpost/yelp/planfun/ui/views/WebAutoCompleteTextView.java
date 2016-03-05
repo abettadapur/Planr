@@ -1,4 +1,4 @@
-package devpost.yelp.planfun.activities.views;
+package devpost.yelp.planfun.ui.views;
 
 import android.content.Context;
 import android.os.Handler;
@@ -7,8 +7,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
-
-import java.util.jar.Attributes;
 
 /**
  * Created by alexb on 2/29/2016.

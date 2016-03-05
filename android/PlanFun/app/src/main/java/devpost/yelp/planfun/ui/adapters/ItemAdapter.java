@@ -1,4 +1,4 @@
-package devpost.yelp.planfun.activities.adapters;
+package devpost.yelp.planfun.ui.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

@@ -22,17 +22,6 @@
             android:layout_height="match_parent"
             >
 
-            <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:elevation="4dp"
-            android:transitionName="actionBar"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                android:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
-
             <fragment
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_below="@id/toolbar"
@@ -40,7 +29,20 @@
                 android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                 />
+                />
+
+            <com.melnykov.fab.FloatingActionButton
+                android:id="@+id/edit_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="16dp"
+                android:src="@drawable/ic_mode_edit_white_24dp"
+                fab:fab_colorNormal="@color/accentColor"
+                fab:fab_colorPressed="@color/accentPressed"
+                fab:fab_colorRipple="@color/accentPressed"
+                />
 
 
         </RelativeLayout>
@@ -55,10 +57,10 @@
             android:id="@+id/dragView">
 
             <FrameLayout
-            android:id="@+id/container"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1" />
+                android:id="@+id/container"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1" />
 
 
         </LinearLayout>

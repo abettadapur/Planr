@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <devpost.yelp.planfun.activities.views.WebAutoCompleteTextView
+        <devpost.yelp.planfun.ui.views.WebAutoCompleteTextView
             android:id="@+id/cityPicker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/shareLayout"
+        android:weightSum="20">
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_height="0px"
+            android:id="@+id/friendsListView"
+            android:layout_width="match_parent"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_weight="17">
+        </android.support.v7.widget.RecyclerView>
+        <TextView
+            android:layout_height="0px"
+            android:layout_width="wrap_content"
+            android:text="Shared with:"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+        />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/sharedUsersView"
+            android:layout_width="match_parent"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_height="0px"
+            android:layout_weight="2">
+        </android.support.v7.widget.RecyclerView>
+    </LinearLayout>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_centerInParent="true"
+        android:id="@+id/loadingCircle"
+        android:visibility="gone"/>
+
+</RelativeLayout>

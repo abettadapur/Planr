@@ -38,13 +38,13 @@ class ItineraryRepository(BaseRepository):
         return itineraries
 
     def search(self, query, city):
-        itineraries = Itinerary.query().filter_by(public=True)
+        itineraries = Itinerary.query.filter_by(public=True)
         if city:
             itineraries = itineraries.filter_by(city=city)
         if query:
             itineraries = itineraries.filter(Itinerary.name.like(query))
 
-        return itineraries
+        return itineraries.all()
 
     def share(self, itinerary, user_id, permission):
         user_repository = UserRepository()
@@ -54,11 +54,29 @@ class ItineraryRepository(BaseRepository):
         if not user:
             result.errors.append("No user with id {0} found".format(user_id))
         else:
-            itinerary_share = ItineraryShares()
-            itinerary_share.itinerary_id = itinerary.id
-            itinerary_share.user_id = user.id
-            itinerary_share.permission = permission
-            result.add_child_result(itinerary_share_repository.add_or_update(itinerary_share))
+            existing = query(ItineraryShares.query.filter_by(itinerary_id=itinerary.id, user_id=user.id).all()).single_or_default(default=None)
+            if existing:
+                existing.permission = permission
+                result.add_child_result(itinerary_share_repository.add_or_update(existing))
+            else:
+                itinerary_share = ItineraryShares()
+                itinerary_share.itinerary_id = itinerary.id
+                itinerary_share.user_id = user.id
+                itinerary_share.permission = permission
+                result.add_child_result(itinerary_share_repository.add_or_update(itinerary_share))
+        return result
+
+    def unshare(self, itinerary, user_id):
+        user_repository = UserRepository()
+        itinerary_share_repository = ItineraryShareRepository()
+        result = ChangeResult()
+        user = user_repository.find(user_id)
+        if not user:
+            result.errors.append("No user with id {0} found".format(user_id))
+        else:
+            existing = query(ItineraryShares.query.filter_by(itinerary_id=itinerary.id, user_id=user.id).all()).single_or_default(default=None)
+            if existing:
+                itinerary_share_repository.delete(existing.id)
         return result
 
     def get_shared_user_permission(self, itinerary_id, user_id):

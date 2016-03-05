@@ -70,7 +70,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:layout_weight="0.85">
+                        android:layout_weight="0.80">
 
                         <RatingBar
                             android:id="@+id/ratingView"
@@ -96,29 +96,6 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:layout_marginLeft="10dp"
-                android:layout_weight="0.05">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="$"
-
-                    android:gravity="center"
-
-                    />
-                <devpost.yelp.planfun.activities.views.VerticalProgressBar
-                    android:layout_width="wrap_content"
-                    android:paddingLeft="8dp"
-                    android:layout_height="match_parent"
-                    android:id="@+id/priceBar"
-                    style="?android:attr/progressBarStyleHorizontal"
-
-                    />
-            </LinearLayout>
         </LinearLayout>
 
         <!--<TextView-->

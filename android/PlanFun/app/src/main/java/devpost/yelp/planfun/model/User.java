@@ -55,4 +55,13 @@ public class User
         return facebook_id;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof User)
+        {
+            User u = (User)o;
+            return u.id == id;
+        }
+        return false;
+    }
 }

@@ -45,7 +45,7 @@ public interface ItineraryService
     Call<List<Itinerary>> searchItinerary(@Query("query") String query);
 
     @POST("itineraries/{id}/share")
-    Call<Itinerary> shareItinerary(@Path("id") int id, @Body ShareRequest request);
+    Call<Itinerary> shareItinerary(@Path("id") int id, @Body List<ShareRequest> request);
 
     @POST("itineraries/{id}/randomize")
     Call<Itinerary> randomizeItinerary(@Path("id") int id);

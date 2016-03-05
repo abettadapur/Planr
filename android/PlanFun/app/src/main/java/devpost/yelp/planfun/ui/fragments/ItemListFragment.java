@@ -1,4 +1,4 @@
-package devpost.yelp.planfun.activities.fragments;
+package devpost.yelp.planfun.ui.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,9 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import devpost.yelp.planfun.R;
-import devpost.yelp.planfun.activities.AddItemActivity;
-import devpost.yelp.planfun.activities.adapters.ItemAdapter;
-import devpost.yelp.planfun.activities.adapters.RecyclerItemClickListener;
+import devpost.yelp.planfun.ui.activities.AddItemActivity;
+import devpost.yelp.planfun.ui.adapters.ItemAdapter;
+import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
 import devpost.yelp.planfun.model.Itinerary;
 
 

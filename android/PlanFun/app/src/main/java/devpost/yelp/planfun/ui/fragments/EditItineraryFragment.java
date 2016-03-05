@@ -1,4 +1,4 @@
-package devpost.yelp.planfun.activities.fragments;
+package devpost.yelp.planfun.ui.fragments;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -15,8 +15,6 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
-
-import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
