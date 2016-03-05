@@ -14,7 +14,7 @@
         <!--android:layout_height="wrap_content"-->
         <!--android:text="Your itinerary is empty!" />-->
 
-    <com.melnykov.fab.FloatingActionButton
+    <com.getbase.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,8 +22,7 @@
         android:layout_margin="16dp"
         android:src="@drawable/ic_add_white_24dp"
         fab:fab_colorNormal="@color/accentColor"
-        fab:fab_colorPressed="@color/accentPressed"
-        fab:fab_colorRipple="@color/accentPressed" />
+        fab:fab_colorPressed="@color/accentPressed" />
 
 
 

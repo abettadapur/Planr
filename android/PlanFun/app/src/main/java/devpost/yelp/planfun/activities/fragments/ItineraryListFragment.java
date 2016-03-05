@@ -17,13 +17,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.melnykov.fab.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.joanzapata.android.iconify.IconDrawable;
+import com.joanzapata.android.iconify.Iconify;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.activities.ItineraryDetailActivity;
 import devpost.yelp.planfun.activities.adapters.ItineraryAdapter;
@@ -34,19 +38,16 @@ import devpost.yelp.planfun.model.Itinerary;
  * A fragment representing a list of Items.
  * <p/>
  * <p/>
- * Activities containing this fragment MUST implement the {@link edu.gatech.daytripper.fragments.ItineraryListFragment.ItineraryListListener}
+ * Activities containing this fragment MUST implement the {@link devpost.yelp.planfun.activities.fragments.ItineraryListFragment.ItineraryListListener}
  * interface.
  */
-public class ItineraryListFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class ItineraryListFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     @Bind(R.id.recycle_view)
     RecyclerView mRecycleView;
 
     @Bind(R.id.progress_circle)
     ProgressBar mLoadingCircle;
-
-    @Bind(R.id.add_fab)
-    FloatingActionButton mAddButton;
 
     @Bind(R.id.swipe_refresh)
     SwipeRefreshLayout mSwipeRefresh;
@@ -59,7 +60,6 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
 
     private final int ITINERARY_CREATE_CODE = 86;
     private final int CONTEXT_DELETE = 87;
-
 
     public static ItineraryListFragment newInstance(int layout, int list_item) {
         ItineraryListFragment fragment = new ItineraryListFragment();
@@ -101,11 +101,8 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
         mRecycleView.setItemAnimator(new DefaultItemAnimator());
 
         mRecycleView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), this));
-
-        mAddButton.attachToRecyclerView(mRecycleView);
-        mAddButton.setOnClickListener(this);
-
         registerForContextMenu(mRecycleView);
+
         return rootView;
     }
 
@@ -190,26 +187,12 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
 
     }
 
-    /** Open a dialog to add a new itinerary. After collecting info, open edit itinerary activity **/
-    @Override
-    public void onClick(View v)
-    {
-        CreateItineraryDialog dialog = new CreateItineraryDialog();
-        dialog.setTargetFragment(this, ITINERARY_CREATE_CODE);
-        dialog.show(getActivity().getSupportFragmentManager(), "fm");
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode ==ITINERARY_CREATE_CODE)
         {
-            if(resultCode == CreateItineraryDialog.CREATE)
-            {
-                Intent i = new Intent(getActivity(), EditItineraryFragment.class);
-                i.putExtra("itinerary_id", CreateItineraryDialog.getNewItinerary().getId());
-                getActivity().startActivity(i);
-            }
+
         }
         this.getActivity().runOnUiThread(()-> mListListener.refresh_list(this));
     }
@@ -222,10 +205,8 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
 
     public void setLoading(boolean loading)
     {
-        getActivity().runOnUiThread(() -> {
-            mRecycleView.setVisibility(loading ? View.GONE : View.VISIBLE);
-            mLoadingCircle.setVisibility(loading ? View.VISIBLE : View.GONE);
-        });
+        mRecycleView.setVisibility(loading?View.GONE:View.VISIBLE);
+        mLoadingCircle.setVisibility(loading ? View.VISIBLE : View.GONE);
     }
 
     /**

@@ -19,8 +19,22 @@
         <item name="colorControlHighlight">@color/primaryColor</item>
         <item name="colorButtonNormal">@color/primaryColorDark</item>
         <item name="android:textColor">@color/white</item>
+    </style>
+
+
+    <style name="ButtonTheme2" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/md_grey_500</item>
+        <item name="colorButtonNormal">@color/white</item>
+        <item name="android:textColor">@color/md_grey_800</item>
 
     </style>
+
+    <style name="menu_labels_style">
+        <item name="android:background">@drawable/fab_label_background</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+
 
 
 </resources>

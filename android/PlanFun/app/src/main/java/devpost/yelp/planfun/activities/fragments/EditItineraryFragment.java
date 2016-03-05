@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,16 +22,46 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import butterknife.Bind;
+import butterknife.OnCheckedChanged;
+import butterknife.OnClick;
 import devpost.yelp.planfun.R;
+import devpost.yelp.planfun.activities.adapters.ItemAdapter;
+import devpost.yelp.planfun.activities.adapters.ItineraryAdapter;
+import devpost.yelp.planfun.activities.views.WebAutoCompleteTextView;
 import devpost.yelp.planfun.model.Itinerary;
 
 public class EditItineraryFragment extends Fragment {
 
     private Itinerary mCurrentItinerary;
 
-    private EditText mNameBox, mStartTimeBox, mEndTimeBox;
-    private AutoCompleteTextView mCityPicker;
-    private CheckBox mCheckBox;
+    @Bind(R.id.input_name)
+    EditText mNameBox;
+
+    @Bind(R.id.timePicker)
+    EditText mStartTimeBox;
+
+    @OnClick(R.id.timePicker)
+    public void startClickListener(View view){
+        new TimePickerDialog(EditItineraryFragment.this.getActivity(), startTimeSetListener,
+                mCurrentItinerary.getStart_time().get(Calendar.HOUR_OF_DAY),
+                mCurrentItinerary.getStart_time().get(Calendar.MINUTE), true).show();
+    }
+
+    @Bind(R.id.cityPicker)
+    WebAutoCompleteTextView mCityPicker;
+
+    @Bind(R.id.privateBox)
+    CheckBox mCheckBox;
+
+    @Bind(R.id.items_view)
+    RecyclerView itemsView;
+    private ItemAdapter mAdapter;
+
+    @OnCheckedChanged(R.id.privateBox)
+    public void privateChecked(CompoundButton buttonView, boolean isChecked) {
+        mCurrentItinerary.setPublic(!isChecked);
+    }
 
     private String dateFormat = "MM/dd/yyyy";
     private SimpleDateFormat dateSdf;
@@ -56,7 +87,6 @@ public class EditItineraryFragment extends Fragment {
         updateView();
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,37 +98,13 @@ public class EditItineraryFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_edit_itinerary, container, false);
 
-        mCityPicker = (AutoCompleteTextView) v.findViewById(R.id.cityPicker);
-        mStartTimeBox = (EditText) v.findViewById(R.id.startPicker);
-        mEndTimeBox = (EditText) v.findViewById(R.id.endPicker);
-
         dateSdf = new SimpleDateFormat(dateFormat, Locale.US);
         timeSdf = new SimpleDateFormat(timeFormat, Locale.US);
 
-
-        mStartTimeBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new TimePickerDialog(EditItineraryFragment.this.getActivity(), startTimeSetListener, mCurrentItinerary.getStart_time().get(Calendar.HOUR_OF_DAY), mCurrentItinerary.getStart_time().get(Calendar.MINUTE), true).show();
-            }
-        });
-
-        mEndTimeBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new TimePickerDialog(EditItineraryFragment.this.getActivity(), endTimeSetListener, mCurrentItinerary.getEnd_time().get(Calendar.HOUR_OF_DAY), mCurrentItinerary.getEnd_time().get(Calendar.MINUTE), true).show();
-            }
-        });
-
-
-        mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mCurrentItinerary.setPublic(isChecked);
-            }
-        });
-
         updateView();
+
+        mAdapter = new ItemAdapter(mCurrentItinerary==null?null:mCurrentItinerary.getItems(), getActivity(), true);
+        itemsView.setAdapter(mAdapter);
 
         return v;
     }
@@ -136,11 +142,9 @@ public class EditItineraryFragment extends Fragment {
     };
 
 
-
     private void updateView() {
         mNameBox.setText(mCurrentItinerary.getName());
         mCityPicker.setText(mCurrentItinerary.getCity());
         mStartTimeBox.setText(timeSdf.format(mCurrentItinerary.getStart_time().getTime()));
-        mEndTimeBox.setText(timeSdf.format(mCurrentItinerary.getEnd_time().getTime()));
     }
 }

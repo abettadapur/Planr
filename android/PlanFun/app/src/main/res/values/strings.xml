@@ -17,5 +17,7 @@
     <string name="title_activity_itinerary_detail">Plan Detail</string>
     <string name="title_activity_edit_itinerary">Edit Plan</string>
     <string name="title_activity_item_detail">ItemDetailActivity</string>
+    <string name="icon_heart">&#xf004;</string>
+
 
 </resources>

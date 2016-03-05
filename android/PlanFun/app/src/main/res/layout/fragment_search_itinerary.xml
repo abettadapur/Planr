@@ -34,7 +34,6 @@
         android:src="@drawable/ic_add_white_24dp"
         fab:fab_colorNormal="@color/accentColor"
         fab:fab_colorPressed="@color/accentPressed"
-        fab:fab_colorRipple="@color/accentPressed"
         android:visibility="invisible"/>
 
 </FrameLayout>

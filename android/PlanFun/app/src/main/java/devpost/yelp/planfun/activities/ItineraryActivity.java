@@ -16,7 +16,6 @@ import android.view.View;
 import android.support.v7.widget.SearchView;
 import android.widget.ImageView;
 
-import com.facebook.AccessToken;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.joanzapata.android.iconify.IconDrawable;
@@ -70,8 +69,10 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
         setContentView(R.layout.activity_itinerary);
         ButterKnife.bind(this);
 
-        itineraryListFragment = ItineraryListFragment.newInstance(R.layout.fragment_itinerary_list, R.layout.itinerary_list_item);
-        searchItineraryFragment = ItineraryListFragment.newInstance(R.layout.fragment_search_itinerary, R.layout.itinerary_list_item);
+        itineraryListFragment = ItineraryListFragment.newInstance(R.layout.fragment_itinerary_list, R.layout.plan_list_item);
+        searchItineraryFragment = ItineraryListFragment.newInstance(R.layout.fragment_search_itinerary, R.layout.plan_list_item);
+        searchItineraryFragment = ItineraryListFragment.newInstance(R.layout.fragment_search_itinerary, R.layout.plan_list_item);
+
 
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(new IconDrawable(this, Iconify.IconValue.fa_reorder).color(0xFFFFFF).sizeDp(23));
@@ -142,17 +143,6 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
                                 .commit();
                         currentFragment = itineraryListFragment;
                         getSupportActionBar().setTitle("Your Itineraries");
-                    }
-                    break;
-                case "Search Plans":
-                    if(currentFragment != searchItineraryFragment) {
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.container, searchItineraryFragment)
-                                .addToBackStack("")
-                                .commit();
-                        currentFragment = searchItineraryFragment;
-                        getSupportActionBar().setTitle("Search Results");
                     }
                     break;
                 case "Settings":
@@ -259,7 +249,6 @@ public class ItineraryActivity extends AppCompatActivity implements ItineraryLis
         });
     }
 
-    @Override
     public boolean onQueryTextSubmit(String s) {
         if(!s.equals("")) {
             if (currentFragment == itineraryListFragment) {

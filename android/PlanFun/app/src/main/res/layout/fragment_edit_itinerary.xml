@@ -1,32 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:transitionName="actionBar"/>
+
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/input_name_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/input_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Plan Name" />
+
+    </android.support.design.widget.TextInputLayout>
+
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/input_layout_city"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <devpost.yelp.planfun.activities.views.WebAutoCompleteTextView
+            android:id="@+id/cityPicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="City"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:id="@+id/timeLayout"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+            <EditText
+                android:id="@+id/timePicker"
+                android:editable="false"
+                android:focusable="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Starting Time"/>
+            </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/dateAdder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SET Date"
+            android:theme="@style/ButtonTheme2"
+            android:layout_weight="1"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_date"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/datePicker"
+                android:editable="false"
+                android:focusable="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=" Date"/>
+        </android.support.design.widget.TextInputLayout>
+    </LinearLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
-            android:paddingTop="@dimen/activity_vertical_margin"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/items_view"
+            android:scrollbars="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/toolbar"
-            android:layout_marginBottom="@dimen/md_button_height"
-            android:id="@+id/container">
+            android:layout_marginBottom="@dimen/md_button_height"/>
 
-            <include layout="@layout/dialog_create_itinerary"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/md_button_height"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:weightSum="7">
 
-        </FrameLayout>
 
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/md_button_height"
+            android:id="@+id/privateBox"
+            android:textColor="#80000000"
+            android:text="Private"
+            android:layout_weight="1"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="@dimen/md_button_height"
             android:id="@+id/submitButton"
             android:text="Save Itinerary"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true" />
-
+            android:theme="@style/ButtonTheme"
+            android:layout_weight="6"/>
+        </LinearLayout>
     </RelativeLayout>
-</FrameLayout>
+
+</LinearLayout>

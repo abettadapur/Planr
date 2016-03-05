@@ -21,6 +21,8 @@ import android.view.View;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.AccessToken;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -36,7 +38,6 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
-import com.melnykov.fab.FloatingActionButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,10 +49,10 @@ import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.activities.fragments.EditItineraryFragment;
 import devpost.yelp.planfun.activities.fragments.ItemDetailFragment;
-import devpost.yelp.planfun.activities.fragments.ItemListFragment;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Itinerary;
 import devpost.yelp.planfun.model.PolylineModel;
@@ -77,6 +78,31 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+
+    @Bind(R.id.add_fab)
+    FloatingActionsMenu mAddMenu;
+
+    @Bind(R.id.create_fab)
+    FloatingActionButton mCreateFab;
+
+    @OnClick(R.id.create_fab)
+    public void onCreateClick(View button){
+    }
+
+    @Bind(R.id.find_fab)
+    FloatingActionButton mFindFab;
+
+    @OnClick(R.id.find_fab)
+    public void onFindClick(View button){
+    }
+
+    @Bind(R.id.gen_fab)
+    FloatingActionButton mGenFab;
+
+    @OnClick(R.id.gen_fab)
+    public void onGenClick(View button){
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -240,7 +266,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
     }
 
     private void updateView() {
-        this.runOnUiThread(()-> {
+        this.runOnUiThread(() -> {
             if (currentItinerary == null || mGoogleMap == null)
                 return; //wait for the other async method to call this
 
@@ -277,8 +303,7 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
                 polylines.add(mGoogleMap.addPolyline(line));
             }
             itemDetailFragment.updateItem(currentItinerary.getItems().get(0));
-            if(loadingProgressDialog!=null)
-            {
+            if (loadingProgressDialog != null) {
                 loadingProgressDialog.dismiss();
                 loadingProgressDialog = null;
             }
@@ -297,9 +322,8 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
         polylines.clear();
     }
 
-    private void zoomToLocation(String location)
-    {
-        if(mGoogleMap!=null) {
+    private void zoomToLocation(String location) {
+        if (mGoogleMap != null) {
             Geocoder coder = new Geocoder(this);
             try {
                 List<Address> addresses = coder.getFromLocationName(location, 1);
@@ -332,11 +356,20 @@ public class ItineraryDetailActivity extends AppCompatActivity implements OnMapR
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if(requestCode == REQUEST_LOCATION)
-        {
-            if(mGoogleMap!=null)
-            {
+        if (requestCode == REQUEST_LOCATION) {
+            if (mGoogleMap != null) {
+                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for Activity#requestPermissions for more details.
+                    return;
+                }
                 mGoogleMap.setMyLocationEnabled(true);
+
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

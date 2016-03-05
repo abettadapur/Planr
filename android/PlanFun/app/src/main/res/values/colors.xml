@@ -34,4 +34,7 @@
     <color name="maps_orange">#f05209</color>
     <color name="maps_purple">#c209f0</color>
 
+    <color name="black_semi_transparent">#B2000000</color>
+
+
 </resources>
