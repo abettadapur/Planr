@@ -44,7 +44,7 @@ class ItineraryRepository(BaseRepository):
         if query:
             itineraries = itineraries.filter(Itinerary.name.like(query))
 
-        return itineraries
+        return itineraries.all()
 
     def share(self, itinerary, user_id, permission):
         user_repository = UserRepository()
