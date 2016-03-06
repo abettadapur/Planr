@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,10 +27,14 @@ import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
+import devpost.yelp.planfun.net.RestClient;
 import devpost.yelp.planfun.ui.adapters.ItemAdapter;
 import devpost.yelp.planfun.ui.events.SavePlanRequest;
 import devpost.yelp.planfun.ui.views.WebAutoCompleteTextView;
 import devpost.yelp.planfun.model.Plan;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class EditPlanFragment extends Fragment {
 
@@ -75,21 +80,28 @@ public class EditPlanFragment extends Fragment {
     private String timeFormat = "H:mm";
     private SimpleDateFormat timeSdf;
 
+    private RestClient mRestClient;
+
     public static EditPlanFragment newInstance()
     {
-        return new EditPlanFragment();
+        EditPlanFragment fragment = new EditPlanFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     public static EditPlanFragment newInstance(int plan_id) {
         EditPlanFragment fragment = new EditPlanFragment();
         Bundle args = new Bundle();
         args.putInt("plan_id", plan_id);
-        fragment.setArguments(args);;
+        fragment.setArguments(args);
         return fragment;
     }
 
     public EditPlanFragment()
-    {}
+    {
+        mRestClient = RestClient.getInstance();
+    }
 
     public void setPlan(Plan plan)
     {
@@ -114,13 +126,41 @@ public class EditPlanFragment extends Fragment {
         ButterKnife.bind(this,v);
         dateSdf = new SimpleDateFormat(dateFormat, Locale.US);
         timeSdf = new SimpleDateFormat(timeFormat, Locale.US);
-
-        updateView();
-
         mAdapter = new ItemAdapter(mCurrentPlan ==null?null: mCurrentPlan.getItems(), getActivity(), true);
         mItemsView.setAdapter(mAdapter);
 
         return v;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        Bundle args = getArguments();
+        int planId = args.getInt("plan_id", -1);
+        if(planId!=-1)
+        {
+            Call<Plan> planCall = mRestClient.getItineraryService().getItinerary(planId);
+            planCall.enqueue(new Callback<Plan>() {
+                @Override
+                public void onResponse(Call<Plan> call, Response<Plan> response) {
+                    mCurrentPlan = response.body();
+                    getActivity().runOnUiThread(EditPlanFragment.this::updateView);
+                }
+
+                @Override
+                public void onFailure(Call<Plan> call, Throwable t) {
+
+                }
+            });
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Create Plan");
+        }
+        else
+        {
+            mCurrentPlan = new Plan();
+            updateView();
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Edit Plan");
+        }
+
+        super.onViewCreated(view, savedInstanceState);
     }
 
     DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
@@ -158,6 +198,12 @@ public class EditPlanFragment extends Fragment {
     private void updateView() {
         mNameBox.setText(mCurrentPlan.getName());
         mCityPicker.setText(mCurrentPlan.getCity());
-        mStartTimeBox.setText(timeSdf.format(mCurrentPlan.getStart_time().getTime()));
+        if(mCurrentPlan.getStart_time()!=null) {
+            mStartTimeBox.setText(timeSdf.format(mCurrentPlan.getStart_time().getTime()));
+        }
+        else
+        {
+            mStartTimeBox.setText(timeSdf.format(Calendar.getInstance().getTime()));
+        }
     }
 }

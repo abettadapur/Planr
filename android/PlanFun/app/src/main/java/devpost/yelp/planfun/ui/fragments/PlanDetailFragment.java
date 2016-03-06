@@ -45,7 +45,9 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
+import devpost.yelp.planfun.ui.events.EditPlanRequest;
 import devpost.yelp.planfun.ui.fragments.ItemDetailFragment;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Plan;
@@ -229,8 +231,9 @@ public class PlanDetailFragment extends Fragment implements View.OnClickListener
     }
 
     @Override
-    public void onClick(View v) {
-
+    public void onClick(View v)
+    {
+        PlanFunApplication.getBus().post(new EditPlanRequest(currentPlan.getId()));
     }
 
     @Override

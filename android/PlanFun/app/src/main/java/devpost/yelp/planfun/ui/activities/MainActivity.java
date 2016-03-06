@@ -227,9 +227,13 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe
     public void onEditPlanRequest(EditPlanRequest request)
     {
-        EditPlanFragment fragment = EditPlanFragment.newInstance();
+        EditPlanFragment fragment;
+
         if(!request.new_plan)
             fragment = EditPlanFragment.newInstance(request.plan_id);
+        else
+            fragment = EditPlanFragment.newInstance();
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)
                 .addToBackStack("")
@@ -254,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
                     .replace(R.id.container, searchItineraryFragment)
                     .commit();
             currentFragment = searchItineraryFragment;
+            mDrawer.setSelectionAtPosition(1);
             getSupportActionBar().setTitle("Search Results");
         }
     }
