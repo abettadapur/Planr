@@ -1,6 +1,5 @@
 package devpost.yelp.planfun.ui.activities;
 
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.drawable.Drawable;
@@ -10,12 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.support.v7.widget.SearchView;
 import android.widget.ImageView;
 
 import com.facebook.Profile;
@@ -37,23 +31,15 @@ import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
-import java.util.List;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
+import devpost.yelp.planfun.net.RestClient;
 import devpost.yelp.planfun.ui.events.OpenItineraryRequest;
 import devpost.yelp.planfun.ui.fragments.ItineraryDetailFragment;
 import devpost.yelp.planfun.ui.fragments.ItineraryListFragment;
-import devpost.yelp.planfun.model.Itinerary;
-import devpost.yelp.planfun.net.RestClient;
 import devpost.yelp.planfun.ui.fragments.SearchItineraryFragment;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 /**
