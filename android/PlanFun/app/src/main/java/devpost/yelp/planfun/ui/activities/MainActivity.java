@@ -9,6 +9,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -31,15 +33,22 @@ import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
+import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.net.RestClient;
-import devpost.yelp.planfun.ui.events.OpenItineraryRequest;
-import devpost.yelp.planfun.ui.fragments.ItineraryDetailFragment;
-import devpost.yelp.planfun.ui.fragments.ItineraryListFragment;
-import devpost.yelp.planfun.ui.fragments.SearchItineraryFragment;
+import devpost.yelp.planfun.ui.events.EditPlanRequest;
+import devpost.yelp.planfun.ui.events.FindPlanRequest;
+import devpost.yelp.planfun.ui.events.OpenPlanRequest;
+import devpost.yelp.planfun.ui.events.SavePlanRequest;
+import devpost.yelp.planfun.ui.fragments.EditPlanFragment;
+import devpost.yelp.planfun.ui.fragments.PlanDetailFragment;
+import devpost.yelp.planfun.ui.fragments.PlanListFragment;
+import devpost.yelp.planfun.ui.fragments.SearchPlanFragment;
 
 
 /**
@@ -48,7 +57,6 @@ import devpost.yelp.planfun.ui.fragments.SearchItineraryFragment;
 public class MainActivity extends AppCompatActivity {
 
     private Fragment currentFragment;
-    private RestClient mRestClient;
     private Drawer mDrawer;
 
     private PlanListFragment planListFragment;
@@ -81,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
             currentFragment = planListFragment;
 
         }
-        mRestClient = RestClient.getInstance();
     }
 
     private Drawer build_drawer() {
@@ -165,6 +172,9 @@ public class MainActivity extends AppCompatActivity {
                         getSupportActionBar().setTitle("Your Itineraries");
                     }
                     break;
+                case "Search Plans":
+                    PlanFunApplication.getBus().post(new FindPlanRequest());
+                    break;
                 case "Settings":
                     break;
                 case "Logout":
@@ -204,31 +214,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public boolean onQueryTextSubmit(String s) {
-        if(!s.equals("")) {
-            if (currentFragment == planListFragment) {
-                mDrawer.setSelection(1);
-            }
-            Call<List<Plan>> itineraryCall = mRestClient.getItineraryService().searchItinerary(s);
-            itineraryCall.enqueue(new Callback<List<Plan>>() {
-                @Override
-                public void onResponse(Call<List<Plan>> call, Response<List<Plan>> response) {
-                    if(response.isSuccess())
-                    {
-                        MainActivity.this.runOnUiThread(() -> searchItineraryFragment.updateItems(response.body()));
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<List<Plan>> call, Throwable t) {
-
-                }
-            });
-        }
-        return true;
-    }
-
-
     @Subscribe
     public void onOpenPlanRequest(OpenPlanRequest request)
     {
@@ -262,8 +247,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void onFindPlanRequest(FindPlanRequest request
-    ){
+    public void onFindPlanRequest(FindPlanRequest request){
         if(currentFragment != searchItineraryFragment) {
             getSupportFragmentManager()
                     .beginTransaction()
