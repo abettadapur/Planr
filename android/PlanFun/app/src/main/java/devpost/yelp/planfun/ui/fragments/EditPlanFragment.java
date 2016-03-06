@@ -15,6 +15,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
@@ -27,7 +28,9 @@ import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
+import devpost.yelp.planfun.model.City;
 import devpost.yelp.planfun.net.RestClient;
+import devpost.yelp.planfun.ui.adapters.CityAutoCompleteAdapter;
 import devpost.yelp.planfun.ui.adapters.ItemAdapter;
 import devpost.yelp.planfun.ui.events.SavePlanRequest;
 import devpost.yelp.planfun.ui.views.WebAutoCompleteTextView;
@@ -55,7 +58,6 @@ public class EditPlanFragment extends Fragment {
 
     @Bind(R.id.city_picker)
     WebAutoCompleteTextView mCityPicker;
-    CheckBox mCheckBox;
 
     @Bind(R.id.items_view)
     RecyclerView mItemsView;
@@ -123,7 +125,15 @@ public class EditPlanFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_edit_plan, container, false);
-        ButterKnife.bind(this,v);
+        ButterKnife.bind(this, v);
+        mCityPicker.setThreshold(2);
+        mCityPicker.setAdapter(new CityAutoCompleteAdapter(this.getContext()));
+        mCityPicker.setLoadingIndicator((ProgressBar)v.findViewById(R.id.autoCompleteProgressBar));
+        mCityPicker.setOnItemClickListener((parent, view, position, id) -> {
+            City city = (City) parent.getItemAtPosition(position);
+            mCityPicker.setText(city.getName() + ", " + city.getState());
+        });
+
         dateSdf = new SimpleDateFormat(dateFormat, Locale.US);
         timeSdf = new SimpleDateFormat(timeFormat, Locale.US);
         mAdapter = new ItemAdapter(mCurrentPlan ==null?null: mCurrentPlan.getItems(), getActivity(), true);
