@@ -20,7 +20,7 @@ import android.view.ViewGroup;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.AccessToken;
-import com.facebook.internal.AppCall;
+import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -34,7 +34,6 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
-import com.melnykov.fab.FloatingActionButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,12 +44,13 @@ import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import devpost.yelp.planfun.R;
+import devpost.yelp.planfun.ui.fragments.ItemDetailFragment;
 import devpost.yelp.planfun.model.Item;
-import devpost.yelp.planfun.model.Itinerary;
+import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.model.PolylineModel;
 import devpost.yelp.planfun.net.RestClient;
-import devpost.yelp.planfun.ui.activities.MainActivity;
 import devpost.yelp.planfun.ui.dialogs.ShareItineraryDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,10 +59,10 @@ import retrofit2.Response;
 /**
  * Created by alexb on 3/4/2016.
  */
-public class ItineraryDetailFragment extends Fragment implements View.OnClickListener, OnMapReadyCallback, GoogleMap.OnMarkerClickListener
+public class PlanDetailFragment extends Fragment implements View.OnClickListener, OnMapReadyCallback, GoogleMap.OnMarkerClickListener
 {
     private RestClient mRestClient;
-    private Itinerary currentItinerary;
+    private Plan currentPlan;
     private ItemDetailFragment mDetailFragment;
     private GoogleMap mGoogleMap;
 
@@ -78,10 +78,10 @@ public class ItineraryDetailFragment extends Fragment implements View.OnClickLis
     @Bind(R.id.edit_fab)
     FloatingActionButton mEditFab;
 
-    public static ItineraryDetailFragment newInstance(int itinerary_id) {
-        ItineraryDetailFragment fragment = new ItineraryDetailFragment();
+    public static PlanDetailFragment newInstance(int plan_id) {
+        PlanDetailFragment fragment = new PlanDetailFragment();
         Bundle args = new Bundle();
-        args.putInt("itinerary_id", itinerary_id);
+        args.putInt("plan_id", plan_id);
         fragment.setArguments(args);
         return fragment;
     }
@@ -94,7 +94,7 @@ public class ItineraryDetailFragment extends Fragment implements View.OnClickLis
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_itinerary_detail, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_plan_detail, container, false);
         ButterKnife.bind(this, rootView);
         setHasOptionsMenu(true);
         loadingProgressDialogBuilder = new MaterialDialog.Builder(getContext())
@@ -126,17 +126,17 @@ public class ItineraryDetailFragment extends Fragment implements View.OnClickLis
         mapFragment.getMapAsync(this);
 
         Bundle args = getArguments();
-        int id = args.getInt("itinerary_id");
+        int id = args.getInt("plan_id");
         loadingProgressDialog = loadingProgressDialogBuilder.show();
-        Call<Itinerary> itineraryCall = mRestClient.getItineraryService().getItinerary(id, true);
-        itineraryCall.enqueue(new Callback<Itinerary>() {
+        Call<Plan> itineraryCall = mRestClient.getItineraryService().getItinerary(id, true);
+        itineraryCall.enqueue(new Callback<Plan>() {
             @Override
-            public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
+            public void onResponse(Call<Plan> call, Response<Plan> response) {
                 if (response.isSuccess()) {
-                    currentItinerary = response.body();
+                    currentPlan = response.body();
                     if (mMenu != null) {
-                        if (!currentItinerary.getUser().getFacebook_id().equals(AccessToken.getCurrentAccessToken().getUserId())) {
-                            ItineraryDetailFragment.this.getActivity().runOnUiThread(() -> {
+                        if (!currentPlan.getUser().getFacebook_id().equals(AccessToken.getCurrentAccessToken().getUserId())) {
+                            PlanDetailFragment.this.getActivity().runOnUiThread(() -> {
                                 mMenu.add(0, ADD_ITINERARY, 0, "Add to your itineraries").setIcon(new IconDrawable(getContext(), Iconify.IconValue.fa_plus).color(0xFFFFFF).actionBarSize());
                                 mMenu.removeItem(R.id.action_share);
                                 mMenu.removeItem(R.id.action_randomize);
@@ -149,7 +149,7 @@ public class ItineraryDetailFragment extends Fragment implements View.OnClickLis
             }
 
             @Override
-            public void onFailure(Call<Itinerary> call, Throwable t) {
+            public void onFailure(Call<Plan> call, Throwable t) {
 
             }
         });
@@ -158,19 +158,19 @@ public class ItineraryDetailFragment extends Fragment implements View.OnClickLis
     private void updateView()
     {
         getActivity().runOnUiThread(() -> {
-            if (currentItinerary == null || mGoogleMap == null)
+            if (currentPlan == null || mGoogleMap == null)
                 return; //wait for the other async method to call this
 
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(currentItinerary.getName());
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(currentPlan.getName());
 
             clearMap();
-            zoomToLocation(currentItinerary.getCity());
+            zoomToLocation(currentPlan.getCity());
 
-            Collections.sort(currentItinerary.getItems(), (lhs, rhs) -> (int) (lhs.getStart_time().getTimeInMillis() - rhs.getStart_time().getTimeInMillis()));
-            Collections.sort(currentItinerary.getPolylines(), (lhs, rhs) -> lhs.getOrder() - rhs.getOrder());
+            Collections.sort(currentPlan.getItems(), (lhs, rhs) -> (int) (lhs.getStart_time().getTimeInMillis() - rhs.getStart_time().getTimeInMillis()));
+            Collections.sort(currentPlan.getPolylines(), (lhs, rhs) -> lhs.getOrder() - rhs.getOrder());
 
-            for (int j = 0; j < currentItinerary.getItems().size(); j++) {
-                Item i = currentItinerary.getItems().get(j);
+            for (int j = 0; j < currentPlan.getItems().size(); j++) {
+                Item i = currentPlan.getItems().get(j);
                 String drawableName = "marker_" + colors[j % 6] + "_number_" + j;
                 Bitmap b = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(drawableName, "drawable", getActivity().getPackageName()));
                 Bitmap scaled = Bitmap.createScaledBitmap(b, b.getWidth() * 3, b.getHeight() * 3, false);
@@ -182,8 +182,8 @@ public class ItineraryDetailFragment extends Fragment implements View.OnClickLis
 
                 marker_to_item.put(marker, i);
             }
-            for (int j = 0; j < currentItinerary.getPolylines().size(); j++) {
-                PolylineModel polylineModel = currentItinerary.getPolylines().get(j);
+            for (int j = 0; j < currentPlan.getPolylines().size(); j++) {
+                PolylineModel polylineModel = currentPlan.getPolylines().get(j);
                 final String color_str = "maps_" + colors[j];
                 List<LatLng> points = PolyUtil.decode(polylineModel.getPolyline());
                 PolylineOptions line = new PolylineOptions().geodesic(true);
@@ -193,7 +193,7 @@ public class ItineraryDetailFragment extends Fragment implements View.OnClickLis
                 line.color(getResources().getColor(getResources().getIdentifier(color_str, "color", getActivity().getPackageName())));
                 polylines.add(mGoogleMap.addPolyline(line));
             }
-            mDetailFragment.updateItem(currentItinerary.getItems().get(0));
+            mDetailFragment.updateItem(currentPlan.getItems().get(0));
             if (loadingProgressDialog != null) {
                 loadingProgressDialog.dismiss();
                 loadingProgressDialog = null;
@@ -246,11 +246,10 @@ public class ItineraryDetailFragment extends Fragment implements View.OnClickLis
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if(requestCode == REQUEST_LOCATION)
-        {
-            if(mGoogleMap!=null)
-            {
+        if (requestCode == REQUEST_LOCATION) {
+            if (mGoogleMap != null) {
                 mGoogleMap.setMyLocationEnabled(true);
+
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -295,13 +294,13 @@ public class ItineraryDetailFragment extends Fragment implements View.OnClickLis
                                     .content("Regenerating your itinerary...")
                                     .progress(true, 0)
                                     .show();
-                            Call<Itinerary> refreshCall = mRestClient.getItineraryService().randomizeItinerary(currentItinerary.getId());
-                            refreshCall.enqueue(new Callback<Itinerary>() {
+                            Call<Plan> refreshCall = mRestClient.getItineraryService().randomizeItinerary(currentPlan.getId());
+                            refreshCall.enqueue(new Callback<Plan>() {
                                 @Override
-                                public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
+                                public void onResponse(Call<Plan> call, Response<Plan> response) {
                                     if (response.isSuccess()) {
                                         progressDialog.dismiss();
-                                        currentItinerary = response.body();
+                                        currentPlan = response.body();
                                         updateView();
                                     } else {
                                         progressDialog.dismiss();
@@ -310,7 +309,7 @@ public class ItineraryDetailFragment extends Fragment implements View.OnClickLis
                                 }
 
                                 @Override
-                                public void onFailure(Call<Itinerary> call, Throwable t) {
+                                public void onFailure(Call<Plan> call, Throwable t) {
 
                                 }
                             });
@@ -323,18 +322,18 @@ public class ItineraryDetailFragment extends Fragment implements View.OnClickLis
     private void refreshItinerary()
     {
         loadingProgressDialog = loadingProgressDialogBuilder.show();
-        Call<Itinerary> getItineraryCall = mRestClient.getItineraryService().getItinerary(currentItinerary.getId(), true);
-        getItineraryCall.enqueue(new Callback<Itinerary>() {
+        Call<Plan> getItineraryCall = mRestClient.getItineraryService().getItinerary(currentPlan.getId(), true);
+        getItineraryCall.enqueue(new Callback<Plan>() {
             @Override
-            public void onResponse(Call<Itinerary> call, Response<Itinerary> response) {
+            public void onResponse(Call<Plan> call, Response<Plan> response) {
                 if (response.isSuccess()) {
-                    currentItinerary = response.body();
+                    currentPlan = response.body();
                     updateView();
                 }
             }
 
             @Override
-            public void onFailure(Call<Itinerary> call, Throwable t) {
+            public void onFailure(Call<Plan> call, Throwable t) {
 
             }
         });
@@ -348,7 +347,7 @@ public class ItineraryDetailFragment extends Fragment implements View.OnClickLis
                 return true;
 
             case R.id.action_share:
-                ShareItineraryDialog shareDialog = new ShareItineraryDialog(currentItinerary);
+                ShareItineraryDialog shareDialog = new ShareItineraryDialog(currentPlan);
                 shareDialog.show(this.getChildFragmentManager(), "fm");
                 break;
 

@@ -16,7 +16,7 @@ import java.util.List;
 
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.ui.views.RoundedImageView;
-import devpost.yelp.planfun.model.Itinerary;
+import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.model.Share;
 
 /**
@@ -44,10 +44,10 @@ public class ItineraryAdapter extends RecyclerView.Adapter<ItineraryAdapter.View
             this.itemView = itemView;
         }
     }
-    private List<Itinerary> mItems;
+    private List<Plan> mItems;
     private Context mContext;
 
-    public ItineraryAdapter(List<Itinerary> items, Context context)
+    public ItineraryAdapter(List<Plan> items, Context context)
     {
         this.mItems = items;
         this.mContext=context;
@@ -55,7 +55,7 @@ public class ItineraryAdapter extends RecyclerView.Adapter<ItineraryAdapter.View
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.itinerary_list_item, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.plan_list_item, viewGroup, false);
 
         return new ViewHolder(v);
     }
@@ -63,14 +63,14 @@ public class ItineraryAdapter extends RecyclerView.Adapter<ItineraryAdapter.View
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i)
     {
-        Itinerary itinerary = mItems.get(i);
-        viewHolder.mTitleView.setText(itinerary.getName());
-        viewHolder.mSubtitleView.setText(itinerary.getCity());
+        Plan plan = mItems.get(i);
+        viewHolder.mTitleView.setText(plan.getName());
+        viewHolder.mSubtitleView.setText(plan.getCity());
         viewHolder.itemView.setTag(i);
         viewHolder.userLayout.removeAllViews();
-        ImageView ownerImageView = createImageView(itinerary.getUser().getFacebook_id(), false);
+        ImageView ownerImageView = createImageView(plan.getUser().getFacebook_id(), false);
         viewHolder.userLayout.addView(ownerImageView);
-        for(Share share: itinerary.getShared_users())
+        for(Share share: plan.getShared_users())
         {
             viewHolder.userLayout.addView(createImageView(share.getUser().getFacebook_id(), true));
         }

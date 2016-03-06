@@ -51,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private RestClient mRestClient;
     private Drawer mDrawer;
 
-    private ItineraryListFragment itineraryListFragment;
-    private ItineraryListFragment searchItineraryFragment;
+    private PlanListFragment planListFragment;
+    private PlanListFragment searchItineraryFragment;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -60,12 +60,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_itinerary);
+        setContentView(R.layout.activity_plan);
         ButterKnife.bind(this);
         PlanFunApplication.getBus().register(this);
 
-        itineraryListFragment = ItineraryListFragment.newInstance(R.layout.fragment_itinerary_list, R.layout.itinerary_list_item);
-        searchItineraryFragment = SearchItineraryFragment.newInstance(R.layout.fragment_itinerary_list, R.layout.itinerary_list_item);
+        planListFragment = PlanListFragment.newInstance(R.layout.fragment_plan_list, R.layout.plan_list_item);
+        searchItineraryFragment = SearchPlanFragment.newInstance(R.layout.fragment_plan_list, R.layout.plan_list_item);
         setSupportActionBar(toolbar);
         buildToolbar();
 
@@ -76,9 +76,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, itineraryListFragment)
+                    .add(R.id.container, planListFragment)
                     .commit();
-            currentFragment = itineraryListFragment;
+            currentFragment = planListFragment;
 
         }
         mRestClient = RestClient.getInstance();
@@ -156,23 +156,13 @@ public class MainActivity extends AppCompatActivity {
             String item = ((Nameable) iDrawerItem).getName().toString();
             switch (item) {
                 case "My Plans":
-                    if(currentFragment != itineraryListFragment) {
+                    if(currentFragment != planListFragment) {
                         getSupportFragmentManager()
                                 .beginTransaction()
-                                .replace(R.id.container, itineraryListFragment)
+                                .replace(R.id.container, planListFragment)
                                 .commit();
-                        currentFragment = itineraryListFragment;
+                        currentFragment = planListFragment;
                         getSupportActionBar().setTitle("Your Itineraries");
-                    }
-                    break;
-                case "Search Plans":
-                    if(currentFragment != searchItineraryFragment) {
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.container, searchItineraryFragment)
-                                .commit();
-                        currentFragment = searchItineraryFragment;
-                        getSupportActionBar().setTitle("Search Results");
                     }
                     break;
                 case "Settings":
@@ -192,14 +182,95 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public boolean onQueryTextSubmit(String s) {
+        if(!s.equals("")) {
+            if (currentFragment == planListFragment) {
+                mDrawer.setSelection(1);
+            }
+            Call<List<Plan>> itineraryCall = mRestClient.getItineraryService().searchItinerary(s);
+            itineraryCall.enqueue(new Callback<List<Plan>>() {
+                @Override
+                public void onResponse(Call<List<Plan>> call, Response<List<Plan>> response) {
+                    if(response.isSuccess())
+                    {
+                        MainActivity.this.runOnUiThread(() -> searchItineraryFragment.updateItems(response.body()));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Plan>> call, Throwable t) {
+
+                }
+            });
+        }
+        return true;
+    }
+
 
     @Subscribe
-    public void onOpenItineraryRequest(OpenItineraryRequest request)
+    public void onOpenPlanRequest(OpenPlanRequest request)
     {
-        ItineraryDetailFragment fragment = ItineraryDetailFragment.newInstance(request.itinerary_id);
+        PlanDetailFragment fragment = PlanDetailFragment.newInstance(request.plan_id);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)
                 .addToBackStack("")
                 .commit();
+    }
+
+    @Subscribe
+    public void onEditPlanRequest(EditPlanRequest request)
+    {
+        EditPlanFragment fragment = EditPlanFragment.newInstance();
+        if(!request.new_plan)
+            fragment = EditPlanFragment.newInstance(request.plan_id);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("")
+                .commit();
+    }
+
+    @Subscribe
+    public void onSavePlanRequest(SavePlanRequest request)
+    {
+        PlanDetailFragment fragment = PlanDetailFragment.newInstance(request.to_save.getId());
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("")
+                .commit();
+    }
+
+    @Subscribe
+    public void onFindPlanRequest(FindPlanRequest request
+    ){
+        if(currentFragment != searchItineraryFragment) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, searchItineraryFragment)
+                    .commit();
+            currentFragment = searchItineraryFragment;
+            getSupportActionBar().setTitle("Search Results");
+        }
     }
 }

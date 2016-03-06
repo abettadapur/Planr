@@ -31,7 +31,7 @@
                 android:layout_height="match_parent"
                 />
 
-            <com.melnykov.fab.FloatingActionButton
+            <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/edit_fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -41,7 +41,6 @@
                 android:src="@drawable/ic_mode_edit_white_24dp"
                 fab:fab_colorNormal="@color/accentColor"
                 fab:fab_colorPressed="@color/accentPressed"
-                fab:fab_colorRipple="@color/accentPressed"
                 />
 
 

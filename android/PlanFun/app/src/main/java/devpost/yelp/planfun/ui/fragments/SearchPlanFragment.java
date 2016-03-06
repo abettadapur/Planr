@@ -12,7 +12,7 @@ import com.joanzapata.android.iconify.Iconify;
 import java.util.List;
 
 import devpost.yelp.planfun.R;
-import devpost.yelp.planfun.model.Itinerary;
+import devpost.yelp.planfun.model.Plan;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -23,11 +23,11 @@ import retrofit2.Response;
  * <p/>
  * interface.
  */
-public class SearchItineraryFragment extends ItineraryListFragment implements  SearchView.OnQueryTextListener
+public class SearchPlanFragment extends PlanListFragment implements  SearchView.OnQueryTextListener
 {
 
-    public static SearchItineraryFragment newInstance(int layout, int list_item) {
-        SearchItineraryFragment fragment = new SearchItineraryFragment();
+    public static SearchPlanFragment newInstance(int layout, int list_item) {
+        SearchPlanFragment fragment = new SearchPlanFragment();
         Bundle args = new Bundle();
         args.putInt("layout", layout);
         args.putInt("list_item", list_item);
@@ -71,10 +71,10 @@ public class SearchItineraryFragment extends ItineraryListFragment implements  S
     public boolean onQueryTextSubmit(String query) {
         if(!query.equals("")) {
             setLoading(true);
-            Call<List<Itinerary>> itineraryCall = mRestClient.getItineraryService().searchItinerary(query);
-            itineraryCall.enqueue(new Callback<List<Itinerary>>() {
+            Call<List<Plan>> itineraryCall = mRestClient.getItineraryService().searchItinerary(query);
+            itineraryCall.enqueue(new Callback<List<Plan>>() {
                 @Override
-                public void onResponse(Call<List<Itinerary>> call, Response<List<Itinerary>> response) {
+                public void onResponse(Call<List<Plan>> call, Response<List<Plan>> response) {
                     if(response.isSuccess())
                     {
                         getActivity().runOnUiThread(() -> {
@@ -85,7 +85,7 @@ public class SearchItineraryFragment extends ItineraryListFragment implements  S
                 }
 
                 @Override
-                public void onFailure(Call<List<Itinerary>> call, Throwable t) {
+                public void onFailure(Call<List<Plan>> call, Throwable t) {
 
                 }
             });

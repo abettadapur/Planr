@@ -3,6 +3,7 @@ package devpost.yelp.planfun.ui.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,13 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.melnykov.fab.FloatingActionButton;
-
 import devpost.yelp.planfun.R;
+import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.ui.activities.AddItemActivity;
 import devpost.yelp.planfun.ui.adapters.ItemAdapter;
 import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
-import devpost.yelp.planfun.model.Itinerary;
 
 
 /**
@@ -31,7 +30,7 @@ public class ItemListFragment extends Fragment implements RecyclerItemClickListe
 
     private RecyclerView mRecycleView;
     private ItemAdapter mAdapter;
-    private Itinerary mCurrentItinerary;
+    private Plan mCurrentPlan;
 
     private FloatingActionButton mFab;
 
@@ -55,18 +54,12 @@ public class ItemListFragment extends Fragment implements RecyclerItemClickListe
 
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View rootView = inflater.inflate(R.layout.fragment_item_list, container, false);
         mRecycleView = (RecyclerView)rootView.findViewById(R.id.recycle_view);
 
-        mAdapter = new ItemAdapter(mCurrentItinerary.getItems(), getActivity());
+        mAdapter = new ItemAdapter(mCurrentPlan.getItems(), getActivity());
         mRecycleView.setAdapter(mAdapter);
 
         mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -79,7 +72,7 @@ public class ItemListFragment extends Fragment implements RecyclerItemClickListe
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(ItemListFragment.this.getActivity(), AddItemActivity.class);
-                i.putExtra("itinerary_id", mCurrentItinerary.getId());
+                i.putExtra("plan_id", mCurrentPlan.getId());
                 getActivity().startActivity(i);
             }
         });
@@ -96,16 +89,16 @@ public class ItemListFragment extends Fragment implements RecyclerItemClickListe
 
 
 
-    public void setItinerary(Itinerary itinerary)
+    public void setItinerary(Plan plan)
     {
 
-        mCurrentItinerary = itinerary;
+        mCurrentPlan = plan;
     }
 
-    public void setItineraryAndUpdate(Itinerary itinerary)
+    public void setItineraryAndUpdate(Plan plan)
     {
-        mCurrentItinerary = itinerary;
-        mAdapter = new ItemAdapter(mCurrentItinerary.getItems(), getActivity());
+        mCurrentPlan = plan;
+        mAdapter = new ItemAdapter(mCurrentPlan.getItems(), getActivity());
         mRecycleView.setAdapter(mAdapter);
     }
 

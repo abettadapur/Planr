@@ -9,8 +9,10 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Item;
+import devpost.yelp.planfun.ui.events.EditItemRequest;
 
 /**
  * Created by Alex on 3/10/2015.
@@ -30,29 +32,48 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>
     }
     private List<Item> mItems;
     private Context mContext;
+    private boolean addButton;
 
-    public ItemAdapter(List<Item> items, Context context)
+    public ItemAdapter(List<Item> items, Context context){
+        this(items,context,false);
+    }
+
+    public ItemAdapter(List<Item> items, Context context, boolean addButton)
     {
         this.mItems = items;
         this.mContext=context;
+        this.addButton = addButton;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_list_item, viewGroup, false);
+        int layout = R.layout.item_list_item;
+        if(i==getItemCount() && addButton){
+            layout = R.layout.item_list_add_button;
+        }
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(layout, viewGroup, false);
         return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i)
     {
-        Item item = mItems.get(i);
-        viewHolder.mTitleView.setText(item.getName());
-        viewHolder.mSubtitleView.setText(item.getYelp_category().getName());
+        if(i==getItemCount() && addButton){
+            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PlanFunApplication.getBus().post(new EditItemRequest(true));
+                }
+            });
+        }else {
+            Item item = mItems.get(i);
+            viewHolder.mTitleView.setText(item.getName());
+            viewHolder.mSubtitleView.setText(item.getYelp_category().getName());
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mItems==null ? 0: mItems.size();
+        return (mItems==null ? 0: mItems.size())+(addButton?1:0);
     }
 }

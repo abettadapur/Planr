@@ -1,8 +1,6 @@
 package devpost.yelp.planfun.ui.fragments;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v4.app.Fragment;
@@ -18,7 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.melnykov.fab.FloatingActionButton;
+
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,14 +26,16 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.net.RestClient;
 import devpost.yelp.planfun.ui.adapters.ItineraryAdapter;
 import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
-import devpost.yelp.planfun.model.Itinerary;
-import devpost.yelp.planfun.ui.dialogs.CreateItineraryDialog;
-import devpost.yelp.planfun.ui.events.OpenItineraryRequest;
+import devpost.yelp.planfun.model.Plan;
+import devpost.yelp.planfun.ui.events.EditPlanRequest;
+import devpost.yelp.planfun.ui.events.FindPlanRequest;
+import devpost.yelp.planfun.ui.events.OpenPlanRequest;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -43,10 +45,10 @@ import retrofit2.Response;
  * A fragment representing a list of Items.
  * <p/>
  * <p/>
- * Activities containing this fragment MUST implement the {@link edu.gatech.daytripper.fragments.ItineraryListFragment.ItineraryListListener}
+ * Activities containing this fragment MUST implement the {@link devpost.yelp.planfun.activities.fragments.ItineraryListFragment.ItineraryListListener}
  * interface.
  */
-public class ItineraryListFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class PlanListFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     @Bind(R.id.recycle_view)
     RecyclerView mRecycleView;
@@ -54,13 +56,10 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
     @Bind(R.id.progress_circle)
     ProgressBar mLoadingCircle;
 
-    @Bind(R.id.add_fab)
-    FloatingActionButton mAddButton;
-
     @Bind(R.id.swipe_refresh)
     SwipeRefreshLayout mSwipeRefresh;
 
-    private List<Itinerary> mItineraryList;
+    private List<Plan> mPlanList;
     private ItineraryAdapter mAdapter;
     protected RestClient mRestClient;
     protected boolean refreshOnStart = true;
@@ -71,9 +70,34 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
     private final int ITINERARY_CREATE_CODE = 86;
     private final int CONTEXT_DELETE = 87;
 
+    @Bind(R.id.add_fab)
+    FloatingActionMenu mAddMenu;
 
-    public static ItineraryListFragment newInstance(int layout, int list_item) {
-        ItineraryListFragment fragment = new ItineraryListFragment();
+    @Bind(R.id.create_fab)
+    FloatingActionButton mCreateFab;
+
+    @OnClick(R.id.create_fab)
+    public void onCreateClick(View button){
+        PlanFunApplication.getBus().post(new EditPlanRequest(true));
+    }
+
+    @Bind(R.id.find_fab)
+    FloatingActionButton mFindFab;
+
+    @OnClick(R.id.find_fab)
+    public void onFindClick(View button){
+        PlanFunApplication.getBus().post(new FindPlanRequest());
+    }
+
+    @Bind(R.id.gen_fab)
+    FloatingActionButton mGenFab;
+
+    @OnClick(R.id.gen_fab)
+    public void onGenClick(View button){
+    }
+
+    public static PlanListFragment newInstance(int layout, int list_item) {
+        PlanListFragment fragment = new PlanListFragment();
         Bundle args = new Bundle();
         args.putInt("layout", layout);
         args.putInt("list_item", list_item);
@@ -85,13 +109,13 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public ItineraryListFragment() {
+    public PlanListFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mItineraryList = new ArrayList<>();
+        mPlanList = new ArrayList<>();
         mRestClient = RestClient.getInstance();
     }
 
@@ -106,18 +130,15 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
         ButterKnife.bind(this, rootView);
         mSwipeRefresh.setOnRefreshListener(this);
 
-        mAdapter = new ItineraryAdapter(mItineraryList, getActivity());
+        mAdapter = new ItineraryAdapter(mPlanList, getActivity());
         mRecycleView.setAdapter(mAdapter);
 
         mRecycleView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         mRecycleView.setItemAnimator(new DefaultItemAnimator());
 
         mRecycleView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), this));
-
-        mAddButton.attachToRecyclerView(mRecycleView);
-        mAddButton.setOnClickListener(this);
-
         registerForContextMenu(mRecycleView);
+
         return rootView;
     }
 
@@ -131,12 +152,12 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
     private void refreshList()
     {
         setLoading(true);
-        Call<List<Itinerary>> getItinerariesCall = mRestClient.getItineraryService().listItineraries(true);
-        getItinerariesCall.enqueue(new Callback<List<Itinerary>>() {
+        Call<List<Plan>> getItinerariesCall = mRestClient.getItineraryService().listItineraries(true);
+        getItinerariesCall.enqueue(new Callback<List<Plan>>() {
             @Override
-            public void onResponse(Call<List<Itinerary>> call, Response<List<Itinerary>> response) {
+            public void onResponse(Call<List<Plan>> call, Response<List<Plan>> response) {
                 if (response.isSuccess()) {
-                    ItineraryListFragment.this.getActivity().runOnUiThread(() -> {
+                    PlanListFragment.this.getActivity().runOnUiThread(() -> {
                         updateItems(response.body());
                         setLoading(false);
                     });
@@ -150,19 +171,19 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
             }
 
             @Override
-            public void onFailure(Call<List<Itinerary>> call, Throwable t) {
+            public void onFailure(Call<List<Plan>> call, Throwable t) {
 
             }
         });
     }
 
-    public void updateItems(List<Itinerary> items)
+    public void updateItems(List<Plan> items)
     {
-        if(mItineraryList == null)
-            mItineraryList = new ArrayList<>();
+        if(mPlanList == null)
+            mPlanList = new ArrayList<>();
 
-        mItineraryList.clear();
-        mItineraryList.addAll(items);
+        mPlanList.clear();
+        mPlanList.addAll(items);
         mAdapter.notifyDataSetChanged();
     }
 
@@ -188,16 +209,16 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 
         super.onCreateContextMenu(menu, v, menuInfo);
-        Itinerary itinerary = mItineraryList.get(mContextIndex);
-        menu.setHeaderTitle(itinerary.getName());
-        menu.add(0, CONTEXT_DELETE, 0, "Delete Itinerary");
+        Plan plan = mPlanList.get(mContextIndex);
+        menu.setHeaderTitle(plan.getName());
+        menu.add(0, CONTEXT_DELETE, 0, "Delete Plan");
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         if(item.getItemId() == CONTEXT_DELETE)
         {
-            removeItem(mItineraryList.get(mContextIndex).getId());
+            removeItem(mPlanList.get(mContextIndex).getId());
         }
         return super.onContextItemSelected(item);
     }
@@ -205,8 +226,8 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
     @Override
     public void onItemClick(View childView, int position)
     {
-        int itinerary_id = mItineraryList.get(position).getId();
-        PlanFunApplication.getBus().post(new OpenItineraryRequest(itinerary_id));
+        int itinerary_id = mPlanList.get(position).getId();
+        PlanFunApplication.getBus().post(new OpenPlanRequest(itinerary_id));
     }
 
     @Override
@@ -216,28 +237,6 @@ public class ItineraryListFragment extends Fragment implements RecyclerItemClick
         vb.vibrate(100);
         mContextIndex = position;
         getActivity().openContextMenu(childView);
-    }
-
-    /** Open a dialog to add a new itinerary. After collecting info, open edit itinerary activity **/
-    @Override
-    public void onClick(View v)
-    {
-        CreateItineraryDialog dialog = new CreateItineraryDialog();
-        dialog.setTargetFragment(this, ITINERARY_CREATE_CODE);
-        dialog.show(getActivity().getSupportFragmentManager(), "fm");
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==ITINERARY_CREATE_CODE)
-        {
-            if(resultCode== Activity.RESULT_OK)
-            {
-                //things
-            }
-        }
-        getActivity().runOnUiThread(this::refreshList);
     }
 
     @Override

@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by Alex on 3/7/2015.
  */
-public class Itinerary implements Comparable<Itinerary>
+public class Plan implements Comparable<Plan>
 {
     private int id;
     private String name;
@@ -28,9 +28,9 @@ public class Itinerary implements Comparable<Itinerary>
     private List<Share> shared_users;
 
 
-    public Itinerary(){}
+    public Plan(){}
 
-    public Itinerary(String name, Calendar start_time, Calendar end_time, String city, boolean isPublic, List<Item> items)
+    public Plan(String name, Calendar start_time, Calendar end_time, String city, boolean isPublic, List<Item> items)
     {
         this.id = 0;
         this.name = name;
@@ -41,7 +41,7 @@ public class Itinerary implements Comparable<Itinerary>
         this.isPublic = isPublic;
     }
 
-    public Itinerary(int id, String name, Calendar date, Calendar start_time, Calendar end_time, String city, boolean isPublic, List<Item> items) {
+    public Plan(int id, String name, Calendar date, Calendar start_time, Calendar end_time, String city, boolean isPublic, List<Item> items) {
 
         this.id = id;
         this.name = name;
@@ -117,7 +117,7 @@ public class Itinerary implements Comparable<Itinerary>
     }
 
     @Override
-    public int compareTo(Itinerary another) {
+    public int compareTo(Plan another) {
         return this.getStart_time().compareTo(another.getStart_time());
     }
 
