@@ -11,9 +11,8 @@
         android:id="@+id/input_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:met_floatingLabelText="Plan Name"
-        app:met_floatingLabel="highlight"
-        app:met_floatingLabelAlwaysShown="true"/>
+        android:hint="Plan Name"
+        app:met_floatingLabel="normal"/>
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/city_picker"
@@ -21,34 +20,8 @@
         android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:met_floatingLabelText="Starting Place"
-        app:met_floatingLabel="highlight"
-        app:met_floatingLabelAlwaysShown="true"/>
-
-
-    <!--<RelativeLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content">-->
-        <!--<android.support.design.widget.TextInputLayout-->
-            <!--android:id="@+id/input_layout_city"-->
-            <!--android:focusable="false"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content">-->
-
-            <!-- -->
-
-        <!--</android.support.design.widget.TextInputLayout>-->
-        <!--<ProgressBar-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_toEndOf="@id/input_layout_city"-->
-            <!--android:layout_marginStart="-16dp"-->
-            <!--android:indeterminate="true"-->
-            <!--android:id = "@+id/autoCompleteProgressBar"-->
-            <!--android:visibility="gone"-->
-            <!--/>-->
-
-    <!--</RelativeLayout>-->
+        android:hint="Starting Place"
+        app:met_floatingLabel="normal"/>
 
     <LinearLayout
         android:id="@+id/timeLayout"
@@ -65,13 +38,12 @@
                 android:focusable="false"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:met_floatingLabelText="Starting Time"
-                app:met_floatingLabel="highlight"
-                app:met_floatingLabelAlwaysShown="true"
+                android:hint="Starting Time"
+                app:met_floatingLabel="normal"
                 android:layout_weight="1"/>
 
             <Button
-                android:id="@+id/dateAdder"
+                android:id="@+id/date_adder"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="SET Date"
@@ -79,15 +51,15 @@
                 android:layout_weight="1"/>
 
             <com.rengwuxian.materialedittext.MaterialEditText
-                android:id="@+id/datePicker"
+                android:id="@+id/date_picker"
                 android:editable="false"
                 android:focusable="false"
                 android:visibility="gone"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:met_floatingLabelText="Date"
-                app:met_floatingLabel="highlight"
-                app:met_floatingLabelAlwaysShown="true"/>
+                android:hint="Date"
+                app:met_floatingLabel="normal"
+                android:layout_weight="1"/>
     </LinearLayout>
 
     <RelativeLayout

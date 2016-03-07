@@ -80,8 +80,6 @@ public class PlanListFragment extends Fragment implements RecyclerItemClickListe
     @Bind(R.id.gen_fab)
     FloatingActionButton mGenFab;
 
-
-
     public static PlanListFragment newInstance(int layout, int list_item) {
         PlanListFragment fragment = new PlanListFragment();
         Bundle args = new Bundle();
