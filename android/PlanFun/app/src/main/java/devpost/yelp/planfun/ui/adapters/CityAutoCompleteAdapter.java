@@ -1,6 +1,8 @@
 package devpost.yelp.planfun.ui.adapters;
 
 import android.content.Context;
+import android.location.Location;
+import android.text.style.CharacterStyle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +10,18 @@ import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
+
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.AutocompletePrediction;
+import com.google.android.gms.location.places.AutocompletePredictionBuffer;
+import com.google.android.gms.location.places.GeoDataApi;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.maps.android.SphericalUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,22 +37,24 @@ import retrofit2.Call;
 public class CityAutoCompleteAdapter extends BaseAdapter implements Filterable {
     private static final int MAX_RESULTS = 10;
     private Context mContext;
-    private List<City> cityList = new ArrayList<City>();
+    private List<AutocompletePrediction> placesList = new ArrayList<>();
     private RestClient mRestClient;
+    private GoogleApiClient mGoogleApiClient;
 
-    public CityAutoCompleteAdapter(Context context) {
+    public CityAutoCompleteAdapter(Context context, GoogleApiClient client) {
         mContext = context;
         mRestClient = RestClient.getInstance();
+        mGoogleApiClient = client;
     }
 
     @Override
     public int getCount() {
-        return cityList.size();
+        return placesList.size();
     }
 
     @Override
-    public City getItem(int position) {
-        return cityList.get(position);
+    public AutocompletePrediction getItem(int position) {
+        return placesList.get(position);
     }
 
     @Override
@@ -53,7 +69,7 @@ public class CityAutoCompleteAdapter extends BaseAdapter implements Filterable {
             LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(android.R.layout.simple_dropdown_item_1line, parent, false);
         }
-        ((TextView)convertView.findViewById(android.R.id.text1)).setText(getItem(position).getName()+", "+getItem(position).getState());
+        ((TextView)convertView.findViewById(android.R.id.text1)).setText(getItem(position).getFullText(null));
         return convertView;
     }
 
@@ -66,14 +82,11 @@ public class CityAutoCompleteAdapter extends BaseAdapter implements Filterable {
                 FilterResults results = new FilterResults();
                 if(constraint!=null)
                 {
-                    try {
-                        Call<List<City>> cityCall = mRestClient.getCityService().listCities(constraint.toString());
-                        List<City> cities = cityCall.execute().body();
-                        results.values = cities;
-                        results.count = cities.size();
-                    }
-                    catch(IOException ioex)
-                    {}
+                    Location currentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                    LatLngBounds bounds = toBounds(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 5000);
+                    AutocompletePredictionBuffer places = Places.GeoDataApi.getAutocompletePredictions(mGoogleApiClient, constraint.toString(), bounds, new AutocompleteFilter.Builder().setTypeFilter(AutocompleteFilter.TYPE_FILTER_NONE).build()).await();
+                    results.values = places;
+                    results.count = places.getCount();
                 }
                 return results;
             }
@@ -82,7 +95,11 @@ public class CityAutoCompleteAdapter extends BaseAdapter implements Filterable {
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 if(results != null && results.count > 0)
                 {
-                    cityList = (List<City>)results.values;
+                    placesList.clear();
+                    for(AutocompletePrediction place: (AutocompletePredictionBuffer)results.values)
+                    {
+                        placesList.add(place);
+                    }
                     notifyDataSetChanged();
                 }
                 else
@@ -92,5 +109,11 @@ public class CityAutoCompleteAdapter extends BaseAdapter implements Filterable {
             }
         };
         return filter;
+    }
+
+    public LatLngBounds toBounds(LatLng center, double radius) {
+        LatLng southwest = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 225);
+        LatLng northeast = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 45);
+        return new LatLngBounds(southwest, northeast);
     }
 }

@@ -18,6 +18,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TimePicker;
 
+import com.google.android.gms.location.places.AutocompletePrediction;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -30,6 +32,7 @@ import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.City;
 import devpost.yelp.planfun.net.RestClient;
+import devpost.yelp.planfun.ui.activities.MainActivity;
 import devpost.yelp.planfun.ui.adapters.CityAutoCompleteAdapter;
 import devpost.yelp.planfun.ui.adapters.ItemAdapter;
 import devpost.yelp.planfun.ui.events.SavePlanRequest;
@@ -127,11 +130,11 @@ public class EditPlanFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_edit_plan, container, false);
         ButterKnife.bind(this, v);
         mCityPicker.setThreshold(2);
-        mCityPicker.setAdapter(new CityAutoCompleteAdapter(this.getContext()));
+        mCityPicker.setAdapter(new CityAutoCompleteAdapter(this.getContext(), ((MainActivity)getActivity()).getClient()));
         mCityPicker.setLoadingIndicator((ProgressBar)v.findViewById(R.id.autoCompleteProgressBar));
         mCityPicker.setOnItemClickListener((parent, view, position, id) -> {
-            City city = (City) parent.getItemAtPosition(position);
-            mCityPicker.setText(city.getName() + ", " + city.getState());
+            AutocompletePrediction place = (AutocompletePrediction) parent.getItemAtPosition(position);
+            mCityPicker.setText(place.getFullText(null));
         });
 
         dateSdf = new SimpleDateFormat(dateFormat, Locale.US);
@@ -208,12 +211,13 @@ public class EditPlanFragment extends Fragment {
     private void updateView() {
         mNameBox.setText(mCurrentPlan.getName());
         mCityPicker.setText(mCurrentPlan.getCity());
-        if(mCurrentPlan.getStart_time()!=null) {
-            mStartTimeBox.setText(timeSdf.format(mCurrentPlan.getStart_time().getTime()));
-        }
-        else
+        if(mCurrentPlan.getStart_time()==null)
         {
-            mStartTimeBox.setText(timeSdf.format(Calendar.getInstance().getTime()));
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, 9);
+            calendar.set(Calendar.MINUTE, 0);
+            mCurrentPlan.setStart_time(calendar);
         }
+        mStartTimeBox.setText(timeSdf.format(mCurrentPlan.getStart_time().getTime()));
     }
 }

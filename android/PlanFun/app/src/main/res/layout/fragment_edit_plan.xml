@@ -33,7 +33,7 @@
                 android:id="@+id/city_picker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="City"/>
+                android:hint="Starting Place"/>
 
         </android.support.design.widget.TextInputLayout>
         <ProgressBar

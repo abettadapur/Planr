@@ -38,8 +38,8 @@
         android:layout_gravity="bottom|right"
         android:layout_margin="16dp"
         android:src="@drawable/ic_add_white_24dp"
-        fab:menu_colorNormal="@color/primaryColor"
-        fab:menu_colorPressed="@color/primaryColorDark"
+        fab:menu_colorNormal="@color/accentColor"
+        fab:menu_colorPressed="@color/accentPressed"
         fab:menu_labels_style="@style/menu_labels_style">
 
         <com.github.clans.fab.FloatingActionButton
@@ -47,8 +47,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_wand_white_24dp"
-            fab:fab_colorNormal="@color/primaryColor"
-            fab:fab_colorPressed="@color/primaryColorDark"
+            fab:fab_colorNormal="@color/accentColor"
+            fab:fab_colorPressed="@color/accentPressed"
             fab:fab_size="mini"
             fab:fab_label="Generate" />
 
@@ -57,8 +57,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_search_white_24dp"
-            fab:fab_colorNormal="@color/primaryColor"
-            fab:fab_colorPressed="@color/primaryColorDark"
+            fab:fab_colorNormal="@color/accentColor"
+            fab:fab_colorPressed="@color/accentPressed"
             fab:fab_size="mini"
             fab:fab_label="Find" />
 
@@ -67,8 +67,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_mode_edit_white_24dp"
-            fab:fab_colorNormal="@color/primaryColor"
-            fab:fab_colorPressed="@color/primaryColorDark"
+            fab:fab_colorNormal="@color/accentColor"
+            fab:fab_colorPressed="@color/accentPressed"
             fab:fab_size="mini"
             fab:fab_label="Create"/>
 

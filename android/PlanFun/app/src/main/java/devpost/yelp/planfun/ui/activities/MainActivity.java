@@ -16,6 +16,9 @@ import android.widget.ImageView;
 
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Places;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -58,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Fragment currentFragment;
     private Drawer mDrawer;
+    private GoogleApiClient mGoogleApiClient;
 
     private PlanListFragment planListFragment;
     private PlanListFragment searchItineraryFragment;
@@ -65,6 +69,10 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.toolbar)
     Toolbar toolbar;
 
+    public MainActivity()
+    {
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +97,28 @@ public class MainActivity extends AppCompatActivity {
             currentFragment = planListFragment;
 
         }
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(LocationServices.API)
+                .build();
+
+    }
+
+    @Override
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+    public GoogleApiClient getClient()
+    {
+        return mGoogleApiClient;
     }
 
     private Drawer build_drawer() {
