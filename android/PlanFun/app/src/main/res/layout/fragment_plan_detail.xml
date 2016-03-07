@@ -21,15 +21,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             >
-
-            <fragment
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_below="@id/toolbar"
-                android:id="@+id/map"
-                android:name="com.google.android.gms.maps.SupportMapFragment"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                />
+                android:id="@+id/mapContainer">
+            </FrameLayout>
+
+            <!--<fragment-->
+                <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+                <!--android:id="@+id/map"-->
+                <!--android:name="com.google.android.gms.maps.SupportMapFragment"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--/>-->
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/edit_fab"

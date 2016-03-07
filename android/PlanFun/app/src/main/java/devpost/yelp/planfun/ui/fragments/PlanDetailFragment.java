@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -67,6 +68,7 @@ public class PlanDetailFragment extends Fragment implements View.OnClickListener
     private Plan currentPlan;
     private ItemDetailFragment mDetailFragment;
     private GoogleMap mGoogleMap;
+    private SupportMapFragment mapFragment;
 
     private Map<Marker, Item> marker_to_item;
     private List<Polyline> polylines;
@@ -118,13 +120,16 @@ public class PlanDetailFragment extends Fragment implements View.OnClickListener
         mEditFab.setOnClickListener(this);
         mRestClient = RestClient.getInstance();
 
+        FragmentManager fm = getChildFragmentManager();
+        mapFragment =  SupportMapFragment.newInstance();
+        fm.beginTransaction().replace(R.id.mapContainer, mapFragment).commit();
+
         return rootView;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         Bundle args = getArguments();
