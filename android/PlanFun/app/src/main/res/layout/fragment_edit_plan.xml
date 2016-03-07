@@ -7,46 +7,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/input_name_layout"
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/input_name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:met_floatingLabelText="Plan Name"
+        app:met_floatingLabel="highlight"
+        app:met_floatingLabelAlwaysShown="true"/>
 
-        <EditText
-            android:id="@+id/input_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Plan Name" />
-
-    </android.support.design.widget.TextInputLayout>
-
-    <RelativeLayout
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/city_picker"
+        android:editable="false"
+        android:focusable="false"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_layout_city"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:met_floatingLabelText="Starting Place"
+        app:met_floatingLabel="highlight"
+        app:met_floatingLabelAlwaysShown="true"/>
 
-            <devpost.yelp.planfun.ui.views.WebAutoCompleteTextView
-                android:id="@+id/city_picker"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Starting Place"/>
 
-        </android.support.design.widget.TextInputLayout>
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/input_layout_city"
-            android:layout_marginStart="-16dp"
-            android:indeterminate="true"
-            android:id = "@+id/autoCompleteProgressBar"
-            android:visibility="gone"
-            />
+    <!--<RelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content">-->
+        <!--<android.support.design.widget.TextInputLayout-->
+            <!--android:id="@+id/input_layout_city"-->
+            <!--android:focusable="false"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content">-->
 
-    </RelativeLayout>
+            <!-- -->
+
+        <!--</android.support.design.widget.TextInputLayout>-->
+        <!--<ProgressBar-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_toEndOf="@id/input_layout_city"-->
+            <!--android:layout_marginStart="-16dp"-->
+            <!--android:indeterminate="true"-->
+            <!--android:id = "@+id/autoCompleteProgressBar"-->
+            <!--android:visibility="gone"-->
+            <!--/>-->
+
+    <!--</RelativeLayout>-->
 
     <LinearLayout
         android:id="@+id/timeLayout"
@@ -55,44 +57,37 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="2">
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/input_layout_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
 
-            <EditText
+
+            <com.rengwuxian.materialedittext.MaterialEditText
                 android:id="@+id/time_picker"
                 android:editable="false"
                 android:focusable="false"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Starting Time"/>
-            </android.support.design.widget.TextInputLayout>
+                app:met_floatingLabelText="Starting Time"
+                app:met_floatingLabel="highlight"
+                app:met_floatingLabelAlwaysShown="true"
+                android:layout_weight="1"/>
 
-        <Button
-            android:id="@+id/dateAdder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SET Date"
-            android:theme="@style/ButtonTheme2"
-            android:layout_weight="1"/>
+            <Button
+                android:id="@+id/dateAdder"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="SET Date"
+                android:theme="@style/ButtonTheme2"
+                android:layout_weight="1"/>
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_layout_date"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:visibility="gone">
-
-            <EditText
+            <com.rengwuxian.materialedittext.MaterialEditText
                 android:id="@+id/datePicker"
                 android:editable="false"
                 android:focusable="false"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=" Date"/>
-        </android.support.design.widget.TextInputLayout>
+                app:met_floatingLabelText="Date"
+                app:met_floatingLabel="highlight"
+                app:met_floatingLabelAlwaysShown="true"/>
     </LinearLayout>
 
     <RelativeLayout

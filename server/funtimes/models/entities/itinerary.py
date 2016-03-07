@@ -18,7 +18,7 @@ class Itinerary(BaseModel):
     name = db.Column(db.String(200), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
-    city = db.Column(db.String(200), nullable=False)
+    starting_address = db.Column(db.String(2000), nullable=False)
     public = db.Column(db.Boolean)
     items = db.relationship("Item", cascade="all, delete")
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))

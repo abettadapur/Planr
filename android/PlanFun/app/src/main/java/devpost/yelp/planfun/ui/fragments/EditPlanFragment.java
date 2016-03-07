@@ -1,12 +1,16 @@
 package devpost.yelp.planfun.ui.fragments;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +22,14 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TimePicker;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompletePrediction;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.mikepenz.materialize.color.Material;
+import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -44,13 +55,15 @@ import retrofit2.Response;
 
 public class EditPlanFragment extends Fragment {
 
+
+    private final int PLACES_AUTOCOMPLETE=10000;
     private Plan mCurrentPlan;
 
     @Bind(R.id.input_name)
-    EditText mNameBox;
+    MaterialEditText mNameBox;
 
     @Bind(R.id.time_picker)
-    EditText mStartTimeBox;
+    MaterialEditText mStartTimeBox;
 
     @OnClick(R.id.time_picker)
     public void startClickListener(View view){
@@ -60,7 +73,8 @@ public class EditPlanFragment extends Fragment {
     }
 
     @Bind(R.id.city_picker)
-    WebAutoCompleteTextView mCityPicker;
+    MaterialEditText mCityPicker;
+
 
     @Bind(R.id.items_view)
     RecyclerView mItemsView;
@@ -129,20 +143,27 @@ public class EditPlanFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_edit_plan, container, false);
         ButterKnife.bind(this, v);
-        mCityPicker.setThreshold(2);
-        mCityPicker.setAdapter(new CityAutoCompleteAdapter(this.getContext(), ((MainActivity)getActivity()).getClient()));
-        mCityPicker.setLoadingIndicator((ProgressBar)v.findViewById(R.id.autoCompleteProgressBar));
-        mCityPicker.setOnItemClickListener((parent, view, position, id) -> {
-            AutocompletePrediction place = (AutocompletePrediction) parent.getItemAtPosition(position);
-            mCityPicker.setText(place.getFullText(null));
-        });
-
         dateSdf = new SimpleDateFormat(dateFormat, Locale.US);
         timeSdf = new SimpleDateFormat(timeFormat, Locale.US);
         mAdapter = new ItemAdapter(mCurrentPlan ==null?null: mCurrentPlan.getItems(), getActivity(), true);
         mItemsView.setAdapter(mAdapter);
 
+        mCityPicker.setOnClickListener((view)->openAutocomplete());
+
         return v;
+    }
+
+    private void openAutocomplete()
+    {
+        try {
+            Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                    .build(getActivity());
+            startActivityForResult(intent, PLACES_AUTOCOMPLETE);
+        } catch (GooglePlayServicesRepairableException grex) {
+
+        } catch (GooglePlayServicesNotAvailableException gnaex) {
+
+        }
     }
 
     @Override
@@ -219,5 +240,22 @@ public class EditPlanFragment extends Fragment {
             mCurrentPlan.setStart_time(calendar);
         }
         mStartTimeBox.setText(timeSdf.format(mCurrentPlan.getStart_time().getTime()));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACES_AUTOCOMPLETE) {
+            if (resultCode == Activity.RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(getContext(), data);
+                mCityPicker.setText(place.getAddress());
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(getContext(), data);
+                // TODO: Handle the error.
+
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
