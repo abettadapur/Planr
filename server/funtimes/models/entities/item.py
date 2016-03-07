@@ -11,8 +11,8 @@ class Item(BaseModel):
     name = db.Column(db.String(200), nullable=False)
     yelp_category_id = db.Column(db.Integer, db.ForeignKey("yelp_category.id"))
     yelp_category = db.relationship("YelpCategory")
-    itinerary_id = db.Column(db.Integer, db.ForeignKey("itinerary.id", name="fk_item_itinerary_id", ondelete="CASCADE"))
-    itinerary = db.relationship("Itinerary", back_populates="items")
+    plan_id = db.Column(db.Integer, db.ForeignKey("plan.id", name="fk_item_plan_id", ondelete="CASCADE"))
+    plan = db.relationship("Plan", back_populates="items")
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
     type = db.Column(db.Enum("YELP", "USER"), nullable=False)
@@ -21,10 +21,10 @@ class Item(BaseModel):
     location_id = db.Column(db.Integer, db.ForeignKey("location.id"))
     location = db.relationship("Location")
 
-    def __init__(self, name=None, yelp_category=None, itinerary_id = None, start_time=None, end_time=None, type=None, yelp_item=None, location=None):
+    def __init__(self, name=None, yelp_category=None, plan_id = None, start_time=None, end_time=None, type=None, yelp_item=None, location=None):
         self.name = name
         self.yelp_category = yelp_category
-        self.itinerary_id = itinerary_id
+        self.plan_id = plan_id
         self.start_time = start_time
         self.end_time = end_time
         self.type = type

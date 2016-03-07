@@ -10,14 +10,14 @@ from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
 from funtimes.repositories.yelpItemRepository import YelpItemRepository
 
 
-def populate_sample_itinerary(itinerary):
+def populate_sample_plan(plan):
     category_repository = YelpCategoryRepository()
-    categories = category_repository.get_categories_for_time(itinerary.start_time, itinerary.end_time)
-    items = fetch_items(itinerary.starting_coordinate, categories, itinerary.start_time.date())
-    itinerary.items = items
+    categories = category_repository.get_categories_for_time(plan.start_time, plan.end_time)
+    items = fetch_items(plan.starting_coordinate, categories, plan.start_time.date())
+    plan.items = items
 
 
-def fetch_items(coordinate, categories, itinerary_date):
+def fetch_items(coordinate, categories, plan_date):
     items = []
     for category in categories:
         yelp_item = get_yelp_item(coordinate, category)
@@ -27,8 +27,8 @@ def fetch_items(coordinate, categories, itinerary_date):
             yelp_category=category,
             type="YELP",
             yelp_item=yelp_item,
-            start_time=datetime.combine(itinerary_date, category.start_time),
-            end_time=datetime.combine(itinerary_date, category.end_time),
+            start_time=datetime.combine(plan_date, category.start_time),
+            end_time=datetime.combine(plan_date, category.end_time),
             location=yelp_item.location
         )
 

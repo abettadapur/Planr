@@ -10,10 +10,10 @@ def get_directions(origin, destination):
     return directions
 
 
-def get_polyline(itinerary):
+def get_polyline(plan):
     polylines = []
     counter = 1
-    for i1, i2 in pairwise(itinerary.items):
+    for i1, i2 in pairwise(plan.items):
         directions = get_directions(i1.location, i2.location)
         polylines.append(
             {
