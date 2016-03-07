@@ -177,7 +177,6 @@ class ItineraryListResource(Resource):
                                         help='No start_time provided')
         self.create_parser.add_argument('end_time', type=str, required=True, location='json',
                                         help='No end_time provided')
-        self.create_parser.add_argument('city', type=str, required=True, location='json', help='No city provided')
         self.create_parser.add_argument('starting_address', type=str, required=True, location='json', help='No starting address provided')
         self.create_parser.add_argument('starting_coordinate', type=str, required=True, location='json', help='No starting coordinate provided')
         self.create_parser.add_argument('public', type=bool, required=True, location='json',
