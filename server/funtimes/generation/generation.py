@@ -13,15 +13,14 @@ from funtimes.repositories.yelpItemRepository import YelpItemRepository
 def populate_sample_itinerary(itinerary):
     category_repository = YelpCategoryRepository()
     categories = category_repository.get_categories_for_time(itinerary.start_time, itinerary.end_time)
-    items = fetch_items(itinerary.city, categories, itinerary.start_time.date())
+    items = fetch_items(itinerary.starting_coordinate, categories, itinerary.start_time.date())
     itinerary.items = items
 
 
-def fetch_items(city, categories, itinerary_date):
+def fetch_items(coordinate, categories, itinerary_date):
     items = []
-    coordinate = None
     for category in categories:
-        yelp_item = get_yelp_item(city, category, coordinate)
+        yelp_item = get_yelp_item(coordinate, category)
 
         item = Item(
             name=yelp_item.name,
@@ -39,7 +38,7 @@ def fetch_items(city, categories, itinerary_date):
     return items
 
 
-def get_yelp_item(city, category, coordinate=None, strategy=DistanceStrategy()):
+def get_yelp_item(coordinate, category, strategy=DistanceStrategy()):
     extra_yelp_params = {}
     yelp_item_repository = YelpItemRepository()
     if coordinate is not None:

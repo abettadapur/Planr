@@ -2,6 +2,7 @@ from datetime import datetime
 
 from funtimes import db
 from funtimes.models.entities.base import BaseModel
+from funtimes.models.entities.coordinate import Coordinate
 
 
 class ItineraryShares(BaseModel):
@@ -18,14 +19,17 @@ class Itinerary(BaseModel):
     name = db.Column(db.String(200), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
+    city = db.Column(db.String(200), nullable=False)
     starting_address = db.Column(db.String(2000), nullable=False)
+    starting_coordinate_id = db.Column(db.Integer(), db.ForeignKey("coordinate.id", ondelete="CASCADE"))
+    starting_coordinate = db.relationship("Coordinate", cascade="all, delete")
     public = db.Column(db.Boolean)
     items = db.relationship("Item", cascade="all, delete")
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     user = db.relationship("User", back_populates="itineraries")
     shared_users = db.relationship("User", secondary="itinerary_shares")
 
-    def __init__(self, name=None, start_time=None, end_time=None, city=None, public=False, items=[], user=None):
+    def __init__(self, name=None, start_time=None, end_time=None, city=None, starting_address=None, starting_coordinate = None, public=False, items=[], user=None):
         self.name = name
         self.start_time = start_time
         self.end_time = end_time
@@ -56,6 +60,8 @@ class Itinerary(BaseModel):
             start_time= datetime.strptime(create_dict['start_time'], "%Y-%m-%d %H:%M:%S %z"),
             end_time=datetime.strptime(create_dict['end_time'], "%Y-%m-%d %H:%M:%S %z"),
             city=create_dict['city'],
+            starting_address=create_dict['starting_address'],
+            starting_coordinate=Coordinate(create_dict['starting_coordinate'].partition(',')[0], create_dict['starting_coordinate'].partition(',')[2]),
             public=create_dict['public'],
             user=user
         )
