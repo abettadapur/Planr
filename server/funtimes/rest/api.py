@@ -98,7 +98,6 @@ class ItineraryResource(Resource):
                                         help='No start_time provided')
         self.update_parser.add_argument('end_time', type=str, required=True, location='json',
                                         help='No end_time provided')
-        self.update_parser.add_argument('city', type=str, required=True, location='json', help='No city provided')
         self.update_parser.add_argument('public', type=bool, required=True, location='json',
                                         help='No publicity provided')
         self.itinerary_repository = ItineraryRepository()

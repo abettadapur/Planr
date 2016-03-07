@@ -19,7 +19,6 @@ class Itinerary(BaseModel):
     name = db.Column(db.String(200), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
-    city = db.Column(db.String(200), nullable=False)
     starting_address = db.Column(db.String(2000), nullable=False)
     starting_coordinate_id = db.Column(db.Integer(), db.ForeignKey("coordinate.id", ondelete="CASCADE"))
     starting_coordinate = db.relationship("Coordinate", cascade="all, delete")
@@ -34,7 +33,6 @@ class Itinerary(BaseModel):
         self.name = name
         self.start_time = start_time
         self.end_time = end_time
-        self.city = city
         self.starting_address = starting_address
         self.starting_coordinate = starting_coordinate
         self.public = public
@@ -63,7 +61,6 @@ class Itinerary(BaseModel):
             name=create_dict['name'],
             start_time=datetime.strptime(create_dict['start_time'], "%Y-%m-%d %H:%M:%S %z"),
             end_time=datetime.strptime(create_dict['end_time'], "%Y-%m-%d %H:%M:%S %z"),
-            city=create_dict['city'],
             starting_address=create_dict['starting_address'],
             starting_coordinate=Coordinate(float(create_dict['starting_coordinate'].partition(',')[0]),
                                            float(create_dict['starting_coordinate'].partition(',')[2])),
