@@ -58,6 +58,7 @@ public class EditPlanFragment extends Fragment {
 
     private final int PLACES_AUTOCOMPLETE=10000;
     private Plan mCurrentPlan;
+    private Place autoCompleteResult;
 
     @Bind(R.id.input_name)
     MaterialEditText mNameBox;
@@ -248,6 +249,7 @@ public class EditPlanFragment extends Fragment {
             if (resultCode == Activity.RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(getContext(), data);
                 mCityPicker.setText(place.getAddress());
+                autoCompleteResult = place;
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(getContext(), data);
                 // TODO: Handle the error.

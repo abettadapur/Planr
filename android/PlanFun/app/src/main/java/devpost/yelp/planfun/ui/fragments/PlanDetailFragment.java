@@ -166,7 +166,7 @@ public class PlanDetailFragment extends Fragment implements View.OnClickListener
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(currentPlan.getName());
 
             clearMap();
-            zoomToLocation(currentPlan.getCity());
+            zoomToLocation(currentPlan.getStarting_address());
 
             Collections.sort(currentPlan.getItems(), (lhs, rhs) -> (int) (lhs.getStart_time().getTimeInMillis() - rhs.getStart_time().getTimeInMillis()));
             Collections.sort(currentPlan.getPolylines(), (lhs, rhs) -> lhs.getOrder() - rhs.getOrder());

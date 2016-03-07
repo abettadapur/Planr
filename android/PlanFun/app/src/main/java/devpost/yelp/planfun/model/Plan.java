@@ -1,5 +1,6 @@
 package devpost.yelp.planfun.model;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -16,6 +17,8 @@ public class Plan implements Comparable<Plan>
     private Calendar start_time;
     private Calendar end_time;
     private String city;
+    private String starting_address;
+    private LatLng starting_coordinate;
     @SerializedName("public")
     private boolean isPublic;
     @Expose(serialize = false)
@@ -131,5 +134,21 @@ public class Plan implements Comparable<Plan>
 
     public List<Share> getShared_users() {
         return shared_users;
+    }
+
+    public String getStarting_address() {
+        return starting_address;
+    }
+
+    public void setStarting_address(String starting_address) {
+        this.starting_address = starting_address;
+    }
+
+    public LatLng getStarting_coordinate() {
+        return starting_coordinate;
+    }
+
+    public void setStarting_coordinate(LatLng starting_coordinate) {
+        this.starting_coordinate = starting_coordinate;
     }
 }

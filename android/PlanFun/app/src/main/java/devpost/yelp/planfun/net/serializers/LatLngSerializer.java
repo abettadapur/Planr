@@ -26,6 +26,6 @@ public class LatLngSerializer implements JsonSerializer<LatLng>, JsonDeserialize
 
     @Override
     public JsonElement serialize(LatLng src, Type typeOfSrc, JsonSerializationContext context) {
-        return new JsonPrimitive(src.latitude+", "+src.longitude);
+        return new JsonPrimitive(src.latitude+","+src.longitude);
     }
 }
