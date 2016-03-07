@@ -250,14 +250,14 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe
     public void onOpenPlanRequest(OpenPlanRequest request)
     {
+        if(request.fromGenerate)
+            getSupportFragmentManager().popBackStack();
+
         PlanDetailFragment fragment = PlanDetailFragment.newInstance(request.plan_id);
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, fragment);
-        if(!request.fromGenerate)
-        {
-            transaction.addToBackStack("");
-        }
-        transaction.commit();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("")
+                .commit();
     }
 
     @Subscribe

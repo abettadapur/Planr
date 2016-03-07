@@ -103,7 +103,7 @@ public class GeneratePlanFragment extends Fragment
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Generate Itinerary");
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Generate Plan");
         updateView();
         super.onViewCreated(view, savedInstanceState);
     }
