@@ -29,11 +29,14 @@ class Itinerary(BaseModel):
     user = db.relationship("User", back_populates="itineraries")
     shared_users = db.relationship("User", secondary="itinerary_shares")
 
-    def __init__(self, name=None, start_time=None, end_time=None, city=None, starting_address=None, starting_coordinate = None, public=False, items=[], user=None):
+    def __init__(self, name=None, start_time=None, end_time=None, city=None, starting_address=None,
+                 starting_coordinate=None, public=False, items=[], user=None):
         self.name = name
         self.start_time = start_time
         self.end_time = end_time
         self.city = city
+        self.starting_address = starting_address
+        self.starting_coordinate = starting_coordinate
         self.public = public
         self.items = items
         self.user = user
@@ -44,6 +47,7 @@ class Itinerary(BaseModel):
         itinerary_dict['user'] = self.user.as_dict()
         itinerary_dict['items'] = [i.as_dict() for i in self.items]
         itinerary_dict['shared_users'] = [{"user": u.as_dict(), "permission": ""} for u in self.shared_users]
+        itinerary_dict['starting_coordinate'] = self.starting_coordinate.as_dict()
         return itinerary_dict
 
     def update_from_dict(self, update_dict):
@@ -57,11 +61,12 @@ class Itinerary(BaseModel):
     def create_from_dict(create_dict, user):
         itinerary = Itinerary(
             name=create_dict['name'],
-            start_time= datetime.strptime(create_dict['start_time'], "%Y-%m-%d %H:%M:%S %z"),
+            start_time=datetime.strptime(create_dict['start_time'], "%Y-%m-%d %H:%M:%S %z"),
             end_time=datetime.strptime(create_dict['end_time'], "%Y-%m-%d %H:%M:%S %z"),
             city=create_dict['city'],
             starting_address=create_dict['starting_address'],
-            starting_coordinate=Coordinate(create_dict['starting_coordinate'].partition(',')[0], create_dict['starting_coordinate'].partition(',')[2]),
+            starting_coordinate=Coordinate(float(create_dict['starting_coordinate'].partition(',')[0]),
+                                           float(create_dict['starting_coordinate'].partition(',')[2])),
             public=create_dict['public'],
             user=user
         )
