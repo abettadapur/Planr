@@ -1,6 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/input_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:met_floatingLabelText="Plan Name"
+        app:met_primaryColor="@color/accentColor"
+        app:met_floatingLabel="highlight"
+        app:met_floatingLabelAlwaysShown="true"/>
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/startAddressPicker"
+        android:editable="false"
+        android:focusable="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:met_floatingLabelText="Starting Place"
+        app:met_primaryColor="@color/accentColor"
+        app:met_floatingLabel="highlight"
+        app:met_floatingLabelAlwaysShown="true"/>
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/datePicker"
+        android:editable="false"
+        android:focusable="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:met_primaryColor="@color/accentColor"
+        app:met_floatingLabelText="Date"
+        app:met_floatingLabel="highlight"
+        app:met_floatingLabelAlwaysShown="true"
+    />
+
+    <LinearLayout
+        android:id="@+id/timeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/startTimePicker"
+            android:editable="false"
+            android:focusable="false"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:met_floatingLabelText="Starting Time"
+            app:met_primaryColor="@color/accentColor"
+            app:met_floatingLabel="highlight"
+            app:met_floatingLabelAlwaysShown="true"
+            android:layout_weight="1"/>
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/endTimePicker"
+            android:editable="false"
+            android:focusable="false"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:met_primaryColor="@color/accentColor"
+            app:met_floatingLabelText="Ending Time"
+            app:met_floatingLabel="highlight"
+            app:met_floatingLabelAlwaysShown="true"/>
+    </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/md_button_height"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:weightSum="7">
+
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/md_button_height"
+                android:id="@+id/privateBox"
+                android:textColor="#80000000"
+                android:text="Private"
+                android:layout_weight="1"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/md_button_height"
+                android:id="@+id/save_plan"
+                android:text="Generate Plan"
+                android:theme="@style/ButtonTheme"
+                android:layout_weight="6"/>
+        </LinearLayout>
 
 </LinearLayout>

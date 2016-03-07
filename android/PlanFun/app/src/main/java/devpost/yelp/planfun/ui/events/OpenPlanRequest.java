@@ -6,9 +6,11 @@ package devpost.yelp.planfun.ui.events;
 public class OpenPlanRequest
 {
     public int plan_id;
+    public boolean fromGenerate;
 
-    public OpenPlanRequest(int id)
+    public OpenPlanRequest(int id, boolean fromGenerate)
     {
         this.plan_id = id;
+        this.fromGenerate = fromGenerate;
     }
 }
