@@ -2,6 +2,7 @@ package devpost.yelp.planfun.ui.activities;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,8 +21,6 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
-import com.joanzapata.android.iconify.IconDrawable;
-import com.joanzapata.android.iconify.Iconify;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -36,6 +35,8 @@ import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
+
+import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
 import java.util.List;
 
@@ -156,11 +157,27 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 })
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName("My Plans").withIcon(new IconDrawable(this, Iconify.IconValue.fa_list).color(0x8A000000)),
-                        new PrimaryDrawerItem().withName("Search Plans").withIcon(new IconDrawable(this, Iconify.IconValue.fa_search).color(0x8A000000)),
+                        new PrimaryDrawerItem().withName("My Plans").withIcon(MaterialDrawableBuilder.with(this)
+                                .setColor(Color.BLACK)
+                                .setToActionbarSize()
+                                .setIcon(MaterialDrawableBuilder.IconValue.FORMAT_LIST_BULLETED)
+                                .build()),
+                        new PrimaryDrawerItem().withName("Search Plans").withIcon(MaterialDrawableBuilder.with(this)
+                                .setColor(Color.BLACK)
+                                .setToActionbarSize()
+                                .setIcon(MaterialDrawableBuilder.IconValue.MAGNIFY)
+                                .build()),
                         new SectionDrawerItem(),
-                        new SecondaryDrawerItem().withName("Settings").withIcon(new IconDrawable(this, Iconify.IconValue.fa_cog).color(0x8A000000)),
-                        new SecondaryDrawerItem().withName("Logout").withIcon(new IconDrawable(this, Iconify.IconValue.fa_sign_out).color(0x8A000000))
+                        new SecondaryDrawerItem().withName("Settings").withIcon(MaterialDrawableBuilder.with(this)
+                                .setColor(Color.BLACK)
+                                .setToActionbarSize()
+                                .setIcon(MaterialDrawableBuilder.IconValue.SETTINGS)
+                                .build()),
+                        new SecondaryDrawerItem().withName("Logout").withIcon(MaterialDrawableBuilder.with(this)
+                                .setColor(Color.BLACK)
+                                .setToActionbarSize()
+                                .setIcon(MaterialDrawableBuilder.IconValue.LOGOUT)
+                                .build())
                 )
                 .withOnDrawerItemClickListener(drawer_listener)
                 .build();

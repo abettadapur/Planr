@@ -1,13 +1,13 @@
 package devpost.yelp.planfun.ui.fragments;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.joanzapata.android.iconify.IconDrawable;
-import com.joanzapata.android.iconify.Iconify;
+import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
 import java.util.List;
 
@@ -45,9 +45,11 @@ public class SearchPlanFragment extends PlanListFragment implements  SearchView.
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_search, menu);
-        menu.findItem(R.id.search).setIcon(new IconDrawable(getContext(), Iconify.IconValue.fa_search)
-                .color(0xFFFFFF)
-                .actionBarSize());
+        menu.findItem(R.id.search).setIcon(MaterialDrawableBuilder.with(getContext())
+                .setColor(Color.WHITE)
+                .setToActionbarSize()
+                .setIcon(MaterialDrawableBuilder.IconValue.MAGNIFY)
+                .build());
 
         SearchView view = (SearchView)menu.findItem(R.id.search).getActionView();
         if(view!=null)

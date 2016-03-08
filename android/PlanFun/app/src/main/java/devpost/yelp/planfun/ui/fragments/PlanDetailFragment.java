@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -33,8 +34,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
-import com.joanzapata.android.iconify.IconDrawable;
-import com.joanzapata.android.iconify.Iconify;
+
+import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -144,7 +145,7 @@ public class PlanDetailFragment extends Fragment implements View.OnClickListener
                     if (mMenu != null) {
                         if (!currentPlan.getUser().getFacebook_id().equals(AccessToken.getCurrentAccessToken().getUserId())) {
                             PlanDetailFragment.this.getActivity().runOnUiThread(() -> {
-                                mMenu.add(0, ADD_ITINERARY, 0, "Add to your itineraries").setIcon(new IconDrawable(getContext(), Iconify.IconValue.fa_plus).color(0xFFFFFF).actionBarSize());
+                                //mMenu.add(0, ADD_ITINERARY, 0, "Add to your itineraries").setIcon(new IconDrawable(getContext(), Iconify.IconValue.fa_plus).color(0xFFFFFF).actionBarSize());
                                 mMenu.removeItem(R.id.action_share);
                                 mMenu.removeItem(R.id.action_randomize);
                                 mMenu.removeItem(R.id.action_refresh);
@@ -270,15 +271,21 @@ public class PlanDetailFragment extends Fragment implements View.OnClickListener
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_itinerary_detail, menu);
         mMenu = menu;
-        menu.findItem(R.id.action_share).setIcon(new IconDrawable(getContext(), Iconify.IconValue.fa_user_plus)
-                .color(0xFFFFFF)
-                .actionBarSize());
-        menu.findItem(R.id.action_randomize).setIcon(new IconDrawable(getContext(), Iconify.IconValue.fa_magic)
-                .color(0xFFFFFF)
-                .actionBarSize());
-        menu.findItem(R.id.action_refresh).setIcon(new IconDrawable(getContext(), Iconify.IconValue.fa_refresh)
-                .color(0xFFFFFF)
-                .actionBarSize());
+        menu.findItem(R.id.action_share).setIcon(MaterialDrawableBuilder.with(getContext())
+                .setColor(Color.WHITE)
+                .setToActionbarSize()
+                .setIcon(MaterialDrawableBuilder.IconValue.ACCOUNT_PLUS)
+                .build());
+        menu.findItem(R.id.action_randomize).setIcon(MaterialDrawableBuilder.with(getContext())
+                .setColor(Color.WHITE)
+                .setToActionbarSize()
+                .setIcon(MaterialDrawableBuilder.IconValue.AUTO_FIX)
+                .build());
+        menu.findItem(R.id.action_refresh).setIcon(MaterialDrawableBuilder.with(getContext())
+                .setColor(Color.WHITE)
+                .setToActionbarSize()
+                .setIcon(MaterialDrawableBuilder.IconValue.REFRESH)
+                .build());
 
         super.onCreateOptionsMenu(menu, inflater);
     }

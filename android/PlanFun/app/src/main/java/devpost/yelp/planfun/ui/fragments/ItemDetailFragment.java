@@ -5,18 +5,21 @@ import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.IconTextView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.joanzapata.android.iconify.Iconify;
+
+import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
+import net.steamcrafted.materialiconlib.MaterialIconView;
 
 import java.text.SimpleDateFormat;
 
 import devpost.yelp.planfun.R;
+import devpost.yelp.planfun.etc.Util;
 import devpost.yelp.planfun.model.Item;
 import info.hoang8f.widget.FButton;
 
@@ -30,7 +33,7 @@ public class ItemDetailFragment extends Fragment
     private TextView mTitleView, mReviewCountView, mStartTimeView, mEndTimeView;
     private FButton mCallButton, mNavButton, mWebButton;
     private RatingBar mRatingView;
-    private IconTextView mIconView;
+    private MaterialIconView mIconView;
 
     private String timeFormat = "H:mm";
     private SimpleDateFormat timeSdf;
@@ -63,13 +66,13 @@ public class ItemDetailFragment extends Fragment
         mWebButton = (FButton)v.findViewById(R.id.webButton);
         mReviewCountView = (TextView)v.findViewById(R.id.ratingCountView);
         mRatingView = (RatingBar)v.findViewById(R.id.ratingView);
-        mIconView = (IconTextView)v.findViewById(R.id.iconView);
+        mIconView = (MaterialIconView)v.findViewById(R.id.iconView);
         mStartTimeView = (TextView)v.findViewById(R.id.startTimeView);
         mEndTimeView = (TextView)v.findViewById(R.id.endTimeView);
 
         timeSdf = new SimpleDateFormat(timeFormat);
 
-        Iconify.addIcons(mCallButton, mNavButton, mWebButton);
+        //Iconify.addIcons(mCallButton, mNavButton, mWebButton);
 
         mNavButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,27 +114,21 @@ public class ItemDetailFragment extends Fragment
 
         mStartTimeView.setText(timeSdf.format(currentItem.getStart_time().getTime()));
         mEndTimeView.setText(timeSdf.format(currentItem.getEnd_time().getTime()));
-
-        switch(item.getYelp_category().getName())
+        if(!item.getYelp_category().getIcon_string().equals(""))
         {
-            case "breakfast":
-                Iconify.setIcon(mIconView, Iconify.IconValue.fa_coffee);
-                break;
-            case "lunch":
-                Iconify.setIcon(mIconView, Iconify.IconValue.fa_cutlery);
-                break;
-            case "dinner":
-                Iconify.setIcon(mIconView, Iconify.IconValue.fa_cutlery);
-                break;
-            case "nightlife":
-                Iconify.setIcon(mIconView, Iconify.IconValue.fa_glass);
-                break;
-            case "attraction":
-                Iconify.setIcon(mIconView, Iconify.IconValue.fa_futbol_o);
-                break;
+            try {
+                mIconView.setIcon(Util.fromString(item.getYelp_category().getIcon_string()));
+            }
+            catch(IllegalArgumentException iaex)
+            {
+                Log.e("ICON", "No icon found for " + item.getYelp_category().getIcon_string());
+                mIconView.setImageResource(0);
+            }
         }
-
-
+        else
+        {
+            mIconView.setImageResource(0);
+        }
     }
 
 
