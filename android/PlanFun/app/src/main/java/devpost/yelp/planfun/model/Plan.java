@@ -4,6 +4,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -31,7 +32,11 @@ public class Plan implements Comparable<Plan>
     private List<Share> shared_users;
 
 
-    public Plan(){}
+    public Plan(){
+        start_time = Calendar.getInstance();
+        end_time = Calendar.getInstance();
+        items = new ArrayList<Item>();
+    }
 
     public Plan(String name, Calendar start_time, Calendar end_time, String city, boolean isPublic, List<Item> items)
     {

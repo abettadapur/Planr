@@ -2,6 +2,7 @@ package devpost.yelp.planfun.ui.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +49,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         int layout = R.layout.item_list_item;
-        if(i==getItemCount() && addButton){
+        if(i==getItemCount()-1 && addButton){
             layout = R.layout.item_list_add_button;
         }
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(layout, viewGroup, false);
@@ -58,7 +59,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder>
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i)
     {
-        if(i==getItemCount() && addButton){
+        if(i==getItemCount()-1 && addButton){
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

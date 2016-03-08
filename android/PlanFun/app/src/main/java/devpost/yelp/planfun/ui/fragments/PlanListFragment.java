@@ -35,6 +35,7 @@ import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
 import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.ui.events.EditPlanRequest;
 import devpost.yelp.planfun.ui.events.FindPlanRequest;
+import devpost.yelp.planfun.ui.events.GeneratePlanRequest;
 import devpost.yelp.planfun.ui.events.OpenPlanRequest;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -45,7 +46,6 @@ import retrofit2.Response;
  * A fragment representing a list of Items.
  * <p/>
  * <p/>
- * Activities containing this fragment MUST implement the {@link devpost.yelp.planfun.activities.fragments.ItineraryListFragment.ItineraryListListener}
  * interface.
  */
 public class PlanListFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -75,26 +75,10 @@ public class PlanListFragment extends Fragment implements RecyclerItemClickListe
 
     @Bind(R.id.create_fab)
     FloatingActionButton mCreateFab;
-
-    @OnClick(R.id.create_fab)
-    public void onCreateClick(View button){
-        PlanFunApplication.getBus().post(new EditPlanRequest(true));
-    }
-
     @Bind(R.id.find_fab)
     FloatingActionButton mFindFab;
-
-    @OnClick(R.id.find_fab)
-    public void onFindClick(View button){
-        PlanFunApplication.getBus().post(new FindPlanRequest());
-    }
-
     @Bind(R.id.gen_fab)
     FloatingActionButton mGenFab;
-
-    @OnClick(R.id.gen_fab)
-    public void onGenClick(View button){
-    }
 
     public static PlanListFragment newInstance(int layout, int list_item) {
         PlanListFragment fragment = new PlanListFragment();
@@ -227,7 +211,7 @@ public class PlanListFragment extends Fragment implements RecyclerItemClickListe
     public void onItemClick(View childView, int position)
     {
         int itinerary_id = mPlanList.get(position).getId();
-        PlanFunApplication.getBus().post(new OpenPlanRequest(itinerary_id));
+        PlanFunApplication.getBus().post(new OpenPlanRequest(itinerary_id, false));
     }
 
     @Override
@@ -250,5 +234,20 @@ public class PlanListFragment extends Fragment implements RecyclerItemClickListe
             mRecycleView.setVisibility(loading ? View.GONE : View.VISIBLE);
             mLoadingCircle.setVisibility(loading ? View.VISIBLE : View.GONE);
         });
+    }
+
+    @OnClick(R.id.find_fab)
+    public void onFindClick(View button){
+        PlanFunApplication.getBus().post(new FindPlanRequest());
+    }
+
+    @OnClick(R.id.create_fab)
+    public void onCreateClick(View button){
+        PlanFunApplication.getBus().post(new EditPlanRequest(true));
+    }
+
+    @OnClick(R.id.gen_fab)
+    public void onGenClick(View button){
+        PlanFunApplication.getBus().post(new GeneratePlanRequest());
     }
 }

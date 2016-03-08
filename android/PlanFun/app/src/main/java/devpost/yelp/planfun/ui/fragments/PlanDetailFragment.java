@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -67,6 +68,7 @@ public class PlanDetailFragment extends Fragment implements View.OnClickListener
     private Plan currentPlan;
     private ItemDetailFragment mDetailFragment;
     private GoogleMap mGoogleMap;
+    private SupportMapFragment mapFragment;
 
     private Map<Marker, Item> marker_to_item;
     private List<Polyline> polylines;
@@ -118,13 +120,16 @@ public class PlanDetailFragment extends Fragment implements View.OnClickListener
         mEditFab.setOnClickListener(this);
         mRestClient = RestClient.getInstance();
 
+        FragmentManager fm = getChildFragmentManager();
+        mapFragment =  SupportMapFragment.newInstance();
+        fm.beginTransaction().replace(R.id.mapContainer, mapFragment).commit();
+
         return rootView;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         Bundle args = getArguments();
@@ -166,7 +171,7 @@ public class PlanDetailFragment extends Fragment implements View.OnClickListener
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(currentPlan.getName());
 
             clearMap();
-            zoomToLocation(currentPlan.getStarting_address());
+            zoomToLocation(currentPlan.getStarting_coordinate());
 
             Collections.sort(currentPlan.getItems(), (lhs, rhs) -> (int) (lhs.getStart_time().getTimeInMillis() - rhs.getStart_time().getTimeInMillis()));
             Collections.sort(currentPlan.getPolylines(), (lhs, rhs) -> lhs.getOrder() - rhs.getOrder());
@@ -216,17 +221,11 @@ public class PlanDetailFragment extends Fragment implements View.OnClickListener
         polylines.clear();
     }
 
-    private void zoomToLocation(String location)
+    private void zoomToLocation(LatLng latlng)
         {
         if(mGoogleMap!=null) {
             Geocoder coder = new Geocoder(getContext());
-            try {
-                List<Address> addresses = coder.getFromLocationName(location, 1);
-                LatLng city = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(city, 10));
-            } catch (IOException ioex) {
-            }
-
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 10));
         }
     }
 

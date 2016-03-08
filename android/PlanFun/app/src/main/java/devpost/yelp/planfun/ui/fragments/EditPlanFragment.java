@@ -9,23 +9,20 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TimePicker;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.mikepenz.materialize.color.Material;
@@ -69,13 +66,36 @@ public class EditPlanFragment extends Fragment {
     @OnClick(R.id.time_picker)
     public void startClickListener(View view){
         new TimePickerDialog(EditPlanFragment.this.getActivity(), startTimeSetListener,
-                mCurrentPlan.getStart_time().get(Calendar.HOUR_OF_DAY),
-                mCurrentPlan.getStart_time().get(Calendar.MINUTE), true).show();
+            mCurrentPlan.getStart_time().get(Calendar.HOUR_OF_DAY),
+            mCurrentPlan.getStart_time().get(Calendar.MINUTE), true).show();
+    }
+
+    @Bind(R.id.date_picker)
+    MaterialEditText mStartDateBox;
+
+    @OnClick(R.id.date_picker)
+    public void dateClickListener(View view){
+        new DatePickerDialog(EditPlanFragment.this.getActivity(), dateSetListener,
+                mCurrentPlan.getStart_time().get(Calendar.YEAR),
+                mCurrentPlan.getStart_time().get(Calendar.MONTH),
+                mCurrentPlan.getStart_time().get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+    @Bind(R.id.date_adder)
+    Button mDateAddButton;
+
+    @OnClick(R.id.date_adder)
+    public void dateAddClickListener(View view){
+        mDateAddButton.setVisibility(View.GONE);
+        mStartDateBox.setVisibility(View.VISIBLE);
+        new DatePickerDialog(EditPlanFragment.this.getActivity(), dateSetListener,
+                mCurrentPlan.getStart_time().get(Calendar.YEAR),
+                mCurrentPlan.getStart_time().get(Calendar.MONTH),
+                mCurrentPlan.getStart_time().get(Calendar.DAY_OF_MONTH)).show();
     }
 
     @Bind(R.id.city_picker)
     MaterialEditText mCityPicker;
-
 
     @Bind(R.id.items_view)
     RecyclerView mItemsView;
@@ -144,10 +164,13 @@ public class EditPlanFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_edit_plan, container, false);
         ButterKnife.bind(this, v);
+
         dateSdf = new SimpleDateFormat(dateFormat, Locale.US);
         timeSdf = new SimpleDateFormat(timeFormat, Locale.US);
-        mAdapter = new ItemAdapter(mCurrentPlan ==null?null: mCurrentPlan.getItems(), getActivity(), true);
+        mAdapter = new ItemAdapter(mCurrentPlan ==null?null: mCurrentPlan.getItems(), this.getActivity(), true);
         mItemsView.setAdapter(mAdapter);
+        mItemsView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+        mAdapter.notifyDataSetChanged();
 
         mCityPicker.setOnClickListener((view)->openAutocomplete());
 
@@ -186,13 +209,13 @@ public class EditPlanFragment extends Fragment {
 
                 }
             });
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Create Plan");
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Edit Plan");
+            updateView();
         }
         else
         {
             mCurrentPlan = new Plan();
-            updateView();
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Edit Plan");
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Create Plan");
         }
 
         super.onViewCreated(view, savedInstanceState);
@@ -221,14 +244,6 @@ public class EditPlanFragment extends Fragment {
         }
     };
 
-    TimePickerDialog.OnTimeSetListener endTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
-        @Override
-        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            mCurrentPlan.getEnd_time().set(Calendar.HOUR_OF_DAY, hourOfDay);
-            mCurrentPlan.getEnd_time().set(Calendar.MINUTE, minute);
-            updateView();
-        }
-    };
 
     private void updateView() {
         mNameBox.setText(mCurrentPlan.getName());
@@ -241,6 +256,7 @@ public class EditPlanFragment extends Fragment {
             mCurrentPlan.setStart_time(calendar);
         }
         mStartTimeBox.setText(timeSdf.format(mCurrentPlan.getStart_time().getTime()));
+        mStartDateBox.setText(dateSdf.format(mCurrentPlan.getStart_time().getTime()));
     }
 
     @Override

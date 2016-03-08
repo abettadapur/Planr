@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -46,9 +47,11 @@ import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.net.RestClient;
 import devpost.yelp.planfun.ui.events.EditPlanRequest;
 import devpost.yelp.planfun.ui.events.FindPlanRequest;
+import devpost.yelp.planfun.ui.events.GeneratePlanRequest;
 import devpost.yelp.planfun.ui.events.OpenPlanRequest;
 import devpost.yelp.planfun.ui.events.SavePlanRequest;
 import devpost.yelp.planfun.ui.fragments.EditPlanFragment;
+import devpost.yelp.planfun.ui.fragments.GeneratePlanFragment;
 import devpost.yelp.planfun.ui.fragments.PlanDetailFragment;
 import devpost.yelp.planfun.ui.fragments.PlanListFragment;
 import devpost.yelp.planfun.ui.fragments.SearchPlanFragment;
@@ -247,6 +250,9 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe
     public void onOpenPlanRequest(OpenPlanRequest request)
     {
+        if(request.fromGenerate)
+            getSupportFragmentManager().popBackStack();
+
         PlanDetailFragment fragment = PlanDetailFragment.newInstance(request.plan_id);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)
@@ -291,5 +297,15 @@ public class MainActivity extends AppCompatActivity {
             mDrawer.setSelectionAtPosition(1);
             getSupportActionBar().setTitle("Search Results");
         }
+    }
+
+    @Subscribe
+    public void onGeneratePlanRequest(GeneratePlanRequest request)
+    {
+        GeneratePlanFragment fragment = new GeneratePlanFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("")
+                .commit();
     }
 }
