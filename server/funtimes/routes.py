@@ -17,6 +17,7 @@ api.add_resource(funtimes_api.PlanShareResource, '/api/plans/<int:plan_id>/share
 api.add_resource(funtimes_api.ItemListResource, '/api/plans/<int:plan_id>/items')
 api.add_resource(funtimes_api.ItemResource, '/api/plans/<int:plan_id>/items/<int:item_id>')
 api.add_resource(funtimes_api.FriendsResource, '/api/registered_friends')
+api.add_resource(funtimes_api.CategoryResource, '/api/categories')
 
 
 def default(obj):

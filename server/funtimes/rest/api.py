@@ -20,13 +20,11 @@ from sqlalchemy.exc import InvalidRequestError
 
 
 class HelloWorld(Resource):
-
     def get(self):
         return {"message": "Welcome to the FunTimes API"}
 
 
 class AuthResource(Resource):
-
     def __init__(self):
         self.auth_parser = RequestParser()
         self.auth_parser.add_argument(
@@ -53,7 +51,7 @@ class AuthResource(Resource):
         if user and user['id'] == uid:
             if not user_repository.user_exists(user['email']):
                 new_user = User(uid, user['first_name'], user[
-                                'last_name'], user['email'])
+                    'last_name'], user['email'])
                 user_repository.add_or_update(new_user)
                 user_repository.save_changes()
 
@@ -80,7 +78,6 @@ class AuthResource(Resource):
 
 
 class PlanResource(Resource):
-
     def __init__(self):
         self.update_parser = RequestParser()
         self.update_parser.add_argument(
@@ -158,7 +155,6 @@ class PlanResource(Resource):
 
 
 class PlanListResource(Resource):
-
     def __init__(self):
         self.get_parser = RequestParser()
         self.get_parser.add_argument('shared', type=bool, required=False)
@@ -211,7 +207,6 @@ class PlanListResource(Resource):
 
 
 class PlanRandomizeResource(Resource):
-
     def __init__(self):
         self.plan_repository = PlanRepository()
 
@@ -239,7 +234,6 @@ class PlanRandomizeResource(Resource):
 
 
 class PlanSearchResource(Resource):
-
     def __init__(self):
         self.search_parser = RequestParser()
         self.search_parser.add_argument('query', type=str, required=False)
@@ -262,7 +256,6 @@ class PlanSearchResource(Resource):
 
 
 class PlanShareResource(Resource):
-
     def __init__(self):
         self.plan_repository = PlanRepository()
         super(PlanShareResource, self).__init__()
@@ -303,7 +296,6 @@ class PlanShareResource(Resource):
 
 
 class ItemResource(Resource):
-
     def __init__(self):
         self.reqparse = RequestParser()
         self.reqparse.add_argument(
@@ -329,7 +321,7 @@ class ItemResource(Resource):
         if not plan:
             abort(404, message="This plan does not exist")
         item = query(plan.items).where(lambda i: i.id ==
-                                       item_id).single_or_default(default=None)
+                                                 item_id).single_or_default(default=None)
         if not item:
             abort(404, message="This item does not exist")
         return item
@@ -343,7 +335,7 @@ class ItemResource(Resource):
         if not plan:
             abort(404, message="This plan does not exist")
         item = query(plan.items).where(lambda i: i.id ==
-                                       item_id).single_or_default(default=None)
+                                                 item_id).single_or_default(default=None)
         if not item:
             abort(404, message="This item does not exist")
 
@@ -360,7 +352,7 @@ class ItemResource(Resource):
 
         self.item_repository.save_changes()
         return item
-    
+
     @authenticate
     def delete(self, plan_id, item_id, **kwargs):
         user = kwargs['user']
@@ -368,9 +360,9 @@ class ItemResource(Resource):
             default=None)
         if not plan:
             abort(404, message="This plan does not exist")
-        
+
         item = query(plan.items).where(lambda i: i.id ==
-                                       item_id).single_or_default(default=None)
+                                                 item_id).single_or_default(default=None)
         if not item:
             abort(404, message="This item does not exist")
 
@@ -381,7 +373,6 @@ class ItemResource(Resource):
 
 
 class ItemListResource(Resource):
-
     def __init__(self):
         self.reqparse = RequestParser()
         self.reqparse.add_argument(
@@ -436,7 +427,6 @@ class ItemListResource(Resource):
 
 
 class RatingResource(Resource):
-
     def __init__(self):
         self.create_parser = RequestParser()
         self.create_parser.add_argument(
@@ -480,7 +470,6 @@ class RatingResource(Resource):
 
 
 class FriendsResource(Resource):
-
     def __init__(self):
         self.user_repository = UserRepository()
         super(FriendsResource, self).__init__()
@@ -498,6 +487,17 @@ class FriendsResource(Resource):
                 users.append(user)
 
         return users
+
+
+class CategoryResource(Resource):
+    def __init__(self):
+        self.category_repository = YelpCategoryRepository()
+        super(CategoryResource, self).__init__()
+
+    @authenticate
+    def get(self, **kwargs):
+        categories = self.category_repository.get()
+        return categories
 
 
 def on_error(error_message, result=None):

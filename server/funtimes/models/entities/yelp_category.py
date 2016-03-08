@@ -9,6 +9,7 @@ class YelpCategory(BaseModel):
     name = db.Column(db.String(200), nullable=False)
     search_term = db.Column(db.String(200), nullable=True)
     search_filters = db.relationship("YelpSearchFilter")
+    icon_string = db.Column(db.String(500))
 
     def __init__(self, name, search_term):
         self.name = name
