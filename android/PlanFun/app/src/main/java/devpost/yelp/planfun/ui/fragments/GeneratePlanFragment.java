@@ -9,6 +9,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +30,9 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.Bind;
@@ -35,10 +41,15 @@ import butterknife.OnClick;
 import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Plan;
+import devpost.yelp.planfun.model.YelpCategory;
 import devpost.yelp.planfun.net.RestClient;
+import devpost.yelp.planfun.ui.adapters.CategoryAdapter;
+import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
 import devpost.yelp.planfun.ui.dialogs.PickCategoryDialog;
 import devpost.yelp.planfun.ui.events.AddCategoryRequest;
 import devpost.yelp.planfun.ui.events.OpenPlanRequest;
+import devpost.yelp.planfun.ui.listutils.OnStartDragListener;
+import devpost.yelp.planfun.ui.listutils.SimpleItemTouchHelperCallback;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,7 +57,7 @@ import retrofit2.Response;
 /**
  * Created by alexb on 3/6/2016.
  */
-public class GeneratePlanFragment extends Fragment
+public class GeneratePlanFragment extends Fragment implements OnStartDragListener
 {
     @Bind(R.id.input_name)
     MaterialEditText mNameView;
@@ -62,6 +73,8 @@ public class GeneratePlanFragment extends Fragment
     Button saveButton;
     @Bind(R.id.add_category)
     Button mAddCategoryButton;
+    @Bind(R.id.categoryListView)
+    RecyclerView mCategoryListView;
 
     private RestClient mRestClient;
 
@@ -73,12 +86,16 @@ public class GeneratePlanFragment extends Fragment
     private final int PLACES_AUTOCOMPLETE=10001;
 
     private Plan mCurrentPlan;
+    private List<YelpCategory> mCategories;
+    private CategoryAdapter mCategoryAdapter;
+    private ItemTouchHelper mItemTouchHelper;
 
 
     public GeneratePlanFragment()
     {
         mRestClient = RestClient.getInstance();
         mCurrentPlan = new Plan();
+        mCategories = new ArrayList<>();
     }
 
     @Override
@@ -101,6 +118,15 @@ public class GeneratePlanFragment extends Fragment
         timeSdf = new SimpleDateFormat(timeFormat, Locale.US);
 
         mStartingAddressView.setOnClickListener((view) -> openAutocomplete());
+
+        mCategoryAdapter = new CategoryAdapter(mCategories, getActivity(), this);
+        mCategoryListView.setAdapter(mCategoryAdapter);
+        mCategoryListView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mCategoryListView.setItemAnimator(new DefaultItemAnimator());
+
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mCategoryAdapter);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(mCategoryListView);
         return v;
     }
 
@@ -258,5 +284,12 @@ public class GeneratePlanFragment extends Fragment
     public void OnAddCategory(AddCategoryRequest request)
     {
         Log.i("GENERATE", "Category received, id: "+request.category.getId());
+        mCategories.add(request.category);
+        mCategoryAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder holder) {
+        mItemTouchHelper.startDrag(holder);
     }
 }
