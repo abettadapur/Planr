@@ -23,6 +23,7 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.squareup.otto.Subscribe;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -35,6 +36,8 @@ import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.net.RestClient;
+import devpost.yelp.planfun.ui.dialogs.PickCategoryDialog;
+import devpost.yelp.planfun.ui.events.AddCategoryRequest;
 import devpost.yelp.planfun.ui.events.OpenPlanRequest;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -57,6 +60,8 @@ public class GeneratePlanFragment extends Fragment
     MaterialEditText mDateView;
     @Bind(R.id.save_plan)
     Button saveButton;
+    @Bind(R.id.add_category)
+    Button mAddCategoryButton;
 
     private RestClient mRestClient;
 
@@ -74,6 +79,17 @@ public class GeneratePlanFragment extends Fragment
     {
         mRestClient = RestClient.getInstance();
         mCurrentPlan = new Plan();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PlanFunApplication.getBus().register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        PlanFunApplication.getBus().unregister(this);
     }
 
     @Nullable
@@ -208,6 +224,13 @@ public class GeneratePlanFragment extends Fragment
         });
     }
 
+    @OnClick(R.id.add_category)
+    public void onAddCategoryClick(View v)
+    {
+        PickCategoryDialog categoryDialog = new PickCategoryDialog();
+        categoryDialog.show(this.getChildFragmentManager(), "fm");
+    }
+
     @OnClick(R.id.startTimePicker)
     public void openStartTimePicker()
     {
@@ -229,5 +252,11 @@ public class GeneratePlanFragment extends Fragment
                 mCurrentPlan.getStart_time().get(Calendar.YEAR),
                 mCurrentPlan.getStart_time().get(Calendar.MONTH),
                 mCurrentPlan.getStart_time().get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+    @Subscribe
+    public void OnAddCategory(AddCategoryRequest request)
+    {
+        Log.i("GENERATE", "Category received, id: "+request.category.getId());
     }
 }

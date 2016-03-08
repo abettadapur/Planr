@@ -5,6 +5,7 @@ package devpost.yelp.planfun.model;
  */
 public class YelpCategory
 {
+    private int id;
     private String name;
     private String icon_string;
 
@@ -22,5 +23,9 @@ public class YelpCategory
 
     public String getIcon_string() {
         return icon_string;
+    }
+
+    public int getId() {
+        return id;
     }
 }

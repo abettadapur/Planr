@@ -10,9 +10,7 @@ from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
 from funtimes.repositories.yelpItemRepository import YelpItemRepository
 
 
-def populate_sample_plan(plan):
-    category_repository = YelpCategoryRepository()
-    categories = category_repository.get_categories_for_time(plan.start_time, plan.end_time)
+def populate_sample_plan(plan, categories):
     items = fetch_items(plan.starting_coordinate, categories, plan.start_time.date())
     plan.items = items
 

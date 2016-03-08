@@ -16,4 +16,8 @@ public interface CategoryService
 {
     @GET("category/{category}/query")
     Call<List<YelpEntry>> searchCategory(@Path("category") YelpCategory category, @Query("location") String city);
+
+    @GET("categories")
+    Call<List<YelpCategory>> getCategories();
+
 }
