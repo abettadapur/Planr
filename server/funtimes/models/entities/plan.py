@@ -12,6 +12,11 @@ class PlanShares(BaseModel):
     plan_id = db.Column(db.Integer, db.ForeignKey("plan.id", ondelete="CASCADE"))
     permission = db.Column('permissions', db.Enum("READ", "EDIT"), nullable=False)
 
+class PlanCategories(BaseModel):
+    __tablename__ = "plan_categories"
+    id = db.Column(db.Integer, primary_key=True)
+    cat_id = db.Column(db.Integer, db.ForeignKey("yelp_category.id"))
+    plan_id = db.Column(db.Integer, db.ForeignKey("plan.id", ondelete="CASCADE"))
 
 class Plan(BaseModel):
     __tablename__ = "plan"
@@ -23,8 +28,8 @@ class Plan(BaseModel):
     starting_coordinate_id = db.Column(db.Integer(), db.ForeignKey("coordinate.id", ondelete="CASCADE"))
     starting_coordinate = db.relationship("Coordinate", cascade="all, delete")
     public = db.Column(db.Boolean)
-    items = db.relationship("Item", cascade="all, delete", order_by="Plan.start_time")
-    categories = db.relationship("YelpCategory", cascade="all, delete")
+    items = db.relationship("Item", cascade="all, delete", order_by="Item.start_time")
+    categories = db.relationship("YelpCategory", secondary="plan_categories")
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     user = db.relationship("User", back_populates="plans")
     shared_users = db.relationship("User", secondary="plan_shares")
@@ -78,7 +83,7 @@ class Plan(BaseModel):
         if 'starting_address' in create_dict:
             plan.starting_address=create_dict['starting_address']
             plan.starting_coordinate=Coordinate(float(create_dict['starting_coordinate'].partition(',')[0]),
-                                           float(create_dict['starting_coordinate'].partition(',')[2])),
+                                           float(create_dict['starting_coordinate'].partition(',')[2]))
         return plan
 
     def _set_start_item(self,item):

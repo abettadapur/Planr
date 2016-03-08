@@ -38,9 +38,6 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], name=op.f('fk_plan_shares_user_id_user')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_plan_shares'))
     )
-    op.drop_table('itinerary')
-    op.drop_table('city')
-    op.drop_table('itinerary_shares')
     op.add_column('item', sa.Column('plan_id', sa.Integer(), nullable=True))
     op.drop_constraint('fk_item_itinerary_id', 'item', type_='foreignkey')
     op.create_foreign_key('fk_item_plan_id', 'item', 'plan', ['plan_id'], ['id'], ondelete='CASCADE')
@@ -49,6 +46,9 @@ def upgrade():
     op.drop_constraint('fk_rating_itinerary_id_itinerary', 'rating', type_='foreignkey')
     op.create_foreign_key(op.f('fk_rating_plan_id_plan'), 'rating', 'plan', ['plan_id'], ['id'])
     op.drop_column('rating', 'itinerary_id')
+    op.drop_table('itinerary_shares')
+    op.drop_table('itinerary')
+    op.drop_table('city')
     ### end Alembic commands ###
 
 
