@@ -1,12 +1,14 @@
 package devpost.yelp.planfun.ui.adapters;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import net.steamcrafted.materialiconlib.MaterialIconView;
@@ -27,6 +29,7 @@ import devpost.yelp.planfun.ui.listutils.OnStartDragListener;
  */
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> implements ItemTouchHelperAdapter
 {
+
     public static class ViewHolder extends RecyclerView.ViewHolder
     {
         @Bind(R.id.categoryIconView)

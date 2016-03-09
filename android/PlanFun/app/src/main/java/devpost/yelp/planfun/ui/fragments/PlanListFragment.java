@@ -249,4 +249,6 @@ public class PlanListFragment extends Fragment implements RecyclerItemClickListe
     public void onGenClick(View button){
         PlanFunApplication.getBus().post(new GeneratePlanRequest());
     }
+
+    
 }

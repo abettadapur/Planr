@@ -294,16 +294,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void onSavePlanRequest(SavePlanRequest request)
-    {
-        PlanDetailFragment fragment = PlanDetailFragment.newInstance(request.to_save.getId());
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, fragment)
-                .addToBackStack("")
-                .commit();
-    }
-
-    @Subscribe
     public void onFindPlanRequest(FindPlanRequest request){
         if(currentFragment != searchItineraryFragment) {
             getSupportFragmentManager()

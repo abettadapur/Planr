@@ -16,8 +16,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TimePicker;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
@@ -27,6 +29,7 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.Bind;
@@ -37,9 +40,12 @@ import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Plan;
+import devpost.yelp.planfun.model.YelpCategory;
 import devpost.yelp.planfun.net.RestClient;
+import devpost.yelp.planfun.ui.adapters.CategoryAdapter;
 import devpost.yelp.planfun.ui.adapters.ItemAdapter;
 import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
+import devpost.yelp.planfun.ui.dialogs.PickCategoryDialog;
 import devpost.yelp.planfun.ui.events.SavePlanRequest;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -69,7 +75,6 @@ public class EditItemFragment extends Fragment {
     @Bind(R.id.item_place_picker)
     MaterialEditText mPlaceBox;
 
-
     @OnClick(R.id.item_place_picker)
     public void openAutocomplete(View view)
     {
@@ -82,6 +87,48 @@ public class EditItemFragment extends Fragment {
         } catch (GooglePlayServicesNotAvailableException gnaex) {
 
         }
+    }
+
+    private List<YelpCategory> mCategories;
+
+    @Bind(R.id.item_search_categories)
+    EditText mCategoriesText;
+
+    @OnClick(R.id.item_search_categories)
+    public void setCategories(View v){
+        Call<List<YelpCategory>> categoryCall = mRestClient.getCategoryService().getCategories();
+
+        categoryCall.enqueue(new Callback<List<YelpCategory>>() {
+            @Override
+            public void onResponse(Call<List<YelpCategory>> call, Response<List<YelpCategory>> response) {
+                if (response.isSuccess()) {
+                    getActivity().runOnUiThread(() ->
+                    {
+                        new MaterialDialog.Builder(getContext())
+                                .title("Choose Categories")
+                                .items(response.body())
+                                .itemsCallbackMultiChoice(null, new MaterialDialog.ListCallbackMultiChoice() {
+                                    @Override
+                                    public boolean onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
+                                        /**
+                                         * If you use alwaysCallMultiChoiceCallback(), which is discussed below,
+                                         * returning false here won't allow the newly selected check box to actually be selected.
+                                         * See the limited multi choice dialog example in the sample project for details.
+                                         **/
+                                        return true;
+                                    }
+                                })
+                                .positiveText("Done")
+                                .show();
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<YelpCategory>> call, Throwable t) {
+
+            }
+        });
     }
 
     @Bind(R.id.items_view)
@@ -112,18 +159,18 @@ public class EditItemFragment extends Fragment {
 
     private RestClient mRestClient;
 
-    public static EditPlanFragment newInstance()
+    public static EditItemFragment newInstance()
     {
-        EditPlanFragment fragment = new EditPlanFragment();
+        EditItemFragment fragment = new EditItemFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
     }
 
-    public static EditPlanFragment newInstance(int plan_id) {
-        EditPlanFragment fragment = new EditPlanFragment();
+    public static EditItemFragment newInstance(int item_id) {
+        EditItemFragment fragment = new EditItemFragment();
         Bundle args = new Bundle();
-        args.putInt("plan_id", plan_id);
+        args.putInt("item_id", item_id);
         fragment.setArguments(args);
         return fragment;
     }
@@ -152,7 +199,7 @@ public class EditItemFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_edit_plan, container, false);
+        View v = inflater.inflate(R.layout.fragment_item_search, container, false);
         ButterKnife.bind(this, v);
 
         dateSdf = new SimpleDateFormat(dateFormat, Locale.US);

@@ -24,6 +24,7 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.squareup.otto.Subscribe;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -37,6 +38,8 @@ import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.net.RestClient;
 import devpost.yelp.planfun.ui.adapters.ItemAdapter;
+import devpost.yelp.planfun.ui.events.EditItemRequest;
+import devpost.yelp.planfun.ui.events.EditPlanRequest;
 import devpost.yelp.planfun.ui.events.SavePlanRequest;
 import devpost.yelp.planfun.model.Plan;
 import retrofit2.Call;
@@ -131,6 +134,7 @@ public class EditPlanFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_edit_plan, container, false);
         ButterKnife.bind(this, v);
+        PlanFunApplication.getBus().register(this);
 
         dateSdf = new SimpleDateFormat(dateFormat, Locale.US);
         timeSdf = new SimpleDateFormat(timeFormat, Locale.US);
@@ -221,5 +225,30 @@ public class EditPlanFragment extends Fragment {
         }
     }
 
+    @Subscribe
+    public void onSavePlanRequest(SavePlanRequest request)
+    {
+        PlanDetailFragment fragment = PlanDetailFragment.newInstance(request.to_save.getId());
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("")
+                .commit();
+    }
+
+    @Subscribe
+    public void onEditItemRequest(EditItemRequest request)
+    {
+        EditItemFragment fragment;
+
+        if(!request.new_item)
+            fragment = EditItemFragment.newInstance(request.item_id);
+        else
+            fragment = EditItemFragment.newInstance();
+
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("")
+                .commit();
+    }
 
 }
