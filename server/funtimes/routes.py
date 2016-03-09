@@ -9,15 +9,15 @@ from funtimes.rest import api as funtimes_api
 api = Api(app)
 api.add_resource(funtimes_api.HelloWorld, '/api')
 api.add_resource(funtimes_api.AuthResource, '/api/auth')
-api.add_resource(funtimes_api.CityResource, '/api/cities')
-api.add_resource(funtimes_api.ItineraryListResource, '/api/itineraries')
-api.add_resource(funtimes_api.ItineraryResource, '/api/itineraries/<int:id>')
-api.add_resource(funtimes_api.ItineraryRandomizeResource, '/api/itineraries/<int:id>/randomize')
-api.add_resource(funtimes_api.ItinerarySearchResource, '/api/itineraries/search')
-api.add_resource(funtimes_api.ItineraryShareResource, '/api/itineraries/<int:itinerary_id>/share')
-api.add_resource(funtimes_api.ItemListResource, '/api/itineraries/<int:itinerary_id>/items')
-api.add_resource(funtimes_api.ItemResource, '/api/itineraries/<int:itinerary_id>/items/<int:item_id>')
+api.add_resource(funtimes_api.PlanListResource, '/api/plans')
+api.add_resource(funtimes_api.PlanResource, '/api/plans/<int:id>')
+api.add_resource(funtimes_api.PlanRandomizeResource, '/api/plans/<int:id>/randomize')
+api.add_resource(funtimes_api.PlanSearchResource, '/api/plans/search')
+api.add_resource(funtimes_api.PlanShareResource, '/api/plans/<int:plan_id>/share')
+api.add_resource(funtimes_api.ItemListResource, '/api/plans/<int:plan_id>/items')
+api.add_resource(funtimes_api.ItemResource, '/api/plans/<int:plan_id>/items/<int:item_id>')
 api.add_resource(funtimes_api.FriendsResource, '/api/registered_friends')
+api.add_resource(funtimes_api.CategoryResource, '/api/categories')
 
 
 def default(obj):

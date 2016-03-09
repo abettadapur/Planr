@@ -9,11 +9,8 @@ class YelpCategory(BaseModel):
     name = db.Column(db.String(200), nullable=False)
     search_term = db.Column(db.String(200), nullable=True)
     search_filters = db.relationship("YelpSearchFilter")
-    start_time = db.Column(db.Time)
-    end_time = db.Column(db.Time)
+    icon_string = db.Column(db.String(500))
 
-    def __init__(self, name, search_term, start_time, end_time):
+    def __init__(self, name, search_term):
         self.name = name
         self.search_term = search_term
-        self.start_time = start_time
-        self.end_time = end_time

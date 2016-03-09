@@ -104,8 +104,7 @@ public class PlanListFragment extends Fragment implements RecyclerItemClickListe
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-    {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle args = getArguments();
         layout = args.getInt("layout");
         list_item = args.getInt("list_item");
@@ -127,8 +126,8 @@ public class PlanListFragment extends Fragment implements RecyclerItemClickListe
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
         if(refreshOnStart)
             refreshList();
     }

@@ -1,6 +1,6 @@
 from funtimes.models.entities.change_result import ChangeResult
 
-from funtimes.models.entities.yelpcategory import YelpCategory
+from funtimes.models.entities.yelp_category import YelpCategory
 from funtimes.repositories.baseRepository import BaseRepository
 from asq.initiators import query
 

@@ -9,14 +9,13 @@ from funtimes.models.entities.change_result import ChangeResult
 from funtimes.models.entities.rating import Rating
 from funtimes.models.entities.user import User
 from funtimes.repositories.itemRepository import ItemRepository
-from funtimes.repositories.itineraryRepository import ItineraryRepository
+from funtimes.repositories.planRepository import PlanRepository
 from funtimes.repositories.ratingRepository import RatingRepository
 from funtimes.repositories.userAuthorizationRepository import UserAuthorizationRepository
 from funtimes.repositories.userRepository import UserRepository
 from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
-from funtimes.repositories.cityRepository import CityRepository
 from funtimes.rest import authenticate
-from funtimes.generation.generation import populate_sample_itinerary
+from funtimes.generation.generation import populate_sample_plan
 from sqlalchemy.exc import InvalidRequestError
 
 
@@ -28,7 +27,8 @@ class HelloWorld(Resource):
 class AuthResource(Resource):
     def __init__(self):
         self.auth_parser = RequestParser()
-        self.auth_parser.add_argument('token', type=str, required=True, help="No token to verify", location='json')
+        self.auth_parser.add_argument(
+            'token', type=str, required=True, help="No token to verify", location='json')
         self.auth_parser.add_argument('user_id', type=str, required=True,
                                       help="An associated Facebook User ID is required", location='json')
         super(AuthResource, self).__init__()
@@ -50,7 +50,8 @@ class AuthResource(Resource):
 
         if user and user['id'] == uid:
             if not user_repository.user_exists(user['email']):
-                new_user = User(uid, user['first_name'], user['last_name'], user['email'])
+                new_user = User(uid, user['first_name'], user[
+                    'last_name'], user['email'])
                 user_repository.add_or_update(new_user)
                 user_repository.save_changes()
 
@@ -76,116 +77,106 @@ class AuthResource(Resource):
         user = kwargs['user']
 
 
-class CityResource(Resource):
-    def __init__(self):
-        self.query_parser = RequestParser()
-        self.query_parser.add_argument('name', required=False, help='Name of city')
-        self.query_parser.add_argument('state', required=False, help='Name of state')
-        self.city_repository = CityRepository()
-        super(CityResource, self).__init__()
-
-    def get(self, **kwargs):
-        args = self.query_parser.parse_args()
-        cities = self.city_repository.search(args.name, args.state)
-        return cities
-
-
-class ItineraryResource(Resource):
+class PlanResource(Resource):
     def __init__(self):
         self.update_parser = RequestParser()
-        self.update_parser.add_argument('name', type=str, required=True, location='json', help='No name provided')
-        self.update_parser.add_argument('start_time', type=str, required=True, location='json',
+        self.update_parser.add_argument(
+            'name', type=str, required=False, location='json', help='No name provided')
+        self.update_parser.add_argument('start_time', type=str, required=False, location='json',
                                         help='No start_time provided')
-        self.update_parser.add_argument('end_time', type=str, required=True, location='json',
+        self.update_parser.add_argument('end_time', type=str, required=False, location='json',
                                         help='No end_time provided')
-        self.update_parser.add_argument('public', type=bool, required=True, location='json',
+        self.update_parser.add_argument('public', type=bool, required=False, location='json',
                                         help='No publicity provided')
-        self.itinerary_repository = ItineraryRepository()
-        super(ItineraryResource, self).__init__()
+        self.plan_repository = PlanRepository()
+        super(PlanResource, self).__init__()
 
-    # Get an itinerary by id
+    # Get an plan by id
     @authenticate
     def get(self, id, **kwargs):
         user = kwargs['user']
-        itinerary = self.itinerary_repository.find(id)
+        plan = self.plan_repository.find(id)
 
-        if not itinerary:
-            abort(404, message="No itinerary with that id exists")
+        if not plan:
+            abort(404, message="No plan with that id exists")
 
-        if itinerary.user.id != user.id and not query(itinerary.shared_users).contains(user, lambda lhs, rhs: lhs.id == rhs.id):
-            abort(404, message="No itinerary with that id exists")
+        if plan.user.id != user.id and not query(plan.shared_users).contains(user, lambda lhs, rhs: lhs.id == rhs.id):
+            abort(404, message="No plan with that id exists")
 
         if 'include_polyline' in request.args and request.args['include_polyline']:
-            polyline = get_polyline(itinerary)
-            itinerary_dict = itinerary.as_dict()
-            itinerary_dict['polylines'] = polyline
-            return itinerary_dict
+            polyline = get_polyline(plan)
+            plan_dict = plan.as_dict()
+            plan_dict['polylines'] = polyline
+            return plan_dict
 
-        return itinerary
+        return plan
 
-    # Update an itinerary by id
+    # Update an plan by id
     @authenticate
     def put(self, id, **kwargs):
         user = kwargs['user']
         args = self.update_parser.parse_args()
+        plan = self.plan_repository.find(id)
 
-        itinerary = self.itinerary_repository.find(id)
+        if not plan:
+            abort(404, message="No plan with that id exists")
 
-        if not itinerary:
-            abort(404, message="No itinerary with that id exists")
-
-        if itinerary.user.id != user.id:
-            permission = self.itinerary_repository.get_shared_user_permission(id, user.id)
+        if plan.user.id != user.id:
+            permission = self.plan_repository.get_shared_user_permission(
+                id, user.id)
             if not permission:
-                abort(404, message="No itinerary with that id exists")
+                abort(404, message="No plan with that id exists")
             elif permission == 'READ':
                 abort(403, message="This user does not have edit permissions")
 
-        itinerary.update_from_dict(args)
-        result = self.itinerary_repository.add_or_update(itinerary)
+        plan.update_from_dict(args)
+        result = self.plan_repository.add_or_update(plan)
 
         if not result.success():
-            on_error(error_message="Could not update itinerary", result=result)
+            on_error(error_message="Could not update plan", result=result)
 
-        self.itinerary_repository.save_changes()
-        return itinerary
+        self.plan_repository.save_changes()
+        return plan
 
     @authenticate
     def delete(self, id, **kwargs):
         user = kwargs['user']
-        itinerary = self.itinerary_repository.find(id)
+        plan = self.plan_repository.find(id)
 
-        if not itinerary:
-            abort(404, message="No itinerary with that id exists")
+        if not plan:
+            abort(404, message="No plan with that id exists")
 
-        if itinerary.user.id != user.id:
-            abort(404, message="No itinerary with that id exists")
+        if plan.user.id != user.id:
+            abort(404, message="No plan with that id exists")
 
-        self.itinerary_repository.delete(id)
-        self.itinerary_repository.save_changes()
-        return {"message": "Deleted itinerary"}
+        self.plan_repository.delete(id)
+        self.plan_repository.save_changes()
+        return {"message": "Deleted plan"}
 
 
-class ItineraryListResource(Resource):
+class PlanListResource(Resource):
     def __init__(self):
         self.get_parser = RequestParser()
         self.get_parser.add_argument('shared', type=bool, required=False)
 
         self.create_parser = RequestParser()
-        self.create_parser.add_argument('name', type=str, required=True, location='json', help='No name provided')
+        self.create_parser.add_argument(
+            'name', type=str, required=True, location='json', help='No name provided')
         self.create_parser.add_argument('start_time', type=str, required=True, location='json',
                                         help='No start_time provided')
         self.create_parser.add_argument('end_time', type=str, required=True, location='json',
                                         help='No end_time provided')
-        self.create_parser.add_argument('starting_address', type=str, required=True, location='json', help='No starting address provided')
-        self.create_parser.add_argument('starting_coordinate', type=str, required=True, location='json', help='No starting coordinate provided')
+        self.create_parser.add_argument(
+            'starting_address', type=str, required=True, location='json', help='No starting address provided')
+        self.create_parser.add_argument(
+            'starting_coordinate', type=str, required=True, location='json', help='No starting coordinate provided')
         self.create_parser.add_argument('public', type=bool, required=True, location='json',
                                         help='No publicity provided')
-        self.itinerary_repository = ItineraryRepository()
+        self.plan_repository = PlanRepository()
 
-        super(ItineraryListResource, self).__init__()
+        super(PlanListResource, self).__init__()
 
-    # List all itineraries
+    # List all plans
     @authenticate
     def get(self, **kwargs):
         try:
@@ -193,61 +184,62 @@ class ItineraryListResource(Resource):
             filter_args = request.args.to_dict()
             if 'shared' in filter_args:
                 filter_args['shared'] = bool(filter_args['shared'])
-            itineraries = self.itinerary_repository.get(user=user, **filter_args)
-            return itineraries
+            plans = self.plan_repository.get(user=user, **filter_args)
+            return plans
         except InvalidRequestError as ireq:
             on_error(str(ireq))
 
-    # Create a new itinerary
+    # Create a new plan
     @authenticate
     def post(self, **kwargs):
         user = kwargs['user']
         args = self.create_parser.parse_args()
-        itinerary = self.itinerary_repository.create_from_dict(args, user)
-        populate_sample_itinerary(itinerary)
-        # TODO(abettadapur): Populate itinerary with yelp items
-        result = self.itinerary_repository.add_or_update(itinerary)
+        plan = self.plan_repository.create_from_dict(args, user)
+        populate_sample_plan(plan)
+        # TODO(abettadapur): Populate plan with yelp items
+        result = self.plan_repository.add_or_update(plan)
 
         if not result.success:
-            on_error(error_message="Could not create itinerary", result=result)
+            on_error(error_message="Could not create plan", result=result)
 
-        self.itinerary_repository.save_changes()
-        return itinerary
+        self.plan_repository.save_changes()
+        return plan
 
 
-class ItineraryRandomizeResource(Resource):
+class PlanRandomizeResource(Resource):
     def __init__(self):
-        self.itinerary_repository = ItineraryRepository()
+        self.plan_repository = PlanRepository()
 
     @authenticate
     def post(self, id, **kwargs):
         user = kwargs['user']
-        itinerary = query(self.itinerary_repository.get(user=user, id=id)).single_or_default(default=None)
+        plan = query(self.plan_repository.get(user=user, id=id)
+                     ).single_or_default(default=None)
 
-        if itinerary is None:
-            abort(404, message="No itinerary with that id was found")
+        if plan is None:
+            abort(404, message="No plan with that id was found")
 
-        self.itinerary_repository.clear_itinerary(itinerary)
-        populate_sample_itinerary(itinerary)
-        result = self.itinerary_repository.add_or_update(itinerary)
+        self.plan_repository.clear_plan(plan)
+        populate_sample_plan(plan)
+        result = self.plan_repository.add_or_update(plan)
 
         if not result.success:
-            on_error(error_message="Could not randomize itinerary", result=result)
+            on_error(error_message="Could not randomize plan", result=result)
 
-        self.itinerary_repository.save_changes()
-        polyline = get_polyline(itinerary)
-        itinerary_dict = itinerary.as_dict()
-        itinerary_dict['polylines'] = polyline
-        return itinerary_dict
+        self.plan_repository.save_changes()
+        polyline = get_polyline(plan)
+        plan_dict = plan.as_dict()
+        plan_dict['polylines'] = polyline
+        return plan_dict
 
 
-class ItinerarySearchResource(Resource):
+class PlanSearchResource(Resource):
     def __init__(self):
         self.search_parser = RequestParser()
         self.search_parser.add_argument('query', type=str, required=False)
         self.search_parser.add_argument('city', type=str, required=False)
-        self.itinerary_repository = ItineraryRepository()
-        super(ItinerarySearchResource, self).__init__()
+        self.plan_repository = PlanRepository()
+        super(PlanSearchResource, self).__init__()
 
     @authenticate
     def get(self, **kwargs):
@@ -259,21 +251,21 @@ class ItinerarySearchResource(Resource):
         if 'city' not in args:
             args['city'] = ''
 
-        itineraries = self.itinerary_repository.search(args['query'], args['city'])
-        return itineraries
+        plans = self.plan_repository.search(args['query'], args['city'])
+        return plans
 
 
-class ItineraryShareResource(Resource):
+class PlanShareResource(Resource):
     def __init__(self):
-        self.itinerary_repository = ItineraryRepository()
-        super(ItineraryShareResource, self).__init__()
+        self.plan_repository = PlanRepository()
+        super(PlanShareResource, self).__init__()
 
     @authenticate
-    def post(self, itinerary_id, **kwargs):
-        itinerary = query(self.itinerary_repository.get(user_id=kwargs['user'].id, id=itinerary_id)).single_or_default(
+    def post(self, plan_id, **kwargs):
+        plan = query(self.plan_repository.get(user_id=kwargs['user'].id, id=plan_id)).single_or_default(
             default=None)
-        if not itinerary:
-            abort(404, message="This itinerary does not exist")
+        if not plan:
+            abort(404, message="This plan does not exist")
 
         post_body = request.json
         if type(post_body) is not list:
@@ -282,120 +274,154 @@ class ItineraryShareResource(Resource):
         result = ChangeResult()
         try:
             shares = query(post_body)
-            for shared_user in itinerary.shared_users:
+            for shared_user in plan.shared_users:
                 if not shares.contains(shared_user, lambda lhs, rhs: rhs['user_id'] == lhs.id):
-                    result.add_child_result(self.itinerary_repository.unshare(itinerary, shared_user.id))
+                    result.add_child_result(
+                        self.plan_repository.unshare(plan, shared_user.id))
 
             for share in post_body:
                 user_id = share['user_id']
                 permission = share['permission']
-                result.add_child_result(self.itinerary_repository.share(itinerary, user_id, permission))
+                result.add_child_result(
+                    self.plan_repository.share(plan, user_id, permission))
 
         except KeyError as ke:
             on_error(error_message="Invalid post body")
 
         if not result.success():
-            on_error(error_message="Could not share itinerary", result=result)
+            on_error(error_message="Could not share plan", result=result)
 
-        self.itinerary_repository.save_changes()
-        return itinerary
+        self.plan_repository.save_changes()
+        return plan
 
 
 class ItemResource(Resource):
     def __init__(self):
         self.reqparse = RequestParser()
-        self.reqparse.add_argument('yelp_id', type=str, required=True, location='json', help='Missing yelp_id')
-        self.reqparse.add_argument('category', type=str, required=True, location='json', help='Missing category')
-        self.reqparse.add_argument('name', type=str, required=True, location='json', help='Missing name')
-        self.reqparse.add_argument('start_time', type=str, required=True, location='json', help='Missing start_time')
-        self.reqparse.add_argument('end_time', type=str, required=True, location='json', help='Missing end_time')
-        self.itinerary_repository = ItineraryRepository()
+        self.reqparse.add_argument(
+            'yelp_id', type=str, required=True, location='json', help='Missing yelp_id')
+        self.reqparse.add_argument(
+            'category', type=str, required=True, location='json', help='Missing category')
+        self.reqparse.add_argument(
+            'name', type=str, required=True, location='json', help='Missing name')
+        self.reqparse.add_argument(
+            'start_time', type=str, required=True, location='json', help='Missing start_time')
+        self.reqparse.add_argument(
+            'end_time', type=str, required=True, location='json', help='Missing end_time')
+        self.plan_repository = PlanRepository()
         self.item_repository = ItemRepository()
         self.category_repository = YelpCategoryRepository()
         super(ItemResource, self).__init__()
 
     @authenticate
-    def get(self, itinerary_id, item_id, **kwargs):
+    def get(self, plan_id, item_id, **kwargs):
         user = kwargs['user']
-        itinerary = query(self.itinerary_repository.get(user_id=user.id, id=itinerary_id)).single_or_default(
+        plan = query(self.plan_repository.get(user_id=user.id, id=plan_id)).single_or_default(
             default=None)
-        if not itinerary:
-            abort(404, message="This itinerary does not exist")
-        item = query(itinerary.items).where(lambda i: i.id == item_id).single_or_default(default=None)
+        if not plan:
+            abort(404, message="This plan does not exist")
+        item = query(plan.items).where(lambda i: i.id ==
+                                                 item_id).single_or_default(default=None)
         if not item:
             abort(404, message="This item does not exist")
         return item
 
     @authenticate
-    def put(self, itinerary_id, item_id, **kwargs):
+    def put(self, plan_id, item_id, **kwargs):
         user = kwargs['user']
         args = self.reqparse.parse_args()
-        itinerary = query(self.itinerary_repository.get(user_id=user.id, id=itinerary_id)).single_or_default(
+        plan = query(self.plan_repository.get(user_id=user.id, id=plan_id)).single_or_default(
             default=None)
-        if not itinerary:
-            abort(404, message="This itinerary does not exist")
-        item = query(itinerary.items).where(lambda i: i.id == item_id).single_or_default(default=None)
+        if not plan:
+            abort(404, message="This plan does not exist")
+        item = query(plan.items).where(lambda i: i.id ==
+                                                 item_id).single_or_default(default=None)
         if not item:
             abort(404, message="This item does not exist")
 
         item.update_from_dict(args)
-        category = query(self.category_repository.get(name=args['category'])).first_or_default(default=None)
+        category = query(self.category_repository.get(
+            name=args['category'])).first_or_default(default=None)
         if not category:
             on_error("No category of that name exists")
 
-        result = self.item_repository.add_or_update(itinerary)
+        result = self.item_repository.add_or_update(plan)
 
         if not result.success():
-            on_error(error_message="Could not update itinerary", result=result)
+            on_error(error_message="Could not update plan", result=result)
 
         self.item_repository.save_changes()
         return item
+
+    @authenticate
+    def delete(self, plan_id, item_id, **kwargs):
+        user = kwargs['user']
+        plan = query(self.plan_repository.get(user_id=user.id, id=plan_id)).single_or_default(
+            default=None)
+        if not plan:
+            abort(404, message="This plan does not exist")
+
+        item = query(plan.items).where(lambda i: i.id ==
+                                                 item_id).single_or_default(default=None)
+        if not item:
+            abort(404, message="This item does not exist")
+
+        plan.remove_item(item)
+        self.item_repository.delete(id)
+        self.item_repository.save_changes()
+        return {"message": "Deleted item"}
 
 
 class ItemListResource(Resource):
     def __init__(self):
         self.reqparse = RequestParser()
-        self.reqparse.add_argument('yelp_id', type=str, required=True, location='json', help='Missing yelp_id')
-        self.reqparse.add_argument('yelp_category', type=str, required=True, location='json', help='Missing category')
-        self.reqparse.add_argument('name', type=str, required=True, location='json', help='Missing name')
-        self.reqparse.add_argument('start_time', type=str, required=True, location='json', help='Missing start_time')
-        self.reqparse.add_argument('end_time', type=str, required=True, location='json', help='Missing end_time')
-        self.itinerary_repository = ItineraryRepository()
+        self.reqparse.add_argument(
+            'yelp_id', type=str, required=True, location='json', help='Missing yelp_id')
+        self.reqparse.add_argument(
+            'yelp_category', type=str, required=True, location='json', help='Missing category')
+        self.reqparse.add_argument(
+            'name', type=str, required=True, location='json', help='Missing name')
+        self.reqparse.add_argument(
+            'start_time', type=str, required=True, location='json', help='Missing start_time')
+        self.reqparse.add_argument(
+            'end_time', type=str, required=True, location='json', help='Missing end_time')
+        self.plan_repository = PlanRepository()
         self.item_repository = ItemRepository()
         self.yelp_category_repository = YelpCategoryRepository()
         super(ItemListResource, self).__init__()
 
     @authenticate
-    def get(self, itinerary_id, **kwargs):
+    def get(self, plan_id, **kwargs):
         user = kwargs['user']
-        itinerary = query(self.itinerary_repository.get(user_id=user.id, id=itinerary_id)).single_or_default(
+        plan = query(self.plan_repository.get(user_id=user.id, id=plan_id)).single_or_default(
             default=None)
-        if not itinerary:
-            abort(404, message="This itinerary does not exist")
-        return itinerary.items
+        if not plan:
+            abort(404, message="This plan does not exist")
+        return plan.items
 
     @authenticate
-    def post(self, itinerary_id, **kwargs):
+    def post(self, plan_id, **kwargs):
         user = kwargs['user']
         args = self.reqparse.parse_args()
-        itinerary = query(self.itinerary_repository.get(user_id=user.id, id=itinerary_id)).single_or_default(
+        plan = query(self.plan_repository.get(user_id=user.id, id=plan_id)).single_or_default(
             default=None)
-        if not itinerary:
-            abort(404, message="This itinerary does not exist")
+        if not plan:
+            abort(404, message="This plan does not exist")
 
         # TODO(abettadapur): Validation
         item = self.item_repository.create_from_dict(args)
-        category = query(self.yelp_category_repository.get(name=args['yelp_category'])).first_or_default(default=None)
+        category = query(self.yelp_category_repository.get(
+            name=args['yelp_category'])).first_or_default(default=None)
         if not category:
             on_error("No yelp category of that name exists")
 
-        itinerary.items.add(item)
-        result = self.itinerary_repository.add_or_update(itinerary)
+        plan.add_item(item)
+        result = self.plan_repository.add_or_update(plan)
 
         if not result.success():
-            on_error(error_message="Could not create item for itinerary", result=result)
+            on_error(error_message="Could not create item for plan", result=result)
 
-        self.itinerary_repository.save_changes()
+        self.plan_repository.save_changes()
 
         return item
 
@@ -403,28 +429,31 @@ class ItemListResource(Resource):
 class RatingResource(Resource):
     def __init__(self):
         self.create_parser = RequestParser()
-        self.create_parser.add_argument('title', type=str, required=True, location='json', help='Missing title')
-        self.create_parser.add_argument('rating', type=int, required=True, location='json', help='Missing rating')
-        self.create_parser.add_argument('content', type=str, required=True, location='json', help='Missing content')
+        self.create_parser.add_argument(
+            'title', type=str, required=True, location='json', help='Missing title')
+        self.create_parser.add_argument(
+            'rating', type=int, required=True, location='json', help='Missing rating')
+        self.create_parser.add_argument(
+            'content', type=str, required=True, location='json', help='Missing content')
         self.rating_repository = RatingRepository()
-        self.itinerary_repository = ItineraryRepository()
+        self.plan_repository = PlanRepository()
         super(RatingResource, self).__init__()
 
     @authenticate
-    def post(self, itinerary_id, **kwargs):
+    def post(self, plan_id, **kwargs):
         user = kwargs['user']
         args = self.create_parser.parse_args()
-        itinerary = self.itinerary_repository.find(itinerary_id)
+        plan = self.plan_repository.find(plan_id)
 
-        if not itinerary.public:
-            abort(404, message="No itinerary with this id was found")
+        if not plan.public:
+            abort(404, message="No plan with this id was found")
 
         rating = Rating(
             title=args['title'],
             rating=args['rating'],
             content=args['content'],
             user=user,
-            itinerary=itinerary
+            plan=plan
         )
 
         result = self.rating_repository.add_or_update(rating)
@@ -435,8 +464,8 @@ class RatingResource(Resource):
         return rating
 
     @authenticate
-    def get(self, itinerary_id, **kwargs):
-        ratings = self.rating_repository.get(itinerary_id=itinerary_id)
+    def get(self, plan_id, **kwargs):
+        ratings = self.rating_repository.get(plan_id=plan_id)
         return ratings
 
 
@@ -448,14 +477,27 @@ class FriendsResource(Resource):
     @authenticate
     def get(self, **kwargs):
         graph = facebook.GraphAPI(access_token=kwargs['token'])
-        friends = graph.get_connections(kwargs['user'].facebook_id, "friends")['data']
+        friends = graph.get_connections(
+            kwargs['user'].facebook_id, "friends")['data']
         users = []
         for friend in friends:
-            user = query(self.user_repository.get(facebook_id=friend['id'])).single_or_default(default=None)
+            user = query(self.user_repository.get(
+                facebook_id=friend['id'])).single_or_default(default=None)
             if user:
                 users.append(user)
 
         return users
+
+
+class CategoryResource(Resource):
+    def __init__(self):
+        self.category_repository = YelpCategoryRepository()
+        super(CategoryResource, self).__init__()
+
+    @authenticate
+    def get(self, **kwargs):
+        categories = self.category_repository.get()
+        return categories
 
 
 def on_error(error_message, result=None):
