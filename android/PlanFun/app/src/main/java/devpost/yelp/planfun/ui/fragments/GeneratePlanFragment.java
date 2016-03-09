@@ -43,6 +43,7 @@ import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.model.YelpCategory;
 import devpost.yelp.planfun.net.RestClient;
+import devpost.yelp.planfun.net.requests.GeneratePlanRequest;
 import devpost.yelp.planfun.ui.adapters.CategoryAdapter;
 import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
 import devpost.yelp.planfun.ui.dialogs.PickCategoryDialog;
@@ -107,6 +108,7 @@ public class GeneratePlanFragment extends Fragment implements OnStartDragListene
     @Override
     public void onDestroy() {
         PlanFunApplication.getBus().unregister(this);
+        super.onDestroy();
     }
 
     @Nullable
@@ -230,7 +232,7 @@ public class GeneratePlanFragment extends Fragment implements OnStartDragListene
     {
         final ProgressDialog progress = ProgressDialog.show(getActivity(), "Creating", "Generating a custom plan....", true);
         mCurrentPlan.setName(mNameView.getText().toString());
-        Call<Plan> createCall = mRestClient.getItineraryService().createItinerary(mCurrentPlan);
+        Call<Plan> createCall = mRestClient.getItineraryService().generateItinerary(new GeneratePlanRequest(mCategories, mCurrentPlan));
         createCall.enqueue(new Callback<Plan>() {
             @Override
             public void onResponse(Call<Plan> call, Response<Plan> response) {

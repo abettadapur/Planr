@@ -22,7 +22,6 @@ public class Plan implements Comparable<Plan>
     private LatLng starting_coordinate;
     @SerializedName("public")
     private boolean isPublic;
-    @Expose(serialize = false)
     private List<Item> items;
     @Expose(serialize = false)
     private User user;

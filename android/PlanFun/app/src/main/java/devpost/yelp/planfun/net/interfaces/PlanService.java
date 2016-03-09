@@ -3,6 +3,7 @@ package devpost.yelp.planfun.net.interfaces;
 import java.util.List;
 
 import devpost.yelp.planfun.model.Plan;
+import devpost.yelp.planfun.net.requests.GeneratePlanRequest;
 import devpost.yelp.planfun.net.requests.ShareRequest;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -21,6 +22,9 @@ public interface PlanService
 {
     @POST("plans")
     Call<Plan> createItinerary(@Body Plan plan);
+
+    @POST("plans/generate")
+    Call<Plan> generateItinerary(@Body GeneratePlanRequest request);
 
     @GET("plans")
     Call<List<Plan>> listItineraries();
