@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/timeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/item_time_picker"
+            android:editable="false"
+            android:focusable="false"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Starting Time"
+            app:met_floatingLabel="normal"
+            android:layout_weight="1"/>
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/item_duration_picker"
+            android:editable="false"
+            android:focusable="false"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Duration"
+            app:met_floatingLabel="normal"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/item_place_picker"
+        android:editable="false"
+        android:focusable="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Near/At"
+        app:met_floatingLabel="normal"/>
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/item_search_term"
+        android:editable="false"
+        android:focusable="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search Term"
+        app:met_floatingLabel="normal"/>
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/item_search_categories"
+        android:editable="false"
+        android:focusable="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Categories"
+        app:met_floatingLabel="normal"/>
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/items_view"
+            android:scrollbars="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/md_button_height"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/md_button_height"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:weightSum="2">
+
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/md_button_height"
+                android:id="@+id/cancel_item_add"
+                android:theme="@style/ButtonTheme"
+                android:text="Cancel"
+                android:layout_weight="1"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/md_button_height"
+                android:id="@+id/do_item_add"
+                android:enabled="false"
+                android:text="Add"
+                android:theme="@style/ButtonTheme"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

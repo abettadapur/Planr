@@ -38,24 +38,22 @@ public class Plan implements Comparable<Plan>
         items = new ArrayList<Item>();
     }
 
-    public Plan(String name, Calendar start_time, Calendar end_time, String city, boolean isPublic, List<Item> items)
+    public Plan(String name, Calendar start_time, Calendar end_time,  boolean isPublic, List<Item> items)
     {
         this.id = 0;
         this.name = name;
         this.start_time = start_time;
         this.end_time = end_time;
-        this.city = city;
         this.items = items;
         this.isPublic = isPublic;
     }
 
-    public Plan(int id, String name, Calendar date, Calendar start_time, Calendar end_time, String city, boolean isPublic, List<Item> items) {
+    public Plan(int id, String name, Calendar date, Calendar start_time, Calendar end_time, boolean isPublic, List<Item> items) {
 
         this.id = id;
         this.name = name;
         this.start_time = start_time;
         this.end_time = end_time;
-        this.city = city;
         this.items = items;
         this.isPublic = isPublic;
     }

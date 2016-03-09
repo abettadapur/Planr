@@ -8,59 +8,20 @@
     android:layout_height="match_parent">
 
     <com.rengwuxian.materialedittext.MaterialEditText
-        android:id="@+id/input_name"
+        android:id="@+id/plan_input_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Plan Name"
+        android:hint="Name"
         app:met_floatingLabel="normal"/>
 
     <com.rengwuxian.materialedittext.MaterialEditText
-        android:id="@+id/city_picker"
+        android:id="@+id/plan_date_picker"
         android:editable="false"
         android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Starting Place"
+        android:hint="Date"
         app:met_floatingLabel="normal"/>
-
-    <LinearLayout
-        android:id="@+id/timeLayout"
-
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="2">
-
-
-            <com.rengwuxian.materialedittext.MaterialEditText
-                android:id="@+id/time_picker"
-                android:editable="false"
-                android:focusable="false"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:hint="Starting Time"
-                app:met_floatingLabel="normal"
-                android:layout_weight="1"/>
-
-            <Button
-                android:id="@+id/date_adder"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="SET Date"
-                android:theme="@style/ButtonTheme2"
-                android:layout_weight="1"/>
-
-            <com.rengwuxian.materialedittext.MaterialEditText
-                android:id="@+id/date_picker"
-                android:editable="false"
-                android:focusable="false"
-                android:visibility="gone"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:hint="Date"
-                app:met_floatingLabel="normal"
-                android:layout_weight="1"/>
-    </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"

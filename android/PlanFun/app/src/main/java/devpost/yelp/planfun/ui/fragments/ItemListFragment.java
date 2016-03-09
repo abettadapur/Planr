@@ -12,11 +12,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.otto.Subscribe;
+
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.ui.activities.AddItemActivity;
 import devpost.yelp.planfun.ui.adapters.ItemAdapter;
 import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
+import devpost.yelp.planfun.ui.events.EditItemRequest;
+import devpost.yelp.planfun.ui.events.EditPlanRequest;
 
 
 /**
@@ -113,16 +117,21 @@ public class ItemListFragment extends Fragment implements RecyclerItemClickListe
     }
 
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
 
+    @Subscribe
+    public void onEditItemRequest(EditItemRequest request)
+    {
+        EditItemFragment fragment;
+
+        if(!request.new_plan)
+            fragment = EditPlanFragment.newInstance(request.plan_id);
+        else
+            fragment = EditPlanFragment.newInstance();
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("")
+                .commit();
+    }
 
 }

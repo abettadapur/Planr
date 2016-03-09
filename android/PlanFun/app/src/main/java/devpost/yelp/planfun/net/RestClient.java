@@ -20,7 +20,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
-import java.sql.Time;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.Executor;
@@ -31,10 +30,9 @@ import devpost.yelp.planfun.net.interfaces.AuthService;
 import devpost.yelp.planfun.net.interfaces.CategoryService;
 import devpost.yelp.planfun.net.interfaces.DirectionsService;
 import devpost.yelp.planfun.net.interfaces.ItemService;
-import devpost.yelp.planfun.net.interfaces.ItineraryService;
+import devpost.yelp.planfun.net.interfaces.PlanService;
 import devpost.yelp.planfun.net.serializers.CalendarSerializer;
 import devpost.yelp.planfun.net.serializers.LatLngSerializer;
-import okhttp3.Interceptor;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -46,7 +44,7 @@ public class RestClient {
     private static final String BASE_URL="http://funtimes.bettadapur.com:5000/api/";
     private static String TAG = "REST";
     private AuthService authService;
-    private ItineraryService itineraryService;
+    private PlanService itineraryService;
     private ItemService itemService;
     private DirectionsService directionsService;
     private CategoryService categoryService;
@@ -139,7 +137,7 @@ public class RestClient {
                 .build();
 
         authService = adapter.create(AuthService.class);
-        itineraryService = adapter.create(ItineraryService.class);
+        itineraryService = adapter.create(PlanService.class);
         itemService = adapter.create(ItemService.class);
         directionsService = adapter.create(DirectionsService.class);
         categoryService = adapter.create(CategoryService.class);
@@ -151,7 +149,7 @@ public class RestClient {
     {
         return authService;
     }
-    public ItineraryService getItineraryService() { return itineraryService; }
+    public PlanService getItineraryService() { return itineraryService; }
     public ItemService getItemService() { return itemService; }
     public DirectionsService getDirectionsService() { return directionsService; }
     public CategoryService getCategoryService(){ return categoryService; }
