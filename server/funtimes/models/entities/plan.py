@@ -88,6 +88,19 @@ class Plan(BaseModel):
                                                   float(create_dict['starting_coordinate'].partition(',')[2]))
         return plan
 
+    @staticmethod
+    def from_json(json, user):
+        plan = Plan(
+                name=json.get('name'),
+                start_time=datetime.strptime(json.get('start_time'), "%Y-%m-%d %H:%M:%S") if json.get('start_time') is not None else None,
+                end_time=datetime.strptime(json.get('end_time'), "%Y-%m-%d %H:%M:%S") if json.get('end_time') is not None else None,
+                public=json.get('public'),
+                starting_address=json.get('starting_address'),
+                starting_coordinate=Coordinate.from_json(json.get('starting_coordinate')),
+                user=user,
+            )
+        return plan
+
     def _set_start_item(self, item):
         self.start_time = item.start_time
         self.starting_address = item.location.address
@@ -102,6 +115,8 @@ class Plan(BaseModel):
             self.end_time = item.end_time
 
         # @Alex Allow duplicates? Makes removal easier later (see beow)
+
+        item = db.session.merge(item)
 
         result = ItemRepository().validate(item)
 

@@ -6,6 +6,8 @@ from flask_restful import abort, Resource
 from flask_restful.reqparse import RequestParser
 from funtimes.maps.maps import get_polyline
 from funtimes.models.entities.change_result import ChangeResult
+from funtimes.models.entities.item import Item
+from funtimes.models.entities.plan import Plan
 from funtimes.models.entities.rating import Rating
 from funtimes.models.entities.user import User
 from funtimes.repositories.itemRepository import ItemRepository
@@ -194,13 +196,12 @@ class PlanListResource(Resource):
     @authenticate
     def post(self, **kwargs):
         user = kwargs['user']
-        args = self.create_parser.parse_args()
         json = request.json
 
         if 'items' not in json or len(json['items']) == 0:
             on_error(error_message="No items were provided")
 
-        plan = self.plan_repository.from_json(args, user)
+        plan = Plan.from_json(json, user)
         result = self.plan_repository.add_or_update(plan)
 
         if not result.success():
@@ -236,7 +237,8 @@ class PlanGenerateResource(Resource):
         categories = self.category_repository.get_from_list(json['categories'])
         plan = json['plan']
 
-        plan = self.plan_repository.create_from_dict(plan, user)
+        plan = Plan.from_json(plan, user)
+        self.plan_repository.expunge(plan)
         populate_sample_plan(plan, categories)
 
         return plan
@@ -355,7 +357,7 @@ class ItemResource(Resource):
     def put(self, plan_id, item_id, **kwargs):
         user = kwargs['user']
         json = request.json
-        new_item = self.item_repository.from_json(json)
+        new_item = Item.from_json(json)
 
         if new_item.id != item_id:
             on_error(error_message="Could not update item, ids do not match")
@@ -417,7 +419,7 @@ class ItemListResource(Resource):
     def post(self, plan_id, **kwargs):
         user = kwargs['user']
         json = request.json
-        item = self.item_repository.from_json(json)
+        item = Item.from_json(json)
         plan = query(self.plan_repository.get(user_id=user.id, id=plan_id)).single_or_default(
             default=None)
         if not plan:

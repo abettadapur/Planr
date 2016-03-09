@@ -59,4 +59,9 @@ def get_yelp_item(coordinate, category, strategy=DistanceStrategy()):
         lambda r: ['Food Trucks', 'foodtrucks'] not in r['categories'])
     yelp_items = [YelpItem.create_from_dict(result) for result in search_results]
     yelp_item = strategy.run_strategy(yelp_items)
-    return yelp_item_repository.get_or_insert(yelp_item)
+    yelp_item = yelp_item_repository.get_or_insert(yelp_item)
+    yelp_item_repository.save_changes()
+    return yelp_item
+
+
+

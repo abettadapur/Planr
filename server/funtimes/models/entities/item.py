@@ -2,6 +2,8 @@ from datetime import datetime
 
 from funtimes import db
 from funtimes.models.entities.base import BaseModel
+from funtimes.models.entities.location import Location
+from funtimes.models.entities.yelp_category import YelpCategory
 from funtimes.models.entities.yelp_item import YelpItem
 
 
@@ -53,5 +55,22 @@ class Item(BaseModel):
         item.start_time = datetime.strptime(args['start_time'], "%Y-%m-%d %H:%M:%S")
         item.end_time = datetime.strptime(args['end_time'], "%Y-%m-%d %H:%M:%S")
         item.yelp_item_id = args['yelp_item_id']
+        return item
+
+    @staticmethod
+    def from_json(json):
+        item = Item(
+            name=json.get('name'),
+            yelp_category_id=json.get('yelp_category', {}).get('id'),
+            yelp_category = YelpCategory.from_json(json.get('yelp_category')),
+            plan_id=json.get('plan_id'),
+            start_time=datetime.strptime(json.get('start_time'), "%Y-%m-%d %H:%M:%S") if json.get('start_time') is not None else None,
+            end_time=datetime.strptime(json.get('end_time'), "%Y-%m-%d %H:%M:%S") if json.get('end_time') is not None else None,
+            type=json.get("type"),
+            yelp_item_id=json.get('yelp_item', {}).get('id'),
+            yelp_item=YelpItem.from_json(json.get('yelp_item')),
+            location_id=json.get('location', {}).get('id'),
+            location=Location.from_json(json.get('location'))
+        )
         return item
 

@@ -30,20 +30,6 @@ class PlanRepository(BaseRepository):
     def create_from_dict(self, create_dict, user):
         return Plan.create_from_dict(create_dict, user)
 
-    def from_json(self, json, user):
-        plan = Plan(
-            name=json.get('name'),
-            start_time=datetime.strptime(json.get('start_time', "1970-00-01 00:00:00"), "%Y-%m-%d %H:%M:%S"),
-            end_time=datetime.strptime(json.get('end_time', "1970-00-01 00:00:00"), "%Y-%m-%d %H:%M:%S"),
-            public=json.get('public'),
-            starting_address=json.get('starting_address'),
-            starting_coordinate=Coordinate(float(json['starting_coordinate'].partition(',')[0]),
-                                           float(json['starting_coordinate'].partition(',')[2])) if json.get(
-                'starting_coordinate') is not None else None,
-            user=user,
-        )
-        return plan
-
     def get(self, user=None, shared=False, **kwargs):
         if user:
             kwargs['user_id'] = user.id

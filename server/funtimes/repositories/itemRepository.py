@@ -30,21 +30,5 @@ class ItemRepository(BaseRepository):
     def from_list(self, args):
         items = []
         for item in args:
-            items.append(self.from_json(item))
+            items.append(Item.from_json(item))
         return items
-
-    def from_json(self, json):
-        item = Item(
-            name=json.get('name'),
-            yelp_category_id=json.get('yelp_category', {}).get('id'),
-            yelp_category = json.get('yelp_category'),
-            plan_id=json.get('plan_id'),
-            start_time=datetime.strptime(json.get('start_time', "1970-00-01 00:00:00"), "%Y-%m-%d %H:%M:%S"),
-            end_time=datetime.strptime(json.get('end_time', "1970-00-01 00:00:00"), "%Y-%m-%d %H:%M:%S"),
-            type=json.get("type"),
-            yelp_item_id=json.get('yelp_item', {}).get('id'),
-            yelp_item=json.get('yelp_item'),
-            location_id=json.get('location', {}).get('id'),
-            location=json.get('location')
-        )
-        return item
