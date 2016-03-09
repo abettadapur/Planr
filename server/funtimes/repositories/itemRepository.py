@@ -4,9 +4,6 @@ from funtimes.models.entities.change_result import ChangeResult
 
 from funtimes.models.entities.item import Item
 from funtimes.repositories.baseRepository import BaseRepository
-from funtimes.repositories.planRepository import PlanRepository
-from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
-from funtimes.repositories.yelpItemRepository import YelpItemRepository
 
 
 class ItemRepository(BaseRepository):
