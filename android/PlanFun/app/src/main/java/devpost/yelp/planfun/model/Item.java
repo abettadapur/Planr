@@ -15,12 +15,9 @@ public class Item
     private String name;
     private Calendar start_time;
     private Calendar end_time;
-
-    @Expose(serialize=false)
     private Location location;
-
-    @Expose(serialize = false)
     private YelpEntry yelp_item;
+    private ItemType type;
 
     public Item(int id, String yelp_item_id, YelpCategory yelp_category, String name, Calendar start_time, Calendar end_time, YelpEntry yelp_entry) {
         this.id = id;
@@ -117,5 +114,13 @@ public class Item
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public ItemType getType() {
+        return type;
+    }
+
+    public void setType(ItemType type) {
+        this.type = type;
     }
 }
