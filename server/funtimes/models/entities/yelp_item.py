@@ -43,3 +43,19 @@ class YelpItem(BaseModel):
             location=Location.create_from_yelp_dict(dict['location'])
         )
         return item
+
+    @staticmethod
+    def from_json(json):
+        if json:
+            item = YelpItem(
+                id=json.get('id'),
+                name=json.get('name'),
+                image_url=json.get('image_url'),
+                url=json.get('url'),
+                phone=json.get('phone'),
+                rating=json.get('rating'),
+                review_count=json.get('review_count'),
+                location=Location.from_json(json.get('location'))
+            )
+            return item
+        return None

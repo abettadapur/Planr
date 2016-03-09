@@ -6,6 +6,8 @@ from flask_restful import abort, Resource
 from flask_restful.reqparse import RequestParser
 from funtimes.maps.maps import get_polyline
 from funtimes.models.entities.change_result import ChangeResult
+from funtimes.models.entities.item import Item
+from funtimes.models.entities.plan import Plan
 from funtimes.models.entities.rating import Rating
 from funtimes.models.entities.user import User
 from funtimes.repositories.itemRepository import ItemRepository
@@ -173,6 +175,7 @@ class PlanListResource(Resource):
         self.create_parser.add_argument('public', type=bool, required=True, location='json',
                                         help='No publicity provided')
         self.plan_repository = PlanRepository()
+        self.item_repository = ItemRepository()
 
         super(PlanListResource, self).__init__()
 
@@ -193,16 +196,51 @@ class PlanListResource(Resource):
     @authenticate
     def post(self, **kwargs):
         user = kwargs['user']
-        args = self.create_parser.parse_args()
-        plan = self.plan_repository.create_from_dict(args, user)
-        populate_sample_plan(plan)
-        # TODO(abettadapur): Populate plan with yelp items
+        json = request.json
+
+        if 'items' not in json or len(json['items']) == 0:
+            on_error(error_message="No items were provided")
+
+        plan = Plan.from_json(json, user)
         result = self.plan_repository.add_or_update(plan)
 
-        if not result.success:
+        if not result.success():
             on_error(error_message="Could not create plan", result=result)
 
+        items = self.item_repository.from_list(json['items'])
+        for item in items:
+            result.add_child_result(plan.add_item(item))
+
+        if not result.success():
+            on_error(error_message="Could not add items to plan", result=result)
+
         self.plan_repository.save_changes()
+        return plan
+
+
+class PlanGenerateResource(Resource):
+    def __init__(self):
+        self.plan_repository = PlanRepository()
+        self.category_repository = YelpCategoryRepository()
+
+    @authenticate
+    def post(self, **kwargs):
+        user = kwargs['user']
+        json = request.json
+
+        if 'categories' not in json or len(json['categories']) == 0:
+            on_error(error_message="Categories were not provided")
+
+        if 'plan' not in json:
+            on_error(error_message="Plan details were not provided")
+
+        categories = self.category_repository.get_from_list(json['categories'])
+        plan = json['plan']
+
+        plan = Plan.from_json(plan, user)
+        self.plan_repository.expunge(plan)
+        populate_sample_plan(plan, categories)
+
         return plan
 
 
@@ -297,17 +335,6 @@ class PlanShareResource(Resource):
 
 class ItemResource(Resource):
     def __init__(self):
-        self.reqparse = RequestParser()
-        self.reqparse.add_argument(
-            'yelp_id', type=str, required=True, location='json', help='Missing yelp_id')
-        self.reqparse.add_argument(
-            'category', type=str, required=True, location='json', help='Missing category')
-        self.reqparse.add_argument(
-            'name', type=str, required=True, location='json', help='Missing name')
-        self.reqparse.add_argument(
-            'start_time', type=str, required=True, location='json', help='Missing start_time')
-        self.reqparse.add_argument(
-            'end_time', type=str, required=True, location='json', help='Missing end_time')
         self.plan_repository = PlanRepository()
         self.item_repository = ItemRepository()
         self.category_repository = YelpCategoryRepository()
@@ -329,29 +356,29 @@ class ItemResource(Resource):
     @authenticate
     def put(self, plan_id, item_id, **kwargs):
         user = kwargs['user']
-        args = self.reqparse.parse_args()
+        json = request.json
+        new_item = Item.from_json(json)
+
+        if new_item.id != item_id:
+            on_error(error_message="Could not update item, ids do not match")
+
         plan = query(self.plan_repository.get(user_id=user.id, id=plan_id)).single_or_default(
             default=None)
         if not plan:
             abort(404, message="This plan does not exist")
-        item = query(plan.items).where(lambda i: i.id ==
+
+        old_item = query(plan.items).where(lambda i: i.id ==
                                                  item_id).single_or_default(default=None)
-        if not item:
+        if not old_item:
             abort(404, message="This item does not exist")
 
-        item.update_from_dict(args)
-        category = query(self.category_repository.get(
-            name=args['category'])).first_or_default(default=None)
-        if not category:
-            on_error("No category of that name exists")
-
-        result = self.item_repository.add_or_update(plan)
+        result = self.item_repository.add_or_update(new_item)
 
         if not result.success():
-            on_error(error_message="Could not update plan", result=result)
+            on_error(error_message="Could not update item", result=result)
 
         self.item_repository.save_changes()
-        return item
+        return new_item
 
     @authenticate
     def delete(self, plan_id, item_id, **kwargs):
@@ -374,17 +401,6 @@ class ItemResource(Resource):
 
 class ItemListResource(Resource):
     def __init__(self):
-        self.reqparse = RequestParser()
-        self.reqparse.add_argument(
-            'yelp_id', type=str, required=True, location='json', help='Missing yelp_id')
-        self.reqparse.add_argument(
-            'yelp_category', type=str, required=True, location='json', help='Missing category')
-        self.reqparse.add_argument(
-            'name', type=str, required=True, location='json', help='Missing name')
-        self.reqparse.add_argument(
-            'start_time', type=str, required=True, location='json', help='Missing start_time')
-        self.reqparse.add_argument(
-            'end_time', type=str, required=True, location='json', help='Missing end_time')
         self.plan_repository = PlanRepository()
         self.item_repository = ItemRepository()
         self.yelp_category_repository = YelpCategoryRepository()
@@ -402,22 +418,19 @@ class ItemListResource(Resource):
     @authenticate
     def post(self, plan_id, **kwargs):
         user = kwargs['user']
-        args = self.reqparse.parse_args()
+        json = request.json
+        item = Item.from_json(json)
         plan = query(self.plan_repository.get(user_id=user.id, id=plan_id)).single_or_default(
             default=None)
         if not plan:
             abort(404, message="This plan does not exist")
 
-        # TODO(abettadapur): Validation
-        item = self.item_repository.create_from_dict(args)
-        category = query(self.yelp_category_repository.get(
-            name=args['yelp_category'])).first_or_default(default=None)
-        if not category:
-            on_error("No yelp category of that name exists")
+        result = plan.add_item(item)
 
-        plan.add_item(item)
+        if not result.success():
+            on_error(error_message="Could not create item for plan", result=result)
+
         result = self.plan_repository.add_or_update(plan)
-
         if not result.success():
             on_error(error_message="Could not create item for plan", result=result)
 

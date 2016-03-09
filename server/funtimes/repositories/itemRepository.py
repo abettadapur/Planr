@@ -1,12 +1,12 @@
+from datetime import datetime
+
 from funtimes.models.entities.change_result import ChangeResult
 
 from funtimes.models.entities.item import Item
 from funtimes.repositories.baseRepository import BaseRepository
-from funtimes.repositories.yelpItemRepository import YelpItemRepository
 
 
 class ItemRepository(BaseRepository):
-
     def __init__(self):
         super(ItemRepository, self).__init__(Item)
 
@@ -27,3 +27,8 @@ class ItemRepository(BaseRepository):
     def create_from_dict(self, args):
         return Item.create_from_dict(args)
 
+    def from_list(self, args):
+        items = []
+        for item in args:
+            items.append(Item.from_json(item))
+        return items

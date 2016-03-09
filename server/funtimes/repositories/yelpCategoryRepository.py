@@ -20,3 +20,9 @@ class YelpCategoryRepository(BaseRepository):
         categories = query(YelpCategory.query.all())
         return categories.where(lambda c: start_time.time() <= c.end_time).where(
             lambda c: end_time.time() >= c.start_time).to_list()
+
+    def get_from_list(self, categories):
+        results = []
+        for category in categories:
+            results.append(self.find(category['id']))
+        return results
