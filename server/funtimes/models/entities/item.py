@@ -21,15 +21,18 @@ class Item(BaseModel):
     location_id = db.Column(db.Integer, db.ForeignKey("location.id"))
     location = db.relationship("Location")
 
-    def __init__(self, name=None, yelp_category=None, plan_id = None, start_time=None, end_time=None, type=None, yelp_item=None, location=None):
+    def __init__(self, name=None, yelp_category=None, yelp_category_id = None, plan_id = None, start_time=None, end_time=None, type=None, yelp_item=None, yelp_item_id=None, location=None, location_id = None):
         self.name = name
         self.yelp_category = yelp_category
+        self.yelp_category_id = yelp_category_id
         self.plan_id = plan_id
         self.start_time = start_time
         self.end_time = end_time
         self.type = type
         self.yelp_item = yelp_item
+        self.yelp_item_id = yelp_item_id
         self.location = location
+        self.location_id = location_id
 
     def update_from_dict(self, args):
         self.name = args['name']
@@ -49,5 +52,6 @@ class Item(BaseModel):
         item.name = args['name']
         item.start_time = datetime.strptime(args['start_time'], "%Y-%m-%d %H:%M:%S")
         item.end_time = datetime.strptime(args['end_time'], "%Y-%m-%d %H:%M:%S")
+        item.yelp_item_id = args['yelp_item_id']
         return item
 

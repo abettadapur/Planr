@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from asq.initiators import query
 from funtimes.integrations.yelp import yelpapi
@@ -11,11 +11,11 @@ from funtimes.repositories.yelpItemRepository import YelpItemRepository
 
 
 def populate_sample_plan(plan, categories):
-    items = fetch_items(plan.starting_coordinate, categories, plan.start_time.date())
+    items = fetch_items(plan.starting_coordinate, categories, plan.start_time.date(), plan.start_time)
     plan.items = items
 
 
-def fetch_items(coordinate, categories, plan_date):
+def fetch_items(coordinate, categories, plan_date, starting_time):
     items = []
     for category in categories:
         yelp_item = get_yelp_item(coordinate, category)
@@ -25,11 +25,11 @@ def fetch_items(coordinate, categories, plan_date):
             yelp_category=category,
             type="YELP",
             yelp_item=yelp_item,
-            start_time=datetime.combine(plan_date, category.start_time),
-            end_time=datetime.combine(plan_date, category.end_time),
+            start_time=starting_time,
+            end_time=starting_time+timedelta(hours=1, minutes=30),
             location=yelp_item.location
         )
-
+        starting_time = starting_time + timedelta(hours=1, minutes=30)
         coordinate = item.location.coordinate
         items.append(item)
 
