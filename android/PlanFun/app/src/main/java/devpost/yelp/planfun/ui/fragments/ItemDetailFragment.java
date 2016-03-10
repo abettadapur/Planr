@@ -158,5 +158,11 @@ public class ItemDetailFragment extends Fragment
         }
     }
 
+    public void updateItem(Item i)
+    {
+        currentItem = i;
+        updateView();
+    }
+
 
 }

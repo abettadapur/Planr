@@ -87,6 +87,9 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
     private MaterialDialog.Builder loadingProgressDialogBuilder;
     private MaterialDialog loadingProgressDialog;
 
+    private boolean itemClicked;
+    private Item clickedItem;
+
     @Bind(R.id.edit_fab)
     FloatingActionButton mEditFab;
     @Bind(R.id.slidingPanel)
@@ -247,7 +250,7 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
         {
         if(mGoogleMap!=null) {
             Geocoder coder = new Geocoder(getContext());
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 10));
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 13));
         }
     }
 
@@ -284,6 +287,24 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
     {
         marker.showInfoWindow();
         Item i = marker_to_item.get(marker);
+        if (mSlidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+
+            itemClicked = true;
+            clickedItem = i;
+            mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
+        }
+        else
+        {
+            if(getChildFragmentManager().getBackStackEntryCount() == 0)
+            {
+                mDetailFragment = ItemDetailFragment.newInstance(clickedItem);
+                getChildFragmentManager().beginTransaction().replace(R.id.container, mDetailFragment).addToBackStack("").commit();
+            }
+            else
+            {
+                mDetailFragment.updateItem(i);
+            }
+        }
         return true;
     }
 
@@ -398,6 +419,10 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
 
     @Override
     public void onPanelCollapsed(View panel) {
+        if(getChildFragmentManager().getBackStackEntryCount() > 0)
+        {
+            getChildFragmentManager().popBackStack();
+        }
         if(mLabelFragment!=null) {
             getChildFragmentManager().beginTransaction().replace(R.id.container, mLabelFragment).commit();
         }
@@ -413,6 +438,12 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
     {
         if(mItemFragment!=null) {
             getChildFragmentManager().beginTransaction().replace(R.id.container, mItemFragment).commit();
+            if(itemClicked)
+            {
+                itemClicked = false;
+                mDetailFragment = ItemDetailFragment.newInstance(clickedItem);
+                getChildFragmentManager().beginTransaction().replace(R.id.container, mDetailFragment).addToBackStack("").commit();
+            }
         }
     }
 
@@ -422,7 +453,7 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
     }
 
     @Subscribe
-    public void onItemDetail(ItemDetailRequest request)
+    public void onItemDetailFromList(ItemDetailRequest request)
     {
         mDetailFragment = ItemDetailFragment.newInstance(request.item);
         getChildFragmentManager().beginTransaction().replace(R.id.container, mDetailFragment).addToBackStack("").commit();
