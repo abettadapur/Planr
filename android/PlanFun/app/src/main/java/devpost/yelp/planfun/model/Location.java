@@ -13,7 +13,7 @@ public class Location implements Parcelable
     private String address;
     private String city;
     private String postal_code;
-    private String state;
+    private String state_code;
     private LatLng coordinate;
 
     public Location()
@@ -43,12 +43,12 @@ public class Location implements Parcelable
         this.postal_code = postal_code;
     }
 
-    public String getState() {
-        return state;
+    public String getState_code() {
+        return state_code;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setState_code(String state_code) {
+        this.state_code = state_code;
     }
 
     public LatLng getCoordinate() {
@@ -65,7 +65,7 @@ public class Location implements Parcelable
         this.address = in.readString();
         this.city = in.readString();
         this.postal_code = in.readString();
-        this.state = in.readString();
+        this.state_code = in.readString();
         this.coordinate = in.readParcelable(LatLng.class.getClassLoader());
     }
     @Override
@@ -79,7 +79,7 @@ public class Location implements Parcelable
         parcel.writeString(address);
         parcel.writeString(city);
         parcel.writeString(postal_code);
-        parcel.writeString(state);
+        parcel.writeString(state_code);
         parcel.writeParcelable(coordinate, flags);
     }
 

@@ -23,7 +23,6 @@ import java.text.SimpleDateFormat;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.etc.Util;
 import devpost.yelp.planfun.model.Item;
-import info.hoang8f.widget.FButton;
 
 /**
  * Created by Alex on 3/30/2015.
@@ -32,7 +31,7 @@ public class ItemDetailFragment extends Fragment
 {
 
     private Item currentItem;
-    private TextView mTitleView, mReviewCountView, mStartTimeView, mEndTimeView;
+    private TextView mTitleView, mReviewCountView, mStartTimeView, mEndTimeView, mRatingValueView, mAddressView;
     private Button mCallButton, mNavButton, mWebButton;
     private RatingBar mRatingView;
     private MaterialIconView mIconView;
@@ -73,9 +72,11 @@ public class ItemDetailFragment extends Fragment
         mWebButton = (Button)v.findViewById(R.id.webButton);
         mReviewCountView = (TextView)v.findViewById(R.id.ratingCountView);
         mRatingView = (RatingBar)v.findViewById(R.id.ratingView);
+        mRatingValueView = (TextView)v.findViewById(R.id.ratingValueView);
         mIconView = (MaterialIconView)v.findViewById(R.id.iconView);
         mStartTimeView = (TextView)v.findViewById(R.id.startTimeView);
         mEndTimeView = (TextView)v.findViewById(R.id.endTimeView);
+        mAddressView = (TextView)v.findViewById(R.id.addressView);
 
         timeSdf = new SimpleDateFormat(timeFormat);
 
@@ -132,11 +133,14 @@ public class ItemDetailFragment extends Fragment
         //ImageLoader loader = new ImageLoader(mImageView);
         //loader.execute(currentItem.getYelp_item().getImage_url());
         mRatingView.setRating(currentItem.getYelp_item().getRating());
+        mRatingValueView.setText(currentItem.getYelp_item().getRating() + "");
         //mSubtitleView.setText(PhoneNumberUtils.formatNumber(currentItem.getYelp_item().getPhone(), "US"));
         mReviewCountView.setText(" - "+currentItem.getYelp_item().getReview_count()+" reviews");
 
         mStartTimeView.setText(timeSdf.format(currentItem.getStart_time().getTime()));
         mEndTimeView.setText(timeSdf.format(currentItem.getEnd_time().getTime()));
+
+        mAddressView.setText(currentItem.getLocation().getAddress()+"\n"+currentItem.getLocation().getCity()+", "+currentItem.getLocation().getState_code()+"\n"+currentItem.getLocation().getPostal_code());
         if(!currentItem.getYelp_category().getIcon_string().equals(""))
         {
             try {
