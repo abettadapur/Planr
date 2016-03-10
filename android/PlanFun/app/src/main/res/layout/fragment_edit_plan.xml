@@ -11,7 +11,10 @@
         android:id="@+id/plan_input_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Name"/>
+        app:met_floatingLabelText="Plan Name"
+        app:met_primaryColor="@color/primaryColor"
+        app:met_floatingLabelAlwaysShown="true"
+        app:met_floatingLabel="highlight" />
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/plan_date_picker"
@@ -19,20 +22,26 @@
         android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Date"/>
+        app:met_floatingLabelText="Date"
+        app:met_primaryColor="@color/primaryColor"
+        app:met_floatingLabelAlwaysShown="true"
+        app:met_floatingLabel="highlight"
+        />
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/plan_description"
-        android:editable="false"
-        android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Description"/>
+        app:met_floatingLabelText="Description"
+        app:met_primaryColor="@color/primaryColor"
+        app:met_floatingLabelAlwaysShown="true"
+        app:met_floatingLabel="highlight"
+        />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="3px"
-        android:background="@color/md_white_1000"
+        android:background="@color/dividers"
         />
     <TextView
         android:layout_width="match_parent"
@@ -43,7 +52,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="3px"
-        android:background="@color/md_white_1000"
+        android:background="@color/dividers"
         />
 
     <RelativeLayout

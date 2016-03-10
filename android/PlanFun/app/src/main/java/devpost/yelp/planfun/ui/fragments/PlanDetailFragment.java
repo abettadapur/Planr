@@ -135,7 +135,7 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
 //                    .commit();
         }
 
-        mLabelFragment = LabelFragment.newInstance("View items");
+        mLabelFragment = LabelFragment.newInstance("View Activities");
         getChildFragmentManager().beginTransaction().replace(R.id.container, mLabelFragment).commit();
 
         mEditFab.setOnClickListener(this);
@@ -284,7 +284,6 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
     {
         marker.showInfoWindow();
         Item i = marker_to_item.get(marker);
-        mDetailFragment.updateItem(i);
         return true;
     }
 

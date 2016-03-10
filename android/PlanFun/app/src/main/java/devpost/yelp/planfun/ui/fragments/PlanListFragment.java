@@ -140,10 +140,12 @@ public class PlanListFragment extends BaseFragment implements RecyclerItemClickL
             @Override
             public void onResponse(Call<List<Plan>> call, Response<List<Plan>> response) {
                 if (response.isSuccess()) {
-                    PlanListFragment.this.getActivity().runOnUiThread(() -> {
-                        updateItems(response.body());
-                        setLoading(false);
-                    });
+                    if(getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            updateItems(response.body());
+                            setLoading(false);
+                        });
+                    }
                 } else {
                     try {
                         Log.e("GET ITINERARIES", response.errorBody().string());

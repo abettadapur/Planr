@@ -90,13 +90,11 @@ public class MainActivity extends AppCompatActivity {
         buildToolbar();
 
         mDrawer = this.build_drawer();
-
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, planListFragment)
+                    .replace(R.id.container, planListFragment)
                     .commit();
 
         }

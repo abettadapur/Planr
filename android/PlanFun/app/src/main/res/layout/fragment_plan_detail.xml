@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         xmlns:sothree="http://schemas.android.com/apk/res-auto"
         android:gravity="bottom"
-        sothree:umanoPanelHeight="30dp"
+        sothree:umanoPanelHeight="50dp"
         sothree:umanoShadowHeight="4dp"
         sothree:umanoDragView="@+id/dragView"
         sothree:umanoOverlay="false"

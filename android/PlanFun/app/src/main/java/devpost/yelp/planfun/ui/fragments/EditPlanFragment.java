@@ -117,6 +117,13 @@ public class EditPlanFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PlanFunApplication.getBus().register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        PlanFunApplication.getBus().unregister(this);
     }
 
     @Nullable
@@ -124,7 +131,7 @@ public class EditPlanFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_edit_plan, container, false);
         ButterKnife.bind(this, v);
-        PlanFunApplication.getBus().register(this);
+
 
         mAdapter = new ItemAdapter(mCurrentPlan ==null?null: mCurrentPlan.getItems(), this.getActivity(), true);
         mItemsView.setAdapter(mAdapter);

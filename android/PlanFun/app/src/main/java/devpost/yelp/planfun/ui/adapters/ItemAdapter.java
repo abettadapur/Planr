@@ -1,11 +1,15 @@
 package devpost.yelp.planfun.ui.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+
+import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
 import java.util.List;
 
@@ -93,7 +97,19 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
         }
         else if(i==getItemCount()-1 && addButton){
             itemViewHolder.itemView.findViewById(R.id.item_find).setOnClickListener(FIND_LISTENER);
+            ((Button)itemViewHolder.itemView.findViewById(R.id.item_find))
+                    .setCompoundDrawables(MaterialDrawableBuilder.with(mContext)
+                            .setIcon(MaterialDrawableBuilder.IconValue.MAGNIFY)
+                            .setColor(Color.BLACK)
+                            .setToActionbarSize()
+                            .build(), null, null, null);
             itemViewHolder.itemView.findViewById(R.id.item_create).setOnClickListener(CREATE_LISTENER);
+            ((Button)itemViewHolder.itemView.findViewById(R.id.item_create))
+                    .setCompoundDrawables(MaterialDrawableBuilder.with(mContext)
+                            .setIcon(MaterialDrawableBuilder.IconValue.PLUS)
+                            .setColor(Color.BLACK)
+                            .setToActionbarSize()
+                            .build(), null, null, null);
         }else {
             Item item = mItems.get(i);
             itemViewHolder.mTitleView.setText(item.getName());

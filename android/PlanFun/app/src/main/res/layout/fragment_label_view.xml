@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="30dp"
+    android:layout_height="50dp"
     android:paddingStart="16dp"
     android:paddingEnd="16dp">
 
@@ -11,7 +11,7 @@
 
         android:layout_centerInParent="true"
         android:text="Label"
-        android:textStyle="bold"
+        android:textAllCaps="true"
         android:id="@+id/labelView"
         android:gravity="center_vertical"
         android:textAppearance="?android:attr/textAppearanceMedium"/>

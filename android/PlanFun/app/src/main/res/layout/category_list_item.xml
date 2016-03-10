@@ -5,8 +5,12 @@
     android:layout_height="48dp">
 
     <net.steamcrafted.materialiconlib.MaterialIconView
-        android:layout_width="36dp"
+        android:layout_width="48dp"
         android:layout_height="match_parent"
+        app:materialIconColor="@color/material_drawer_primary_icon"
+        android:layout_gravity="center"
+        android:scaleType="center"
+        app:materialIconSize="36dp"
         android:id="@+id/categoryIconView"
     />
     <TextView
@@ -14,6 +18,8 @@
         android:layout_height="match_parent"
         android:id="@+id/categoryNameView"
         android:layout_gravity="center_vertical"
+        android:gravity="center|start"
+        android:text="Category"
         android:paddingStart="16dp"
         android:layout_marginEnd="36dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
