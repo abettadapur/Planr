@@ -240,8 +240,11 @@ class PlanGenerateResource(Resource):
         plan = Plan.from_json(plan, user)
         self.plan_repository.expunge(plan)
         populate_sample_plan(plan, categories)
-
-        return plan
+        
+        polyline = get_polyline(plan)
+        plan_dict = plan.as_dict()
+        plan_dict['polylines'] = polyline
+        return plan_dict
 
 
 class PlanRandomizeResource(Resource):
