@@ -46,11 +46,13 @@ import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.net.RestClient;
+import devpost.yelp.planfun.ui.events.CurrentFragmentEvent;
 import devpost.yelp.planfun.ui.events.EditPlanRequest;
 import devpost.yelp.planfun.ui.events.FindPlanRequest;
 import devpost.yelp.planfun.ui.events.GeneratePlanRequest;
 import devpost.yelp.planfun.ui.events.OpenPlanRequest;
 import devpost.yelp.planfun.ui.events.SavePlanRequest;
+import devpost.yelp.planfun.ui.fragments.BackPressFragment;
 import devpost.yelp.planfun.ui.fragments.EditPlanFragment;
 import devpost.yelp.planfun.ui.fragments.GeneratePlanFragment;
 import devpost.yelp.planfun.ui.fragments.PlanDetailFragment;
@@ -98,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, planListFragment)
                     .commit();
-            currentFragment = planListFragment;
 
         }
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -218,7 +219,6 @@ public class MainActivity extends AppCompatActivity {
                                 .beginTransaction()
                                 .replace(R.id.container, planListFragment)
                                 .commit();
-                        currentFragment = planListFragment;
                         getSupportActionBar().setTitle("Your Itineraries");
                     }
                     break;
@@ -300,7 +300,6 @@ public class MainActivity extends AppCompatActivity {
                     .beginTransaction()
                     .replace(R.id.container, searchItineraryFragment)
                     .commit();
-            currentFragment = searchItineraryFragment;
             mDrawer.setSelectionAtPosition(1);
             getSupportActionBar().setTitle("Search Results");
         }
@@ -314,5 +313,24 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.container, fragment)
                 .addToBackStack("")
                 .commit();
+    }
+
+    @Subscribe
+    public void newCurrentFragment(CurrentFragmentEvent event)
+    {
+        currentFragment = event.fragment;
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if(currentFragment instanceof BackPressFragment)
+        {
+            if(!((BackPressFragment)currentFragment).onBackPressed())
+                super.onBackPressed();
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 }

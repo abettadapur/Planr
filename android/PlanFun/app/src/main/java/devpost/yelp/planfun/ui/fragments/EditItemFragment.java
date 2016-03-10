@@ -54,7 +54,7 @@ import retrofit2.Response;
 /**
  * Created by ros on 3/8/16.
  */
-public class EditItemFragment extends Fragment {
+public class EditItemFragment extends BaseFragment {
     private final int PLACES_AUTOCOMPLETE=10000;
     private Item mCurrentItem;
     private Place autoCompleteResult;

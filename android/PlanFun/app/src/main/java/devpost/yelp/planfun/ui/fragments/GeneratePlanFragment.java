@@ -58,7 +58,7 @@ import retrofit2.Response;
 /**
  * Created by alexb on 3/6/2016.
  */
-public class GeneratePlanFragment extends Fragment implements OnStartDragListener
+public class GeneratePlanFragment extends BaseFragment implements OnStartDragListener
 {
     @Bind(R.id.input_name)
     MaterialEditText mNameView;

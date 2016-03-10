@@ -39,9 +39,12 @@ public class ItemDetailFragment extends Fragment
     private SimpleDateFormat timeSdf;
 
 
-    public static ItemDetailFragment newInstance()
+    public static ItemDetailFragment newInstance(Item i)
     {
         ItemDetailFragment fragment = new ItemDetailFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("item", i);
+        fragment.setArguments(args);
         return fragment;
     }
     @Override

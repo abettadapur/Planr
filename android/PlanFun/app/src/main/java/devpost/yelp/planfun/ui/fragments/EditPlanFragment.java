@@ -46,7 +46,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class EditPlanFragment extends Fragment {
+public class EditPlanFragment extends BaseFragment {
 
 
     private final int PLACES_AUTOCOMPLETE=10000;
