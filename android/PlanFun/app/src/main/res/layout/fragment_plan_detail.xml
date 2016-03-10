@@ -10,11 +10,14 @@
         android:layout_height="match_parent"
         xmlns:sothree="http://schemas.android.com/apk/res-auto"
         android:gravity="bottom"
-        sothree:umanoPanelHeight="68dp"
+        sothree:umanoPanelHeight="30dp"
         sothree:umanoShadowHeight="4dp"
         sothree:umanoDragView="@+id/dragView"
         sothree:umanoOverlay="false"
         sothree:paddingEnd="68dp"
+        sothree:umanoFadeColor="@android:color/transparent"
+        sothree:umanoAnchorPoint="0.5"
+        android:id="@+id/slidingPanel"
         >
 
         <RelativeLayout
@@ -26,14 +29,6 @@
                 android:layout_height="match_parent"
                 android:id="@+id/mapContainer">
             </FrameLayout>
-
-            <!--<fragment-->
-                <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
-                <!--android:id="@+id/map"-->
-                <!--android:name="com.google.android.gms.maps.SupportMapFragment"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--/>-->
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/edit_fab"
@@ -64,7 +59,6 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1" />
-
 
         </LinearLayout>
 

@@ -1,13 +1,18 @@
 package devpost.yelp.planfun.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * Created by Alex on 3/7/2015.
  */
-public class Item
+public class Item implements Parcelable
 {
     private int id;
     private String yelp_item_id;
@@ -123,4 +128,55 @@ public class Item
     public void setType(ItemType type) {
         this.type = type;
     }
+
+    public Item(Parcel in)
+    {
+        this.id = in.readInt();
+        this.yelp_item_id = in.readString();
+        this.yelp_category = in.readParcelable(YelpCategory.class.getClassLoader());
+        this.name = in.readString();
+        this.start_time = new GregorianCalendar(TimeZone.getTimeZone(in.readString()));
+        this.start_time.setTimeInMillis(in.readLong());
+        this.end_time = new GregorianCalendar(TimeZone.getTimeZone(in.readString()));
+        this.end_time.setTimeInMillis(in.readLong());
+        this.location = in.readParcelable(Location.class.getClassLoader());
+        this.yelp_item = in.readParcelable(YelpEntry.class.getClassLoader());
+        this.type = (ItemType)in.readSerializable();
+
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags)
+    {
+        parcel.writeInt(id);
+        parcel.writeString(yelp_item_id);
+        parcel.writeParcelable(yelp_category, flags);
+        parcel.writeString(name);
+        parcel.writeString(start_time.getTimeZone().getID());
+        parcel.writeLong(start_time.getTimeInMillis());
+        parcel.writeString(end_time.getTimeZone().getID());
+        parcel.writeLong(end_time.getTimeInMillis());
+        parcel.writeParcelable(location, flags);
+        parcel.writeParcelable(yelp_item, flags);
+        parcel.writeSerializable(type);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>() {
+        @Override
+        public Item createFromParcel(Parcel in) {
+            return new Item(in);
+        }
+
+        @Override
+        public Item[] newArray(int size) {
+            return new Item[size];
+        }
+    };
 }

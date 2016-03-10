@@ -1,9 +1,12 @@
 package devpost.yelp.planfun.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by abettadapur on 3/17/2015.
  */
-public class YelpEntry
+public class YelpEntry implements Parcelable
 {
     private String id;
     private String name;
@@ -94,4 +97,48 @@ public class YelpEntry
     public void setPrice(int price) {
         this.price = price;
     }
+
+    public YelpEntry(Parcel in)
+    {
+        id = in.readString();
+        name = in.readString();
+        phone = in.readString();
+        image_url = in.readString();
+        url = in.readString();
+        rating = in.readFloat();
+        review_count = in.readInt();
+        price = in.readInt();
+        location = in.readParcelable(Location.class.getClassLoader());
+    }
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags)
+    {
+        parcel.writeString(id);
+        parcel.writeString(name);
+        parcel.writeString(phone);
+        parcel.writeString(image_url);
+        parcel.writeString(url);
+        parcel.writeFloat(rating);
+        parcel.writeInt(review_count);
+        parcel.writeInt(price);
+        parcel.writeParcelable(location, flags);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<YelpEntry> CREATOR = new Parcelable.Creator<YelpEntry>() {
+        @Override
+        public YelpEntry createFromParcel(Parcel in) {
+            return new YelpEntry(in);
+        }
+
+        @Override
+        public YelpEntry[] newArray(int size) {
+            return new YelpEntry[size];
+        }
+    };
 }

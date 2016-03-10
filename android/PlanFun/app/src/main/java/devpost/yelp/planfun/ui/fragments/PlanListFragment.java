@@ -48,7 +48,7 @@ import retrofit2.Response;
  * <p/>
  * interface.
  */
-public class PlanListFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class PlanListFragment extends BaseFragment implements RecyclerItemClickListener.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     @Bind(R.id.recycle_view)
     RecyclerView mRecycleView;

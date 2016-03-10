@@ -1,11 +1,14 @@
 package devpost.yelp.planfun.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.android.gms.maps.model.LatLng;
 
 /**
  * Created by abettadapur on 3/17/2015.
  */
-public class Location
+public class Location implements Parcelable
 {
     private String address;
     private String city;
@@ -55,4 +58,41 @@ public class Location
     public void setCoordinate(LatLng coordinate) {
         this.coordinate = coordinate;
     }
+
+
+    public Location(Parcel in)
+    {
+        this.address = in.readString();
+        this.city = in.readString();
+        this.postal_code = in.readString();
+        this.state = in.readString();
+        this.coordinate = in.readParcelable(LatLng.class.getClassLoader());
+    }
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags)
+    {
+        parcel.writeString(address);
+        parcel.writeString(city);
+        parcel.writeString(postal_code);
+        parcel.writeString(state);
+        parcel.writeParcelable(coordinate, flags);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Location> CREATOR = new Parcelable.Creator<Location>() {
+        @Override
+        public Location createFromParcel(Parcel in) {
+            return new Location(in);
+        }
+
+        @Override
+        public Location[] newArray(int size) {
+            return new Location[size];
+        }
+    };
 }
