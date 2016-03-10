@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:met_floatingLabelText="Plan Name"
-            app:met_primaryColor="@color/accentColor"
+            app:met_primaryColor="@color/primaryColor"
             app:met_floatingLabel="highlight"
             app:met_floatingLabelAlwaysShown="true"/>
 
@@ -28,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:met_floatingLabelText="Starting Place"
-            app:met_primaryColor="@color/accentColor"
+            app:met_primaryColor="@color/primaryColor"
             app:met_floatingLabel="highlight"
             app:met_floatingLabelAlwaysShown="true"/>
 
@@ -38,7 +38,7 @@
             android:focusable="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:met_primaryColor="@color/accentColor"
+            app:met_primaryColor="@color/primaryColor"
             app:met_floatingLabelText="Date"
             app:met_floatingLabel="highlight"
             app:met_floatingLabelAlwaysShown="true"
@@ -59,7 +59,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:met_floatingLabelText="Starting Time"
-                app:met_primaryColor="@color/accentColor"
+                app:met_primaryColor="@color/primaryColor"
                 app:met_floatingLabel="highlight"
                 app:met_floatingLabelAlwaysShown="true"
                 android:layout_weight="1"/>
@@ -71,7 +71,7 @@
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:met_primaryColor="@color/accentColor"
+                app:met_primaryColor="@color/primaryColor"
                 app:met_floatingLabelText="Ending Time"
                 app:met_floatingLabel="highlight"
                 app:met_floatingLabelAlwaysShown="true"/>
@@ -80,10 +80,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Categories"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textStyle="bold"
-            />
+            android:text="Categories"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"

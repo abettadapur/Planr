@@ -22,11 +22,16 @@
     </style>
 
 
-    <style name="ButtonTheme2" parent="Theme.AppCompat.Light">
+    <style name="ButtonThemeWhite" parent="Theme.AppCompat.Light">
         <item name="colorControlHighlight">@color/md_grey_500</item>
         <item name="colorButtonNormal">@color/white</item>
         <item name="android:textColor">@color/md_grey_800</item>
+    </style>
 
+    <style name="ButtonThemeCancel" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/md_red_500</item>
+        <item name="colorButtonNormal">@color/maps_red</item>
+        <item name="android:textColor">@color/md_grey_100</item>
     </style>
 
     <style name="menu_labels_style">

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="@dimen/activity_horizontal_margin"
+    android:paddingEnd="@dimen/activity_horizontal_margin">
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/item_add_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:met_floatingLabel="highlight"
+        app:met_floatingLabelText="Name"
+        app:met_floatingLabelAlwaysShown="true"/>
+
+    <LinearLayout
+        android:id="@+id/timeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/item_add_start"
+            android:editable="false"
+            android:focusable="false"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:met_floatingLabel="highlight"
+            app:met_floatingLabelText="Start Time"
+            app:met_floatingLabelAlwaysShown="true"
+            android:layout_weight="1"/>
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/item_add_end"
+            android:editable="false"
+            android:focusable="false"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:met_floatingLabel="highlight"
+            app:met_floatingLabelText="End Time"
+            app:met_floatingLabelAlwaysShown="true"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/item_add_at"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:met_floatingLabel="highlight"
+        app:met_floatingLabelText="At"
+        app:met_floatingLabelAlwaysShown="true"
+        />
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/item_add_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:met_floatingLabel="highlight"
+        app:met_floatingLabelText="Description"
+        app:met_floatingLabelAlwaysShown="true"/>
+
+    <include android:id="@+id/add_item_yelp_view"
+             layout="@layout/item_list_item"/>
+
+</LinearLayout>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="68dp"
+    android:orientation="horizontal"
+>
+    <net.steamcrafted.materialiconlib.MaterialIconView
+        android:layout_width="68dp"
+        android:scaleType="center"
+        app:materialIconSize="48dp"
+        app:materialIconColor="@color/material_drawer_primary_icon"
+        android:layout_height="match_parent"
+        android:id="@+id/categoryIcon"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingStart="16dp"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Large Text"
+            android:gravity="bottom"
+            android:id="@+id/titleView" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="top"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Small Text"
+            android:id="@+id/detailView" />
+    </LinearLayout>
+</LinearLayout>

@@ -48,7 +48,7 @@ import retrofit2.Response;
  * <p/>
  * interface.
  */
-public class PlanListFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class PlanListFragment extends BaseFragment implements RecyclerItemClickListener.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     @Bind(R.id.recycle_view)
     RecyclerView mRecycleView;
@@ -140,10 +140,12 @@ public class PlanListFragment extends Fragment implements RecyclerItemClickListe
             @Override
             public void onResponse(Call<List<Plan>> call, Response<List<Plan>> response) {
                 if (response.isSuccess()) {
-                    PlanListFragment.this.getActivity().runOnUiThread(() -> {
-                        updateItems(response.body());
-                        setLoading(false);
-                    });
+                    if(getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            updateItems(response.body());
+                            setLoading(false);
+                        });
+                    }
                 } else {
                     try {
                         Log.e("GET ITINERARIES", response.errorBody().string());
@@ -250,5 +252,5 @@ public class PlanListFragment extends Fragment implements RecyclerItemClickListe
         PlanFunApplication.getBus().post(new GeneratePlanRequest());
     }
 
-    
+
 }

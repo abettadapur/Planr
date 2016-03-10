@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -38,19 +37,20 @@ import com.squareup.picasso.Picasso;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
-import java.util.List;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.net.RestClient;
+import devpost.yelp.planfun.ui.events.CurrentFragmentEvent;
 import devpost.yelp.planfun.ui.events.EditPlanRequest;
 import devpost.yelp.planfun.ui.events.FindPlanRequest;
 import devpost.yelp.planfun.ui.events.GeneratePlanRequest;
 import devpost.yelp.planfun.ui.events.OpenPlanRequest;
 import devpost.yelp.planfun.ui.events.SavePlanRequest;
+import devpost.yelp.planfun.ui.fragments.BackPressFragment;
+import devpost.yelp.planfun.ui.fragments.EditPlanFragment;
 import devpost.yelp.planfun.ui.fragments.EditPlanFragment;
 import devpost.yelp.planfun.ui.fragments.GeneratePlanFragment;
 import devpost.yelp.planfun.ui.fragments.PlanDetailFragment;
@@ -84,21 +84,18 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         PlanFunApplication.getBus().register(this);
 
-        planListFragment = PlanListFragment.newInstance(R.layout.fragment_plan_list, R.layout.plan_list_item);
-        searchItineraryFragment = SearchPlanFragment.newInstance(R.layout.fragment_plan_list, R.layout.plan_list_item);
+        planListFragment = PlanListFragment.newInstance(R.layout.fragment_plan_list, R.layout.item_list_plan);
+        searchItineraryFragment = SearchPlanFragment.newInstance(R.layout.fragment_plan_list, R.layout.item_list_plan);
         setSupportActionBar(toolbar);
         buildToolbar();
 
         mDrawer = this.build_drawer();
-
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, planListFragment)
+                    .replace(R.id.container, planListFragment)
                     .commit();
-            currentFragment = planListFragment;
 
         }
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -218,7 +215,6 @@ public class MainActivity extends AppCompatActivity {
                                 .beginTransaction()
                                 .replace(R.id.container, planListFragment)
                                 .commit();
-                        currentFragment = planListFragment;
                         getSupportActionBar().setTitle("Your Itineraries");
                     }
                     break;
@@ -300,7 +296,6 @@ public class MainActivity extends AppCompatActivity {
                     .beginTransaction()
                     .replace(R.id.container, searchItineraryFragment)
                     .commit();
-            currentFragment = searchItineraryFragment;
             mDrawer.setSelectionAtPosition(1);
             getSupportActionBar().setTitle("Search Results");
         }
@@ -314,5 +309,24 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.container, fragment)
                 .addToBackStack("")
                 .commit();
+    }
+
+    @Subscribe
+    public void newCurrentFragment(CurrentFragmentEvent event)
+    {
+        currentFragment = event.fragment;
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if(currentFragment instanceof BackPressFragment)
+        {
+            if(!((BackPressFragment)currentFragment).onBackPressed())
+                super.onBackPressed();
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 }

@@ -42,7 +42,8 @@
 
         <activity
             android:name=".ui.activities.MainActivity"
-            android:label="@string/title_activity_intinerary" >
+            android:label="@string/title_activity_intinerary"
+            android:screenOrientation="portrait">
         </activity>
 
     </application>

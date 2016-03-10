@@ -1,17 +1,24 @@
 package devpost.yelp.planfun.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created by Alex on 3/7/2015.
  */
-public class Plan implements Comparable<Plan>
+public class Plan implements Comparable<Plan>, Parcelable
 {
     private int id;
     private String name;
@@ -22,7 +29,6 @@ public class Plan implements Comparable<Plan>
     private LatLng starting_coordinate;
     @SerializedName("public")
     private boolean isPublic;
-    @Expose(serialize = false)
     private List<Item> items;
     @Expose(serialize = false)
     private User user;
@@ -154,4 +160,57 @@ public class Plan implements Comparable<Plan>
     public void setStarting_coordinate(LatLng starting_coordinate) {
         this.starting_coordinate = starting_coordinate;
     }
+
+    public Plan(Parcel in)
+    {
+        this.id = in.readInt();
+        this.start_time = new GregorianCalendar(TimeZone.getTimeZone(in.readString()));
+        this.start_time.setTimeInMillis(in.readLong());
+        this.end_time = new GregorianCalendar(TimeZone.getTimeZone(in.readString()));
+        this.end_time.setTimeInMillis(in.readLong());
+        this.city = in.readString();
+        this.starting_address = in.readString();
+        this.starting_coordinate = in.readParcelable(LatLng.class.getClassLoader());
+        this.isPublic = in.readByte()!=0;
+        this.items = new ArrayList<>(Arrays.asList(in.createTypedArray(Item.CREATOR)));
+        this.user = in.readParcelable(User.class.getClassLoader());
+        this.polylines = new ArrayList<>(Arrays.asList(in.createTypedArray(PolylineModel.CREATOR)));
+        this.shared_users = new ArrayList<>(Arrays.asList(in.createTypedArray(Share.CREATOR)));
+
+    }
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags)
+    {
+        parcel.writeInt(id);
+        parcel.writeString(start_time.getTimeZone().getID());
+        parcel.writeLong(start_time.getTimeInMillis());
+        parcel.writeString(end_time.getTimeZone().getID());
+        parcel.writeLong(end_time.getTimeInMillis());
+        parcel.writeString(city);
+        parcel.writeString(starting_address);
+        parcel.writeParcelable(starting_coordinate, flags);
+        parcel.writeByte((byte)(isPublic?1:0));
+        parcel.writeTypedArray((Parcelable[])(items.toArray()), flags);
+        parcel.writeParcelable(user, flags);
+        parcel.writeTypedArray((Parcelable[]) polylines.toArray(), flags);
+        parcel.writeTypedArray((Parcelable[]) shared_users.toArray(), flags);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Plan> CREATOR = new Parcelable.Creator<Plan>() {
+        @Override
+        public Plan createFromParcel(Parcel in) {
+            return new Plan(in);
+        }
+
+        @Override
+        public Plan[] newArray(int size) {
+            return new Plan[size];
+        }
+    };
 }
