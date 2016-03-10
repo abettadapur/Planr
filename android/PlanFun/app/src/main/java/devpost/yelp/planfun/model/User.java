@@ -1,9 +1,12 @@
 package devpost.yelp.planfun.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Alex on 3/7/2015.
  */
-public class User
+public class User implements Parcelable
 {
     private long id;
     private String first_name;
@@ -64,4 +67,40 @@ public class User
         }
         return false;
     }
+    public User(Parcel in)
+    {
+        id = in.readLong();
+        first_name = in.readString();
+        last_name = in.readString();
+        first_name = in.readString();
+        facebook_id = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags)
+    {
+        parcel.writeLong(id);
+        parcel.writeString(first_name);
+        parcel.writeString(last_name);
+        parcel.writeString(email);
+        parcel.writeString(facebook_id);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 }
