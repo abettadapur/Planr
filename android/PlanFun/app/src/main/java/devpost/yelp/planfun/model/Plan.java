@@ -195,10 +195,10 @@ public class Plan implements Comparable<Plan>, Parcelable
         parcel.writeString(starting_address);
         parcel.writeParcelable(starting_coordinate, flags);
         parcel.writeByte((byte)(isPublic?1:0));
-        parcel.writeTypedArray((Parcelable[])(items.toArray()), flags);
+        parcel.writeTypedArray((Item[])(items.toArray()), flags);
         parcel.writeParcelable(user, flags);
-        parcel.writeTypedArray((Parcelable[]) polylines.toArray(), flags);
-        parcel.writeTypedArray((Parcelable[]) shared_users.toArray(), flags);
+        parcel.writeTypedArray((PolylineModel[]) polylines.toArray(), flags);
+        parcel.writeTypedArray((Share[]) shared_users.toArray(), flags);
     }
 
     @SuppressWarnings("unused")

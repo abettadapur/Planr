@@ -70,25 +70,25 @@ import retrofit2.Response;
  */
 public class PlanDetailFragment extends BackPressFragment implements View.OnClickListener, OnMapReadyCallback, GoogleMap.OnMarkerClickListener, SlidingUpPanelLayout.PanelSlideListener
 {
-    private RestClient mRestClient;
-    private Plan currentPlan;
-    private ItemDetailFragment mDetailFragment;
-    private ItemListFragment mItemFragment;
-    private LabelFragment mLabelFragment;
-    private GoogleMap mGoogleMap;
-    private SupportMapFragment mapFragment;
+    protected RestClient mRestClient;
+    protected Plan currentPlan;
+    protected ItemDetailFragment mDetailFragment;
+    protected ItemListFragment mItemFragment;
+    protected LabelFragment mLabelFragment;
+    protected GoogleMap mGoogleMap;
+    protected SupportMapFragment mapFragment;
 
-    private Map<Marker, Item> marker_to_item;
-    private List<Polyline> polylines;
-    private Menu mMenu;
-    private static String[] colors = {"red", "blue", "cyan", "green", "purple", "orange"};
-    private final int ADD_ITINERARY = 94801;
-    private final int REQUEST_LOCATION = 12;
-    private MaterialDialog.Builder loadingProgressDialogBuilder;
-    private MaterialDialog loadingProgressDialog;
+    protected Map<Marker, Item> marker_to_item;
+    protected List<Polyline> polylines;
+    protected Menu mMenu;
+    protected static String[] colors = {"red", "blue", "cyan", "green", "purple", "orange"};
+    protected final int ADD_ITINERARY = 94801;
+    protected final int REQUEST_LOCATION = 12;
+    protected MaterialDialog.Builder loadingProgressDialogBuilder;
+    protected MaterialDialog loadingProgressDialog;
 
-    private boolean itemClicked;
-    private Item clickedItem;
+    protected boolean itemClicked;
+    protected Item clickedItem;
 
     @Bind(R.id.edit_fab)
     FloatingActionButton mEditFab;

@@ -47,6 +47,7 @@ import devpost.yelp.planfun.ui.events.CurrentFragmentEvent;
 import devpost.yelp.planfun.ui.events.EditPlanRequest;
 import devpost.yelp.planfun.ui.events.FindPlanRequest;
 import devpost.yelp.planfun.ui.events.GeneratePlanRequest;
+import devpost.yelp.planfun.ui.events.OpenPlanPreviewRequest;
 import devpost.yelp.planfun.ui.events.OpenPlanRequest;
 import devpost.yelp.planfun.ui.events.SavePlanRequest;
 import devpost.yelp.planfun.ui.fragments.BackPressFragment;
@@ -55,6 +56,7 @@ import devpost.yelp.planfun.ui.fragments.EditPlanFragment;
 import devpost.yelp.planfun.ui.fragments.GeneratePlanFragment;
 import devpost.yelp.planfun.ui.fragments.PlanDetailFragment;
 import devpost.yelp.planfun.ui.fragments.PlanListFragment;
+import devpost.yelp.planfun.ui.fragments.PlanPreviewFragment;
 import devpost.yelp.planfun.ui.fragments.SearchPlanFragment;
 
 
@@ -305,6 +307,16 @@ public class MainActivity extends AppCompatActivity {
     public void onGeneratePlanRequest(GeneratePlanRequest request)
     {
         GeneratePlanFragment fragment = new GeneratePlanFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("")
+                .commit();
+    }
+
+    @Subscribe
+    public void onOpenPlanPreviewRequest(OpenPlanPreviewRequest request)
+    {
+        PlanPreviewFragment fragment = PlanPreviewFragment.newInstance(request.plan);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)
                 .addToBackStack("")

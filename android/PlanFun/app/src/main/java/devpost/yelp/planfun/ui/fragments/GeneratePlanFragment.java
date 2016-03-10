@@ -48,6 +48,7 @@ import devpost.yelp.planfun.ui.adapters.CategoryAdapter;
 import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
 import devpost.yelp.planfun.ui.dialogs.PickCategoryDialog;
 import devpost.yelp.planfun.ui.events.AddCategoryRequest;
+import devpost.yelp.planfun.ui.events.OpenPlanPreviewRequest;
 import devpost.yelp.planfun.ui.events.OpenPlanRequest;
 import devpost.yelp.planfun.ui.listutils.OnStartDragListener;
 import devpost.yelp.planfun.ui.listutils.SimpleItemTouchHelperCallback;
@@ -239,7 +240,7 @@ public class GeneratePlanFragment extends BaseFragment implements OnStartDragLis
                 progress.dismiss();
                 if (response.isSuccess()) {
                     Log.i("CREATE ITINERARY", "SUCCESS " + response.body());
-                    PlanFunApplication.getBus().post(new OpenPlanRequest(response.body().getId(), true));
+                    PlanFunApplication.getBus().post(new OpenPlanPreviewRequest(response.body()));
                 } else {
                     Log.i("CREATE ITINERARY", "FAIL: " + response.errorBody());
                 }
