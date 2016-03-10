@@ -1,7 +1,6 @@
 package devpost.yelp.planfun.ui.fragments;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,8 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
@@ -34,19 +31,13 @@ import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
-import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.model.YelpCategory;
 import devpost.yelp.planfun.net.RestClient;
-import devpost.yelp.planfun.ui.adapters.CategoryAdapter;
 import devpost.yelp.planfun.ui.adapters.ItemAdapter;
-import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
-import devpost.yelp.planfun.ui.dialogs.PickCategoryDialog;
-import devpost.yelp.planfun.ui.events.SavePlanRequest;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -54,23 +45,10 @@ import retrofit2.Response;
 /**
  * Created by ros on 3/8/16.
  */
-public class EditItemFragment extends Fragment {
+public class SearchItemFragment extends Fragment {
     private final int PLACES_AUTOCOMPLETE=10000;
     private Item mCurrentItem;
     private Place autoCompleteResult;
-
-    @Bind(R.id.item_duration_picker)
-    MaterialEditText mDurationBox;
-
-    @Bind(R.id.item_time_picker)
-    MaterialEditText mTimeBox;
-
-    @OnClick(R.id.item_time_picker)
-    public void startClickListener(View view){
-        new TimePickerDialog(EditItemFragment.this.getActivity(), startTimeSetListener,
-                mCurrentItem.getStart_time().get(Calendar.HOUR_OF_DAY),
-                mCurrentItem.getStart_time().get(Calendar.MINUTE), true).show();
-    }
 
     @Bind(R.id.item_place_picker)
     MaterialEditText mPlaceBox;
@@ -136,14 +114,6 @@ public class EditItemFragment extends Fragment {
 
     private ItemAdapter mAdapter;
 
-    @Bind(R.id.do_item_add)
-    Button mAddButton;
-
-    @OnClick(R.id.do_item_add)
-    public void addClicked(View view){
-
-    }
-
     @Bind(R.id.cancel_item_add)
     Button mCancelButton;
 
@@ -152,30 +122,25 @@ public class EditItemFragment extends Fragment {
 
     }
 
-    private String dateFormat = "MM/dd/yyyy";
-    private SimpleDateFormat dateSdf;
-    private String timeFormat = "H:mm";
-    private SimpleDateFormat timeSdf;
-
     private RestClient mRestClient;
 
-    public static EditItemFragment newInstance()
+    public static SearchItemFragment newInstance()
     {
-        EditItemFragment fragment = new EditItemFragment();
+        SearchItemFragment fragment = new SearchItemFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
     }
 
-    public static EditItemFragment newInstance(int item_id) {
-        EditItemFragment fragment = new EditItemFragment();
+    public static SearchItemFragment newInstance(int item_id) {
+        SearchItemFragment fragment = new SearchItemFragment();
         Bundle args = new Bundle();
         args.putInt("item_id", item_id);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public EditItemFragment()
+    public SearchItemFragment()
     {
         mRestClient = RestClient.getInstance();
     }
@@ -201,9 +166,6 @@ public class EditItemFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_item_search, container, false);
         ButterKnife.bind(this, v);
-
-        dateSdf = new SimpleDateFormat(dateFormat, Locale.US);
-        timeSdf = new SimpleDateFormat(timeFormat, Locale.US);
         mAdapter = new ItemAdapter(null,this.getActivity());
         mItemsView.setAdapter(mAdapter);
         mItemsView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
@@ -214,31 +176,8 @@ public class EditItemFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        Bundle args = getArguments();
-        int planId = args.getInt("item_id", -1);
-        if(planId!=-1)
-        {
-            Call<Plan> planCall = mRestClient.getItineraryService().getItinerary(planId);
-            planCall.enqueue(new Callback<Plan>() {
-                @Override
-                public void onResponse(Call<Plan> call, Response<Plan> response) {
-                    //mCurrentImte = response.body();
-                    getActivity().runOnUiThread(EditItemFragment.this::updateView);
-                }
-
-                @Override
-                public void onFailure(Call<Plan> call, Throwable t) {
-
-                }
-            });
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Edit Plan");
-            updateView();
-        }
-        else
-        {
-            mCurrentItem = new Item();
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Create Plan");
-        }
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Find Activity");
+        updateView();
 
         super.onViewCreated(view, savedInstanceState);
     }
@@ -255,7 +194,6 @@ public class EditItemFragment extends Fragment {
 
     private void updateView() {
         //TODO
-        mTimeBox.setText(timeSdf.format(mCurrentItem.getStart_time().getTime()));
     }
 
     @Override

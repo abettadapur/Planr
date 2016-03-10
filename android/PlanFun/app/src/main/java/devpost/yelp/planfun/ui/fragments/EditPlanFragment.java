@@ -1,9 +1,7 @@
 package devpost.yelp.planfun.ui.fragments;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,11 +16,7 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
 
@@ -38,8 +32,9 @@ import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.net.RestClient;
 import devpost.yelp.planfun.ui.adapters.ItemAdapter;
+import devpost.yelp.planfun.ui.dialogs.EditItemDialog;
 import devpost.yelp.planfun.ui.events.EditItemRequest;
-import devpost.yelp.planfun.ui.events.EditPlanRequest;
+import devpost.yelp.planfun.ui.events.FindItemRequest;
 import devpost.yelp.planfun.ui.events.SavePlanRequest;
 import devpost.yelp.planfun.model.Plan;
 import retrofit2.Call;
@@ -47,9 +42,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class EditPlanFragment extends Fragment {
-
-
-    private final int PLACES_AUTOCOMPLETE=10000;
     private Plan mCurrentPlan;
     private Place autoCompleteResult;
 
@@ -84,11 +76,6 @@ public class EditPlanFragment extends Fragment {
     public void saveClicked(View view){
         PlanFunApplication.getBus().post(new SavePlanRequest(mCurrentPlan));
     }
-
-    private String dateFormat = "MM/dd/yyyy";
-    private SimpleDateFormat dateSdf;
-    private String timeFormat = "H:mm";
-    private SimpleDateFormat timeSdf;
 
     private RestClient mRestClient;
 
@@ -136,8 +123,6 @@ public class EditPlanFragment extends Fragment {
         ButterKnife.bind(this, v);
         PlanFunApplication.getBus().register(this);
 
-        dateSdf = new SimpleDateFormat(dateFormat, Locale.US);
-        timeSdf = new SimpleDateFormat(timeFormat, Locale.US);
         mAdapter = new ItemAdapter(mCurrentPlan ==null?null: mCurrentPlan.getItems(), this.getActivity(), true);
         mItemsView.setAdapter(mAdapter);
         mItemsView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
@@ -146,18 +131,6 @@ public class EditPlanFragment extends Fragment {
         return v;
     }
 
-    private void openAutocomplete()
-    {
-        try {
-            Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
-                    .build(getActivity());
-            startActivityForResult(intent, PLACES_AUTOCOMPLETE);
-        } catch (GooglePlayServicesRepairableException grex) {
-
-        } catch (GooglePlayServicesNotAvailableException gnaex) {
-
-        }
-    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -235,20 +208,28 @@ public class EditPlanFragment extends Fragment {
                 .commit();
     }
 
+
     @Subscribe
-    public void onEditItemRequest(EditItemRequest request)
+    public void onFindItemRequest(FindItemRequest request)
     {
-        EditItemFragment fragment;
-
-        if(!request.new_item)
-            fragment = EditItemFragment.newInstance(request.item_id);
-        else
-            fragment = EditItemFragment.newInstance();
-
+        SearchItemFragment fragment = SearchItemFragment.newInstance();
         getActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)
                 .addToBackStack("")
                 .commit();
+    }
+
+
+    @Subscribe
+    public void onEditItemRequest(EditItemRequest request)
+    {
+        EditItemDialog dialog = new EditItemDialog();
+
+        if(!request.new_item) {
+            dialog = EditItemDialog.newInstance(request.item_id);
+        }
+
+        dialog.show(getActivity().getSupportFragmentManager(), "fm");
     }
 
 }

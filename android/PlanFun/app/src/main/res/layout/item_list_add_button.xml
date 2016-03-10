@@ -1,10 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Button xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    android:id="@+id/timeLayout"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:theme="@style/ButtonTheme2"
-    android:text="+ Add Item"
-    android:textSize="24sp"
-    >
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:weightSum="2"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-</Button>
+    <com.joanzapata.iconify.widget.IconButton
+        android:id="@+id/item_find"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:theme="@style/ButtonThemeWhite"
+        android:text="{fa-search} FIND"
+        android:textSize="24sp"
+        android:layout_weight="1"
+        />
+
+    <com.joanzapata.iconify.widget.IconButton
+        android:id="@+id/item_create"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:theme="@style/ButtonThemeWhite"
+        android:text="{fa-plus} CREATE"
+        android:textSize="22sp"
+        android:layout_weight="1"
+        />
+
+    </LinearLayout>

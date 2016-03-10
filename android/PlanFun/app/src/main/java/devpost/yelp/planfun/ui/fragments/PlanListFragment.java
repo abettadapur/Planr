@@ -250,5 +250,5 @@ public class PlanListFragment extends Fragment implements RecyclerItemClickListe
         PlanFunApplication.getBus().post(new GeneratePlanRequest());
     }
 
-    
+
 }

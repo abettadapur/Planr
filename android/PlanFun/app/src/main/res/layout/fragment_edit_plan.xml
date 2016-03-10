@@ -11,8 +11,7 @@
         android:id="@+id/plan_input_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Name"
-        app:met_floatingLabel="normal"/>
+        android:hint="Name"/>
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/plan_date_picker"
@@ -20,8 +19,32 @@
         android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Date"
-        app:met_floatingLabel="normal"/>
+        android:hint="Date"/>
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/plan_description"
+        android:editable="false"
+        android:focusable="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Description"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3px"
+        android:background="@color/md_white_1000"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Plan Items"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3px"
+        android:background="@color/md_white_1000"
+        />
 
     <RelativeLayout
         android:layout_width="match_parent"
