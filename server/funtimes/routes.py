@@ -27,7 +27,7 @@ def default(obj):
     if isinstance(obj, datetime.datetime):
         if obj.utcoffset() is not None:
             obj = obj - obj.utcoffset()
-        return obj.strftime("%Y-%m-%d %H:%M:%S")
+        return obj.strftime("%Y-%m-%d %H:%M:%S %z")
 
     if isinstance(obj, datetime.date):
         return obj.strftime("%Y-%m-%d")

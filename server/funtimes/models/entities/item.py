@@ -38,8 +38,8 @@ class Item(BaseModel):
 
     def update_from_dict(self, args):
         self.name = args['name']
-        self.start_time = datetime.strptime(args['start_time'], "%Y-%m-%d %H:%M:%S")
-        self.end_time = datetime.strptime(args['end_time'], "%Y-%m-%d %H:%M:%S")
+        self.start_time = datetime.strptime(args['start_time'], "%Y-%m-%d %H:%M:%S %z")
+        self.end_time = datetime.strptime(args['end_time'], "%Y-%m-%d %H:%M:%S %z")
 
     def as_dict(self):
         item_dict = super(Item, self).as_dict()
@@ -64,8 +64,8 @@ class Item(BaseModel):
             yelp_category_id=json.get('yelp_category', {}).get('id'),
             yelp_category = YelpCategory.from_json(json.get('yelp_category')),
             plan_id=json.get('plan_id'),
-            start_time=datetime.strptime(json.get('start_time'), "%Y-%m-%d %H:%M:%S") if json.get('start_time') is not None else None,
-            end_time=datetime.strptime(json.get('end_time'), "%Y-%m-%d %H:%M:%S") if json.get('end_time') is not None else None,
+            start_time=datetime.strptime(json.get('start_time'), "%Y-%m-%d %H:%M:%S %z") if json.get('start_time') is not None else None,
+            end_time=datetime.strptime(json.get('end_time'), "%Y-%m-%d %H:%M:%S %z") if json.get('end_time') is not None else None,
             type=json.get("type"),
             yelp_item_id=json.get('yelp_item', {}).get('id'),
             yelp_item=YelpItem.from_json(json.get('yelp_item')),

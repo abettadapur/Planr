@@ -92,8 +92,8 @@ class Plan(BaseModel):
     def from_json(json, user):
         plan = Plan(
                 name=json.get('name'),
-                start_time=datetime.strptime(json.get('start_time'), "%Y-%m-%d %H:%M:%S") if json.get('start_time') is not None else None,
-                end_time=datetime.strptime(json.get('end_time'), "%Y-%m-%d %H:%M:%S") if json.get('end_time') is not None else None,
+                start_time=datetime.strptime(json.get('start_time'), "%Y-%m-%d %H:%M:%S %z") if json.get('start_time') is not None else None,
+                end_time=datetime.strptime(json.get('end_time'), "%Y-%m-%d %H:%M:%S %z") if json.get('end_time') is not None else None,
                 public=json.get('public'),
                 starting_address=json.get('starting_address'),
                 starting_coordinate=Coordinate.from_json(json.get('starting_coordinate')),
