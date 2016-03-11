@@ -18,6 +18,7 @@ from funtimes.repositories.userRepository import UserRepository
 from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
 from funtimes.rest import authenticate
 from funtimes.generation.generation import populate_sample_plan
+from funtimes.integrations.yelp import yelpapi
 from sqlalchemy.exc import InvalidRequestError
 
 
@@ -335,6 +336,23 @@ class PlanShareResource(Resource):
         self.plan_repository.save_changes()
         return plan
 
+class ItemSearchResource(Resource):
+    """A proxy to the Yelp API"""
+    def __init__(self):
+        self.parser = RequestParser()
+        self.parser.add_argument('latitude', type=float, location='args',
+                                             required=True, help='No latitude')
+        self.parser.add_argument('longtitude', type=float, location='args',
+                                             required=True, help='No longtitude')
+        self.parser.add_argument('term', location='args')
+        self.parser.add_argument('categories', location='args', default='')
+        super(ItemSearchResource, self).__init__()
+    
+    @authenticate
+    def get(self, **kwargs):
+        args = self.parser.parse_args()
+        return yelpapi.search(args.latitude, args.longtitude, 
+                              args.term,args.categories.split(','),**kwargs)
 
 class ItemResource(Resource):
     def __init__(self):
