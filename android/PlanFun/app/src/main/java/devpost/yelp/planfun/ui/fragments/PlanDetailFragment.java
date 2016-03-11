@@ -204,9 +204,22 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
             Collections.sort(currentPlan.getItems(), (lhs, rhs) -> (int) (lhs.getStart_time().getTimeInMillis() - rhs.getStart_time().getTimeInMillis()));
             Collections.sort(currentPlan.getPolylines(), (lhs, rhs) -> lhs.getOrder() - rhs.getOrder());
 
+            if (currentPlan.getStarting_coordinate() != null) {
+                String drawableName = "marker_" + colors[0] + "_number_" + (0);
+                Bitmap b = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(drawableName, "drawable", getActivity().getPackageName()));
+                Bitmap scaled = Bitmap.createScaledBitmap(b, b.getWidth() * 3, b.getHeight() * 3, false);
+                Marker marker = mGoogleMap.addMarker(new MarkerOptions()
+                        .title("Starting Location")
+                        .icon(BitmapDescriptorFactory.fromBitmap(scaled))
+                        .snippet(currentPlan.getStarting_address())
+                        .position(currentPlan.getStarting_coordinate()));
+
+                marker_to_item.put(marker, null);
+            }
+
             for (int j = 0; j < currentPlan.getItems().size(); j++) {
                 Item i = currentPlan.getItems().get(j);
-                String drawableName = "marker_" + colors[j % 6] + "_number_" + j;
+                String drawableName = "marker_" + colors[(j + 1) % 6] + "_number_" + (j + 1);
                 Bitmap b = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(drawableName, "drawable", getActivity().getPackageName()));
                 Bitmap scaled = Bitmap.createScaledBitmap(b, b.getWidth() * 3, b.getHeight() * 3, false);
                 Marker marker = mGoogleMap.addMarker(new MarkerOptions()
@@ -290,22 +303,19 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
     {
         marker.showInfoWindow();
         Item i = marker_to_item.get(marker);
-        if (mSlidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+        if(i != null) {
+            if (mSlidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED) {
 
-            itemClicked = true;
-            clickedItem = i;
-            mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
-        }
-        else
-        {
-            if(getChildFragmentManager().getBackStackEntryCount() == 0)
-            {
-                mDetailFragment = ItemDetailFragment.newInstance(clickedItem);
-                getChildFragmentManager().beginTransaction().replace(R.id.container, mDetailFragment).addToBackStack("").commit();
-            }
-            else
-            {
-                mDetailFragment.updateItem(i);
+                itemClicked = true;
+                clickedItem = i;
+                mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
+            } else {
+                if (getChildFragmentManager().getBackStackEntryCount() == 0) {
+                    mDetailFragment = ItemDetailFragment.newInstance(clickedItem);
+                    getChildFragmentManager().beginTransaction().replace(R.id.container, mDetailFragment).addToBackStack("").commit();
+                } else {
+                    mDetailFragment.updateItem(i);
+                }
             }
         }
         return true;

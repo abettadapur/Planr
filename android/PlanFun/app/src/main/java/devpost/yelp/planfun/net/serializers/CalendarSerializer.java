@@ -12,6 +12,7 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 /**
  * @author Alex
@@ -27,6 +28,8 @@ public class CalendarSerializer implements JsonSerializer<Calendar>, JsonDeseria
         try {
             sdf.parse(date_str);
             date = sdf.getCalendar();
+            long offset = TimeZone.getDefault().getRawOffset();
+            date.setTimeInMillis(date.getTimeInMillis() + offset);
         }
         catch(ParseException pex)
         {

@@ -102,7 +102,7 @@ public class PlanPreviewFragment extends PlanDetailFragment {
                 .progress(true, 0)
                 .build();
 
-        fragment.show();    
+        fragment.show();
 
         Call<Plan> planCall = mRestClient.getItineraryService().createItinerary(currentPlan);
         planCall.enqueue(new Callback<Plan>() {
