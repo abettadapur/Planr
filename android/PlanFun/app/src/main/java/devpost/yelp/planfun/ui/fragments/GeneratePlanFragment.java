@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.TimePicker;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -28,6 +29,8 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
+
+import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -67,14 +70,12 @@ public class GeneratePlanFragment extends BaseFragment implements OnStartDragLis
     MaterialEditText mStartingAddressView;
     @Bind(R.id.startTimePicker)
     MaterialEditText mStartTimeView;
-    @Bind(R.id.endTimePicker)
-    MaterialEditText mEndTimeView;
     @Bind(R.id.datePicker)
     MaterialEditText mDateView;
     @Bind(R.id.save_plan)
     Button saveButton;
     @Bind(R.id.add_category)
-    Button mAddCategoryButton;
+    ImageButton mAddCategoryButton;
     @Bind(R.id.categoryListView)
     RecyclerView mCategoryListView;
 
@@ -89,6 +90,7 @@ public class GeneratePlanFragment extends BaseFragment implements OnStartDragLis
 
     private Plan mCurrentPlan;
     private List<YelpCategory> mCategories;
+    private List<YelpCategory> mAllCategories;
     private CategoryAdapter mCategoryAdapter;
     private ItemTouchHelper mItemTouchHelper;
 
@@ -98,6 +100,33 @@ public class GeneratePlanFragment extends BaseFragment implements OnStartDragLis
         mRestClient = RestClient.getInstance();
         mCurrentPlan = new Plan();
         mCategories = new ArrayList<>();
+
+        Call<List<YelpCategory>> categoryCall = mRestClient.getCategoryService().getCategories();
+        categoryCall.enqueue(new Callback<List<YelpCategory>>() {
+            @Override
+            public void onResponse(Call<List<YelpCategory>> call, Response<List<YelpCategory>> response) {
+                if(response.isSuccess())
+                {
+                    mAllCategories = response.body();
+                    for(YelpCategory category : mAllCategories)
+                    {
+                        if(category.getName().equals("Lunch") || category.getName().equals("Parks"))
+                        {
+                            mCategories.add(category);
+                        }
+                    }
+                    if(mCategoryAdapter!=null)
+                    {
+                        getActivity().runOnUiThread(mCategoryAdapter::notifyDataSetChanged);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<YelpCategory>> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override
@@ -117,6 +146,8 @@ public class GeneratePlanFragment extends BaseFragment implements OnStartDragLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_generate_plan, container, false);
         ButterKnife.bind(this, v);
+        mAddCategoryButton.setImageDrawable(MaterialDrawableBuilder.with(getContext()).setIcon(MaterialDrawableBuilder.IconValue.PLUS).setColor(R.color.material_drawer_primary_icon).build());
+
         dateSdf = new SimpleDateFormat(dateFormat, Locale.US);
         timeSdf = new SimpleDateFormat(timeFormat, Locale.US);
 
@@ -161,10 +192,6 @@ public class GeneratePlanFragment extends BaseFragment implements OnStartDragLis
             mCurrentPlan.getStart_time().set(Calendar.YEAR, year);
             mCurrentPlan.getStart_time().set(Calendar.MONTH, monthOfYear);
             mCurrentPlan.getStart_time().set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-            mCurrentPlan.getEnd_time().set(Calendar.YEAR, year);
-            mCurrentPlan.getEnd_time().set(Calendar.MONTH, monthOfYear);
-            mCurrentPlan.getEnd_time().set(Calendar.DAY_OF_MONTH, dayOfMonth);
             updateView();
         }
     };
@@ -205,7 +232,6 @@ public class GeneratePlanFragment extends BaseFragment implements OnStartDragLis
             mCurrentPlan.setEnd_time(calendar);
         }
         mStartTimeView.setText(timeSdf.format(mCurrentPlan.getStart_time().getTime()));
-        mEndTimeView.setText(timeSdf.format(mCurrentPlan.getEnd_time().getTime()));
         mDateView.setText(dateSdf.format(mCurrentPlan.getStart_time().getTime()));
     }
 
@@ -256,7 +282,7 @@ public class GeneratePlanFragment extends BaseFragment implements OnStartDragLis
     @OnClick(R.id.add_category)
     public void onAddCategoryClick(View v)
     {
-        PickCategoryDialog categoryDialog = new PickCategoryDialog();
+        PickCategoryDialog categoryDialog = PickCategoryDialog.newInstance(mAllCategories);
         categoryDialog.show(this.getChildFragmentManager(), "fm");
     }
 
@@ -266,13 +292,6 @@ public class GeneratePlanFragment extends BaseFragment implements OnStartDragLis
         new TimePickerDialog(getActivity(), startTimeSetListener,
                 mCurrentPlan.getStart_time().get(Calendar.HOUR_OF_DAY),
                 mCurrentPlan.getStart_time().get(Calendar.MINUTE), true).show();
-    }
-    @OnClick(R.id.endTimePicker)
-    public void openEndTimePicker()
-    {
-        new TimePickerDialog(getActivity(), endTimeSetListener,
-                mCurrentPlan.getEnd_time().get(Calendar.HOUR_OF_DAY),
-                mCurrentPlan.getEnd_time().get(Calendar.MINUTE), true).show();
     }
     @OnClick(R.id.datePicker)
     public void openDateTimePicker()

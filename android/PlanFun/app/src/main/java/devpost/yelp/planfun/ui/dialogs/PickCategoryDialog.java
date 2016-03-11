@@ -45,16 +45,24 @@ public class PickCategoryDialog extends DialogFragment implements RecyclerItemCl
     private CategoryAdapter mCategoryAdapter;
     private List<YelpCategory> mCategories;
 
+    public static PickCategoryDialog newInstance(List<YelpCategory> categories)
+    {
+        Bundle args = new Bundle();
+        args.putParcelableArrayList("categories", new ArrayList<>(categories));
+        PickCategoryDialog fragment = new PickCategoryDialog();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     public PickCategoryDialog()
     {
         mRestClient = RestClient.getInstance();
-        mCategories = new ArrayList<>();
     }
 
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
         MaterialDialog.Builder b = new MaterialDialog.Builder(getActivity())
-                .title("Categories")
+                .title("Activities")
                 .negativeText("Close")
                 .onNegative((dialog, which)->dialog.dismiss());
 
@@ -62,33 +70,14 @@ public class PickCategoryDialog extends DialogFragment implements RecyclerItemCl
         View v = i.inflate(R.layout.dialog_pick_category, null);
         ButterKnife.bind(this, v);
 
+        mCategories = getArguments().getParcelableArrayList("categories");
+
         mCategoryAdapter = new CategoryAdapter(mCategories, getActivity());
         mCategoryListView.setAdapter(mCategoryAdapter);
         mCategoryListView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mCategoryListView.setItemAnimator(new DefaultItemAnimator());
         mCategoryListView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), this));
-
-        setLoading(true);
-        Call<List<YelpCategory>> categoryCall = mRestClient.getCategoryService().getCategories();
-        categoryCall.enqueue(new Callback<List<YelpCategory>>() {
-            @Override
-            public void onResponse(Call<List<YelpCategory>> call, Response<List<YelpCategory>> response) {
-                if (response.isSuccess()) {
-                    getActivity().runOnUiThread(() ->
-                    {
-                        mCategories.clear();
-                        mCategories.addAll(response.body());
-                        mCategoryAdapter.notifyDataSetChanged();
-                        setLoading(false);
-                    });
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<YelpCategory>> call, Throwable t) {
-
-            }
-        });
+        setLoading(false);
         b.customView(v, false);
         return b.build();
     }
