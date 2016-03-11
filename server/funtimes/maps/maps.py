@@ -13,6 +13,18 @@ def get_directions(origin, destination):
 def get_polyline(plan):
     polylines = []
     counter = 1
+    
+    if plan.starting_coordinate:
+        directions = get_directions(plan.starting_coordinate, plan.items[0].location.coordinate)
+        polylines.append(
+            {
+                "order": 0,
+                "origin": plan.starting_coordinate.as_dict(),
+                "destination": plan.items[0].location.as_dict(),
+                "polyline": directions[0]['overview_polyline']['points']
+            }
+        )
+
     for i1, i2 in pairwise(plan.items):
         directions = get_directions(i1.location.coordinate, i2.location.coordinate)
         polylines.append(
