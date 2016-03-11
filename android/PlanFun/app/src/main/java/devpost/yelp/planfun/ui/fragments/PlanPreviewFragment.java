@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +22,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.squareup.otto.Subscribe;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
@@ -35,7 +37,10 @@ import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Plan;
+import devpost.yelp.planfun.model.YelpCategory;
 import devpost.yelp.planfun.net.RestClient;
+import devpost.yelp.planfun.net.requests.GeneratePlanRequest;
+import devpost.yelp.planfun.ui.events.ItemDetailRequest;
 import devpost.yelp.planfun.ui.events.OpenPlanRequest;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -84,8 +89,8 @@ public class PlanPreviewFragment extends PlanDetailFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_randomize:
+                randomize();
                 break;
-
             case R.id.action_save:
                 savePlan();
                 break;
@@ -93,6 +98,56 @@ public class PlanPreviewFragment extends PlanDetailFragment {
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    @Override
+    public void updateView()
+    {
+        super.updateView();
+        getActivity().runOnUiThread(()->((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(currentPlan.getName()+" [PREVIEW]"));
+    }
+
+    private void randomize()
+    {
+        new MaterialDialog.Builder(getContext())
+                .title("Confirm")
+                .content("Are you sure you want to randomize?")
+                .positiveText("Yes")
+                .negativeText("No")
+                .onPositive((dialog, which) -> {
+                            final MaterialDialog progressDialog = new MaterialDialog.Builder(getContext())
+                                    .title("Randomizing")
+                                    .content("Regenerating your plan...")
+                                    .progress(true, 0)
+                                    .show();
+                            List<YelpCategory> categories = new ArrayList<YelpCategory>();
+                            for(Item i: currentPlan.getItems())
+                            {
+                                categories.add(i.getYelp_category());
+                            }
+                            Call<Plan> refreshCall = mRestClient.getItineraryService().generateItinerary(new GeneratePlanRequest(categories, currentPlan));
+                            refreshCall.enqueue(new Callback<Plan>() {
+                                @Override
+                                public void onResponse(Call<Plan> call, Response<Plan> response) {
+                                    if (response.isSuccess()) {
+                                        progressDialog.dismiss();
+                                        currentPlan = response.body();
+                                        updateView();
+                                    } else {
+                                        progressDialog.dismiss();
+                                        //TODO(abettadapur): Show error
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Plan> call, Throwable t) {
+
+                                }
+                            });
+                        }
+                )
+
+                .show();
     }
 
     public void savePlan() {
@@ -121,5 +176,12 @@ public class PlanPreviewFragment extends PlanDetailFragment {
 
             }
         });
+    }
+
+    @Override
+    @Subscribe
+    public void onItemDetailFromList(ItemDetailRequest request)
+    {
+        super.onItemDetailFromList(request);
     }
 }

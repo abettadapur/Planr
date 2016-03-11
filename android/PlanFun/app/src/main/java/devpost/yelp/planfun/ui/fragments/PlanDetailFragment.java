@@ -190,7 +190,7 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
         });
     }
 
-    private void updateView()
+    protected void updateView()
     {
         getActivity().runOnUiThread(() -> {
             if (currentPlan == null || mGoogleMap == null)
@@ -357,43 +357,7 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    private void randomize()
-    {
-        new MaterialDialog.Builder(getContext())
-                .title("Confirm")
-                .content("Randomizing your itinerary will delete all items you have added and regenerate a new set of items. Are you sure you want to do this?")
-                .positiveText("Yes")
-                .negativeText("No")
-                .onPositive((dialog, which) -> {
-                            final MaterialDialog progressDialog = new MaterialDialog.Builder(getContext())
-                                    .title("Randomizing")
-                                    .content("Regenerating your itinerary...")
-                                    .progress(true, 0)
-                                    .show();
-                            Call<Plan> refreshCall = mRestClient.getItineraryService().randomizeItinerary(currentPlan.getId());
-                            refreshCall.enqueue(new Callback<Plan>() {
-                                @Override
-                                public void onResponse(Call<Plan> call, Response<Plan> response) {
-                                    if (response.isSuccess()) {
-                                        progressDialog.dismiss();
-                                        currentPlan = response.body();
-                                        updateView();
-                                    } else {
-                                        progressDialog.dismiss();
-                                        //TODO(abettadapur): Show error
-                                    }
-                                }
 
-                                @Override
-                                public void onFailure(Call<Plan> call, Throwable t) {
-
-                                }
-                            });
-                        }
-                )
-
-                .show();
-    }
 
     private void refreshItinerary()
     {
