@@ -46,6 +46,9 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity android:name=".ui.activities.PlansIntro"
+            android:label="Intro" />
+
     </application>
 
 

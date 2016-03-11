@@ -14,7 +14,7 @@ def get_polyline(plan):
     polylines = []
     counter = 1
     for i1, i2 in pairwise(plan.items):
-        directions = get_directions(i1.location, i2.location)
+        directions = get_directions(i1.location.coordinate, i2.location.coordinate)
         polylines.append(
             {
                 "order": counter,
@@ -23,7 +23,7 @@ def get_polyline(plan):
                 "polyline": directions[0]['overview_polyline']['points']
             }
         )
-        counter = counter + 1
+        counter += 1
     return polylines
 
 
