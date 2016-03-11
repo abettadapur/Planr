@@ -3,11 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.fragments.ItineraryDetailFragment">
 
-
-    <item android:id="@+id/action_randomize"
-        android:title="Randomize Itinerary"
-        app:showAsAction="collapseActionView|ifRoom"
-        />
     <item android:id="@+id/action_share"
         android:title="Edit Itinerary"
         app:showAsAction="collapseActionView|ifRoom"

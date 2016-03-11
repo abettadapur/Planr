@@ -265,8 +265,10 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe
     public void onOpenPlanRequest(OpenPlanRequest request)
     {
-        if(request.fromGenerate)
-            getSupportFragmentManager().popBackStack();
+        if(request.fromGenerate) {
+            while(getSupportFragmentManager().getBackStackEntryCount() > 0)
+                getSupportFragmentManager().popBackStack();
+        }
 
         PlanDetailFragment fragment = PlanDetailFragment.newInstance(request.plan_id);
         getSupportFragmentManager().beginTransaction()

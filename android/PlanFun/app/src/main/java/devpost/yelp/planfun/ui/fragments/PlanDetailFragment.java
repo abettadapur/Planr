@@ -90,6 +90,8 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
     protected boolean itemClicked;
     protected Item clickedItem;
 
+    protected boolean inPreviewMode;
+
     @Bind(R.id.edit_fab)
     FloatingActionButton mEditFab;
     @Bind(R.id.slidingPanel)
@@ -107,6 +109,7 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         PlanFunApplication.getBus().register(this);
+        inPreviewMode = false;
     }
 
     @Override
@@ -310,23 +313,36 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_itinerary_detail, menu);
-        mMenu = menu;
-        menu.findItem(R.id.action_share).setIcon(MaterialDrawableBuilder.with(getContext())
-                .setColor(Color.WHITE)
-                .setToActionbarSize()
-                .setIcon(MaterialDrawableBuilder.IconValue.ACCOUNT_PLUS)
-                .build());
-        menu.findItem(R.id.action_randomize).setIcon(MaterialDrawableBuilder.with(getContext())
-                .setColor(Color.WHITE)
-                .setToActionbarSize()
-                .setIcon(MaterialDrawableBuilder.IconValue.AUTO_FIX)
-                .build());
-        menu.findItem(R.id.action_refresh).setIcon(MaterialDrawableBuilder.with(getContext())
-                .setColor(Color.WHITE)
-                .setToActionbarSize()
-                .setIcon(MaterialDrawableBuilder.IconValue.REFRESH)
-                .build());
+        if(inPreviewMode) {
+            inflater.inflate(R.menu.menu_plan_preview, menu);
+            mMenu = menu;
+
+            menu.findItem(R.id.action_randomize).setIcon(MaterialDrawableBuilder.with(getContext())
+                    .setColor(Color.WHITE)
+                    .setToActionbarSize()
+                    .setIcon(MaterialDrawableBuilder.IconValue.AUTO_FIX)
+                    .build());
+
+            menu.findItem(R.id.action_save).setIcon(MaterialDrawableBuilder.with(getContext())
+                    .setColor(Color.WHITE)
+                    .setToActionbarSize()
+                    .setIcon(MaterialDrawableBuilder.IconValue.CONTENT_SAVE)
+                    .build());
+        }
+        else
+        {
+            inflater.inflate(R.menu.menu_itinerary_detail, menu);
+            menu.findItem(R.id.action_share).setIcon(MaterialDrawableBuilder.with(getContext())
+                    .setColor(Color.WHITE)
+                    .setToActionbarSize()
+                    .setIcon(MaterialDrawableBuilder.IconValue.ACCOUNT_PLUS)
+                    .build());
+            menu.findItem(R.id.action_refresh).setIcon(MaterialDrawableBuilder.with(getContext())
+                    .setColor(Color.WHITE)
+                    .setToActionbarSize()
+                    .setIcon(MaterialDrawableBuilder.IconValue.REFRESH)
+                    .build());
+        }
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -399,10 +415,6 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
             case R.id.action_share:
                 ShareItineraryDialog shareDialog = new ShareItineraryDialog(currentPlan);
                 shareDialog.show(this.getChildFragmentManager(), "fm");
-                break;
-
-            case R.id.action_randomize:
-                randomize();
                 break;
 
             case R.id.action_refresh:
