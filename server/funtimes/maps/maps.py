@@ -13,7 +13,7 @@ def get_directions(origin, destination):
 def get_polyline(plan):
     polylines = []
     counter = 1
-    
+
     if plan.starting_coordinate:
         directions = get_directions(plan.starting_coordinate, plan.items[0].location.coordinate)
         polylines.append(

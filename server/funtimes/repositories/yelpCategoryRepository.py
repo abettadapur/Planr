@@ -21,6 +21,10 @@ class YelpCategoryRepository(BaseRepository):
         return categories.where(lambda c: start_time.time() <= c.end_time).where(
             lambda c: end_time.time() >= c.start_time).to_list()
 
+    def get(self, **kwargs):
+        entities = self.model_class.query.filter_by(**kwargs).order_by(YelpCategory.name).all()
+        return entities
+
     def get_from_list(self, categories):
         results = []
         for category in categories:
