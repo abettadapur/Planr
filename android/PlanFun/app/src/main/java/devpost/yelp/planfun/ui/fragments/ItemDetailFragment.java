@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -35,6 +36,7 @@ public class ItemDetailFragment extends Fragment
     private Button mCallButton, mNavButton, mWebButton;
     private RatingBar mRatingView;
     private MaterialIconView mIconView;
+    private LinearLayout mLocationLayout;
 
     private String timeFormat = "H:mm";
     private SimpleDateFormat timeSdf;
@@ -77,6 +79,14 @@ public class ItemDetailFragment extends Fragment
         mStartTimeView = (TextView)v.findViewById(R.id.startTimeView);
         mEndTimeView = (TextView)v.findViewById(R.id.endTimeView);
         mAddressView = (TextView)v.findViewById(R.id.addressView);
+        mLocationLayout = (LinearLayout)v.findViewById(R.id.locationLayout);
+        mLocationLayout.setOnClickListener((v1)->
+        {
+            Uri gmmIntentUri = Uri.parse("geo:"+currentItem.getLocation().getCoordinate().latitude+","+currentItem.getLocation().getCoordinate().longitude
+                    +"?q=" + Uri.encode(mAddressView.getText().toString()));
+            Intent intent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            startActivity(intent);
+        });
 
         timeSdf = new SimpleDateFormat(timeFormat);
 
