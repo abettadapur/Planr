@@ -20,6 +20,7 @@ public class Item implements Parcelable
     private String name;
     private Calendar start_time;
     private Calendar end_time;
+    private String description;
     private Location location;
     private YelpEntry yelp_item;
     private ItemType type;
@@ -55,7 +56,6 @@ public class Item implements Parcelable
     }
 
     public Item()  {}
-
 
     public int getId() {
         return id;
@@ -129,12 +129,17 @@ public class Item implements Parcelable
         this.type = type;
     }
 
+    public String getDescription() { return description; }
+
+    public void setDescription(String description) { this.description = description; }
+
     public Item(Parcel in)
     {
         this.id = in.readInt();
         this.yelp_item_id = in.readString();
         this.yelp_category = in.readParcelable(YelpCategory.class.getClassLoader());
         this.name = in.readString();
+        this.description = in.readString();
         this.start_time = new GregorianCalendar(TimeZone.getTimeZone(in.readString()));
         this.start_time.setTimeInMillis(in.readLong());
         this.end_time = new GregorianCalendar(TimeZone.getTimeZone(in.readString()));
@@ -142,7 +147,6 @@ public class Item implements Parcelable
         this.location = in.readParcelable(Location.class.getClassLoader());
         this.yelp_item = in.readParcelable(YelpEntry.class.getClassLoader());
         this.type = (ItemType)in.readSerializable();
-
     }
 
 
@@ -158,6 +162,7 @@ public class Item implements Parcelable
         parcel.writeString(yelp_item_id);
         parcel.writeParcelable(yelp_category, flags);
         parcel.writeString(name);
+        parcel.writeString(description);
         parcel.writeString(start_time.getTimeZone().getID());
         parcel.writeLong(start_time.getTimeInMillis());
         parcel.writeString(end_time.getTimeZone().getID());

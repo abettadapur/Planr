@@ -13,6 +13,7 @@ import com.google.gson.annotations.Expose;
 
 import devpost.yelp.planfun.net.interfaces.CityService;
 import devpost.yelp.planfun.net.interfaces.FriendsService;
+import devpost.yelp.planfun.net.interfaces.SearchService;
 import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -50,6 +51,7 @@ public class RestClient {
     private CategoryService categoryService;
     private CityService cityService;
     private FriendsService friendsService;
+    private SearchService searchService;
 
     private static RestClient client;
     private static Application context;
@@ -143,21 +145,17 @@ public class RestClient {
         categoryService = adapter.create(CategoryService.class);
         cityService = adapter.create(CityService.class);
         friendsService = adapter.create(FriendsService.class);
+        searchService = adapter.create(SearchService.class);
     }
 
-    public AuthService getAuthService()
-    {
-        return authService;
-    }
+    public AuthService getAuthService() { return authService; }
     public PlanService getItineraryService() { return itineraryService; }
     public ItemService getItemService() { return itemService; }
     public DirectionsService getDirectionsService() { return directionsService; }
     public CategoryService getCategoryService(){ return categoryService; }
     public CityService getCityService(){ return cityService; }
-
-    public FriendsService getFriendsService() {
-        return friendsService;
-    }
+    public FriendsService getFriendsService() { return friendsService; }
+    public SearchService getSearchService(){ return searchService; }
 
     private static final Interceptor mAuthCacheInterceptor = new Interceptor() {
         @Override

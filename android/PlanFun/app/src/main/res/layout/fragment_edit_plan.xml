@@ -11,9 +11,7 @@
         android:id="@+id/plan_input_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:met_floatingLabelText="Plan Name"
-        app:met_primaryColor="@color/primaryColor"
-        app:met_floatingLabelAlwaysShown="true"
+        android:hint="Name"
         app:met_floatingLabel="highlight" />
 
     <com.rengwuxian.materialedittext.MaterialEditText
@@ -22,9 +20,7 @@
         android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:met_floatingLabelText="Date"
-        app:met_primaryColor="@color/primaryColor"
-        app:met_floatingLabelAlwaysShown="true"
+        android:hint="Date"
         app:met_floatingLabel="highlight"
         />
 
@@ -32,9 +28,7 @@
         android:id="@+id/plan_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:met_floatingLabelText="Description"
-        app:met_primaryColor="@color/primaryColor"
-        app:met_floatingLabelAlwaysShown="true"
+        android:hint="Description"
         app:met_floatingLabel="highlight"
         />
 
@@ -42,17 +36,23 @@
         android:layout_width="match_parent"
         android:layout_height="3px"
         android:background="@color/dividers"
+        android:layout_marginLeft="10px"
+        android:layout_marginRight="10px"
         />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Plan Items"
+        android:text="Activities"
         android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_marginLeft="10px"
+        android:layout_marginRight="10px"
         />
     <View
         android:layout_width="match_parent"
         android:layout_height="3px"
         android:background="@color/dividers"
+        android:layout_marginLeft="10px"
+        android:layout_marginRight="10px"
         />
 
     <RelativeLayout

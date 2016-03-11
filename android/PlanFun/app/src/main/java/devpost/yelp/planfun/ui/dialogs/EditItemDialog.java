@@ -3,9 +3,12 @@ package devpost.yelp.planfun.ui.dialogs;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TimePicker;
@@ -15,13 +18,18 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 import com.rengwuxian.materialedittext.MaterialEditText;
+
+import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
 import java.util.Calendar;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 import devpost.yelp.planfun.R;
+import devpost.yelp.planfun.etc.Util;
 import devpost.yelp.planfun.model.Item;
 
 /**
@@ -61,8 +69,13 @@ public class EditItemDialog extends DialogFragment {
     @Bind(R.id.item_add_description)
     public MaterialEditText mDescBox;
 
-    private Item mItem;
+    @Bind(R.id.add_item_yelp_view)
+    public CardView mYelpItemView;
 
+    @Bind(R.id.item_add_category)
+    public MaterialEditText mCategoryText;
+
+    private Item mItem;
 
     public static EditItemDialog newInstance(int item_id) {
         EditItemDialog f = new EditItemDialog();
@@ -87,7 +100,7 @@ public class EditItemDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
         MaterialDialog.Builder b = new MaterialDialog.Builder(getActivity())
-                .title("Add Item")
+                .title("Edit Activity")
                 .positiveText("Done")
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
@@ -97,10 +110,27 @@ public class EditItemDialog extends DialogFragment {
                 })
                 .negativeText("Cancel");
 
-
         LayoutInflater i = getActivity().getLayoutInflater();
         View v = i.inflate(R.layout.dialog_edit_item, null);
+        ButterKnife.bind(this, v);
 
+        if(mItem==null){
+            b = b.title("Create Activity");
+            mItem = new Item();
+            mYelpItemView.setVisibility(View.GONE);
+            mNameBox.requestFocusFromTouch();
+            mCategoryText.setIconLeft(MaterialDrawableBuilder.with(getContext())
+                    .setIcon(MaterialDrawableBuilder.IconValue.FOLDER)
+                    .setColor(Color.BLACK)
+                    .setToActionbarSize()
+                    .build());
+        } else {
+            if(mItem.getYelp_item()==null){
+                mYelpItemView.setVisibility(View.GONE);
+            }else{
+                mCategoryText.setVisibility(View.GONE);
+            }
+        }
         updateView();
         b.customView(v, false);
         return b.build();
@@ -140,6 +170,7 @@ public class EditItemDialog extends DialogFragment {
 
     private void updateView()
     {
+        mNameBox.setText(mItem.getName());
 
     }
 

@@ -3,14 +3,45 @@ package devpost.yelp.planfun.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
+import java.util.List;
+
+import devpost.yelp.planfun.net.RestClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 /**
  * Created by alexb on 3/1/2016.
  */
-public class YelpCategory implements Parcelable
-{
+public class YelpCategory implements Parcelable {
     private int id;
     private String name;
     private String icon_string;
+
+    public static List<YelpCategory> SERVER_CATEGORIES;
+
+    static {
+        RestClient.getInstance().getCategoryService().getCategories().enqueue(
+                new Callback<List<YelpCategory>>()
+
+                {
+                    @Override
+                    public void onResponse
+                            (Call< List < YelpCategory >> call, Response<List<YelpCategory>> response) {
+                        if (response.isSuccess()) {
+                            SERVER_CATEGORIES = response.body();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<YelpCategory>> call, Throwable t) {
+
+                    }
+                }
+        );
+    }
 
     public YelpCategory()
     {

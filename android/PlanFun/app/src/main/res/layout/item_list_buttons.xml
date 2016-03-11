@@ -16,8 +16,6 @@
         android:layout_weight="1"
         />
 
-
-
     <Button
         android:id="@+id/item_create"
         android:layout_width="match_parent"

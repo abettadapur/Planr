@@ -5,15 +5,16 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TimePicker;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -24,17 +25,14 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Item;
-import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.model.YelpCategory;
 import devpost.yelp.planfun.net.RestClient;
 import devpost.yelp.planfun.ui.adapters.ItemAdapter;
@@ -47,7 +45,6 @@ import retrofit2.Response;
  */
 public class SearchItemFragment extends BaseFragment {
     private final int PLACES_AUTOCOMPLETE=10000;
-    private Item mCurrentItem;
     private Place autoCompleteResult;
 
     @Bind(R.id.item_place_picker)
@@ -69,50 +66,59 @@ public class SearchItemFragment extends BaseFragment {
 
     private List<YelpCategory> mCategories;
 
+    private Integer[] mCategoriesSelected;
+
     @Bind(R.id.item_search_categories)
     EditText mCategoriesText;
 
     @OnClick(R.id.item_search_categories)
     public void setCategories(View v){
-        Call<List<YelpCategory>> categoryCall = mRestClient.getCategoryService().getCategories();
+        if(YelpCategory.SERVER_CATEGORIES==null){
+            MaterialDialog wait_dialog = new MaterialDialog.Builder(getContext())
+                    .title("Getting Categories")
+                    .content("Please Wait")
+                    .progress(true, 0)
+                    .show();
 
-        categoryCall.enqueue(new Callback<List<YelpCategory>>() {
-            @Override
-            public void onResponse(Call<List<YelpCategory>> call, Response<List<YelpCategory>> response) {
-                if (response.isSuccess()) {
-                    getActivity().runOnUiThread(() ->
-                    {
-                        new MaterialDialog.Builder(getContext())
-                                .title("Choose Categories")
-                                .items(response.body())
-                                .itemsCallbackMultiChoice(null, new MaterialDialog.ListCallbackMultiChoice() {
-                                    @Override
-                                    public boolean onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
-                                        /**
-                                         * If you use alwaysCallMultiChoiceCallback(), which is discussed below,
-                                         * returning false here won't allow the newly selected check box to actually be selected.
-                                         * See the limited multi choice dialog example in the sample project for details.
-                                         **/
-                                        return true;
-                                    }
-                                })
-                                .positiveText("Done")
-                                .show();
-                    });
-                }
+            while(YelpCategory.SERVER_CATEGORIES==null){
             }
+            wait_dialog.dismiss();
+        }
 
-            @Override
-            public void onFailure(Call<List<YelpCategory>> call, Throwable t) {
-
-            }
-        });
+        new MaterialDialog.Builder(getContext())
+                .title("Choose Categories")
+                .items(YelpCategory.SERVER_CATEGORIES)
+                .itemsCallbackMultiChoice(mCategoriesSelected, new MaterialDialog.ListCallbackMultiChoice() {
+                    @Override
+                    public boolean onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
+                        mCategoriesSelected = which;
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                StringBuffer buf = new StringBuffer();
+                                for(int i=0;i<text.length;i++){
+                                    buf.append(text[i]);
+                                    if(i!=text.length-1)
+                                        buf.append(",");
+                                }
+                                mCategoriesText.setText(buf.toString());
+                            }
+                        });
+                        return true;
+                    }
+                })
+                .positiveText("Done")
+                .negativeText("Cancel")
+                .show();
     }
 
-    @Bind(R.id.items_view)
+    @Bind(R.id.item_search_results)
     RecyclerView mItemsView;
 
     private ItemAdapter mAdapter;
+
+    @Bind(R.id.item_search_loading)
+    ProgressBar mProgressView;
 
     @Bind(R.id.cancel_item_add)
     Button mCancelButton;
@@ -127,33 +133,12 @@ public class SearchItemFragment extends BaseFragment {
     public static SearchItemFragment newInstance()
     {
         SearchItemFragment fragment = new SearchItemFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public static SearchItemFragment newInstance(int item_id) {
-        SearchItemFragment fragment = new SearchItemFragment();
-        Bundle args = new Bundle();
-        args.putInt("item_id", item_id);
-        fragment.setArguments(args);
         return fragment;
     }
 
     public SearchItemFragment()
     {
         mRestClient = RestClient.getInstance();
-    }
-
-    public void setPlan(Item item)
-    {
-        mCurrentItem = item;
-    }
-
-    public void setPlanAndUpdate(Item item)
-    {
-        mCurrentItem = item;
-        updateView();
     }
 
     @Override
@@ -177,32 +162,16 @@ public class SearchItemFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Find Activity");
-        updateView();
-
         super.onViewCreated(view, savedInstanceState);
-    }
-
-    TimePickerDialog.OnTimeSetListener startTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
-        @Override
-        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            mCurrentItem.getStart_time().set(Calendar.HOUR_OF_DAY, hourOfDay);
-            mCurrentItem.getStart_time().set(Calendar.MINUTE, minute);
-            updateView();
-        }
-    };
-
-
-    private void updateView() {
-        //TODO
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACES_AUTOCOMPLETE) {
             if (resultCode == Activity.RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(getContext(), data);
-                mPlaceBox.setText(place.getAddress());
-                autoCompleteResult = place;
+                autoCompleteResult = PlaceAutocomplete.getPlace(getContext(), data);
+                mPlaceBox.setText(autoCompleteResult.getAddress());
+                doQuery();
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(getContext(), data);
                 // TODO: Handle the error.
@@ -212,5 +181,31 @@ public class SearchItemFragment extends BaseFragment {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void doQuery(){
+        mItemsView.setVisibility(View.GONE);
+        mProgressView.setVisibility(View.VISIBLE);
+
+        Call<List<Item>> itemsCall = mRestClient.getSearchService().searchItems(autoCompleteResult.getLatLng().latitude,
+                autoCompleteResult.getLatLng().longitude);
+        itemsCall.enqueue(new Callback<List<Item>>() {
+            @Override
+            public void onResponse(Call<List<Item>> call, Response<List<Item>> response) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mItemsView.setVisibility(View.VISIBLE);
+                        mProgressView.setVisibility(View.GONE);
+                        mAdapter.setItems(response.body());
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Call<List<Item>> call, Throwable t) {
+            }
+        });
     }
 }
