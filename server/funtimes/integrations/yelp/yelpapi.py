@@ -43,8 +43,9 @@ def _make_request(path, url_params=None):
         print(error)
 
 
-def search(query, category_filters, **kwargs):
+def search(latitude, longtitude, query, category_filters, **kwargs):
     url_params = {
+        'll': '%f,%f'%(latitude,longtitude),
         'term': query.replace(' ', '+') if query else "",
         'category_filter': ','.join(category_filters)}
     url_params.update(kwargs)

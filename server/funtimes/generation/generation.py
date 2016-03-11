@@ -39,8 +39,6 @@ def fetch_items(coordinate, categories, plan_date, starting_time):
 def get_yelp_item(coordinate, category, strategy=DistanceStrategy()):
     extra_yelp_params = {}
     yelp_item_repository = YelpItemRepository()
-    if coordinate is not None:
-        extra_yelp_params['ll'] = str(coordinate)
 
     # for these strategies, use YelpAPI
     # then reset strategy_name so that we can still call strategy module below
@@ -53,7 +51,9 @@ def get_yelp_item(coordinate, category, strategy=DistanceStrategy()):
         extra_yelp_params['sort'] = 1
         strategy = FirstRandomStrategy()
 
-    search_results = query(yelpapi.search(category.search_term,
+    search_results = query(yelpapi.search(coordinate.latitude,
+                                          coordinate.longtitude,
+                                          category.search_term,
                                           query(category.search_filters).select(lambda f: f.filter).to_list(),
                                           **extra_yelp_params)).where(
         lambda r: ['Food Trucks', 'foodtrucks'] not in r['categories'])
