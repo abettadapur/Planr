@@ -42,9 +42,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class EditPlanFragment extends BaseFragment {
-
-
-    private final int PLACES_AUTOCOMPLETE=10000;
     private Plan mCurrentPlan;
     private Place autoCompleteResult;
 
@@ -132,12 +129,10 @@ public class EditPlanFragment extends BaseFragment {
         View v = inflater.inflate(R.layout.fragment_edit_plan, container, false);
         ButterKnife.bind(this, v);
 
-
         mAdapter = new ItemAdapter(mCurrentPlan ==null?null: mCurrentPlan.getItems(), this.getActivity(), true);
         mItemsView.setAdapter(mAdapter);
         mItemsView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         mAdapter.notifyDataSetChanged();
-
         return v;
     }
 
@@ -168,6 +163,7 @@ public class EditPlanFragment extends BaseFragment {
         {
             mCurrentPlan = new Plan();
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Create Plan");
+            mNameBox.requestFocusFromTouch();
         }
 
         super.onViewCreated(view, savedInstanceState);
@@ -183,19 +179,11 @@ public class EditPlanFragment extends BaseFragment {
             mCurrentPlan.getEnd_time().set(Calendar.YEAR, year);
             mCurrentPlan.getEnd_time().set(Calendar.MONTH, monthOfYear);
             mCurrentPlan.getEnd_time().set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            mCurrentPlan.setName(mNameBox.getText().toString());
+
             updateView();
         }
     };
-
-    TimePickerDialog.OnTimeSetListener startTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
-        @Override
-        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            mCurrentPlan.getStart_time().set(Calendar.HOUR_OF_DAY, hourOfDay);
-            mCurrentPlan.getStart_time().set(Calendar.MINUTE, minute);
-            updateView();
-        }
-    };
-
 
     private void updateView() {
         mNameBox.setText(mCurrentPlan.getName());

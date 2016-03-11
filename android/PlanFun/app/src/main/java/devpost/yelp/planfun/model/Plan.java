@@ -27,6 +27,7 @@ public class Plan implements Comparable<Plan>, Parcelable
     private String city;
     private String starting_address;
     private LatLng starting_coordinate;
+    private String description;
     @SerializedName("public")
     private boolean isPublic;
     private List<Item> items;

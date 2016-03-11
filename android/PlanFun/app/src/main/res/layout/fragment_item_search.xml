@@ -37,18 +37,24 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="3px"
-        android:background="@color/md_white_1000"
+        android:background="@color/dividers"
+        android:layout_marginLeft="10px"
+        android:layout_marginRight="10px"
         />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Options"
         android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_marginLeft="10px"
+        android:layout_marginRight="10px"
         />
     <View
         android:layout_width="match_parent"
         android:layout_height="3px"
-        android:background="@color/md_white_1000"
+        android:background="@color/dividers"
+        android:layout_marginLeft="10px"
+        android:layout_marginRight="10px"
         />
 
     <RelativeLayout
@@ -56,11 +62,20 @@
         android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/items_view"
+            android:id="@+id/item_search_results"
             android:scrollbars="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="@dimen/md_button_height"/>
+
+        <ProgressBar
+            android:id="@+id/item_search_loading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/md_button_height"
+            android:indeterminate="true"
+            android:visibility="gone"
+            android:theme="@android:style/Widget.ProgressBar.Small.Inverse"/>
 
 
             <Button

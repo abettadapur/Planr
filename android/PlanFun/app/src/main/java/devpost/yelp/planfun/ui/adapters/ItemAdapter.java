@@ -51,7 +51,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
     };
     private List<Item> mItems;
     private Context mContext;
-    private boolean addButton, spinner;
+    private boolean addButton;
 
     public ItemAdapter(List<Item> items, Context context){
         this(items,context,false);
@@ -69,20 +69,16 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
         this(null,context,false);
     }
 
-    public void setSpinner(boolean set){
-        this.spinner = set;
+    public void setItems(List<Item> items){
+        mItems = items;
     }
 
     @Override
     public ItemViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         int layout = R.layout.item_list_item;
         boolean item = true;
-        if(spinner){
-            layout = R.layout.item_list_spinner;
-            item = false;
-        }
-        else if(i==getItemCount()-1 && addButton){
-            layout = R.layout.item_list_add_button;
+        if(i==getItemCount()-1 && addButton){
+            layout = R.layout.item_list_buttons;
             item = false;
         }
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(layout, viewGroup, false);
@@ -92,10 +88,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
     @Override
     public void onBindViewHolder(ItemViewHolder itemViewHolder, int i)
     {
-        if(spinner){
-
-        }
-        else if(i==getItemCount()-1 && addButton){
+        if(i==getItemCount()-1 && addButton){
             itemViewHolder.itemView.findViewById(R.id.item_find).setOnClickListener(FIND_LISTENER);
             ((Button)itemViewHolder.itemView.findViewById(R.id.item_find))
                     .setCompoundDrawables(MaterialDrawableBuilder.with(mContext)
@@ -119,8 +112,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
 
     @Override
     public int getItemCount() {
-        if(spinner)
-            return 1;
         return (mItems==null ? 0: mItems.size())+(addButton?1:0);
     }
 }
