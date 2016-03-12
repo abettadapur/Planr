@@ -65,17 +65,20 @@ public class ItemDetailFragment extends Fragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         View v = inflater.inflate(R.layout.fragment_item_detail, container, false);
         mTitleView = (TextView)v.findViewById(R.id.titleView);
+        mTitleView.setTextColor(getActivity().getColor(R.color.white));
         //mSubtitleView = (TextView)v.findViewById(R.id.subtitleView);
         mCallButton = (Button)v.findViewById(R.id.callButton);
         mNavButton = (Button)v.findViewById(R.id.navButton);
         mWebButton = (Button)v.findViewById(R.id.webButton);
         mReviewCountView = (TextView)v.findViewById(R.id.ratingCountView);
+        mReviewCountView.setTextColor(getActivity().getColor(R.color.white));
         mRatingView = (RatingBar)v.findViewById(R.id.ratingView);
         mRatingValueView = (TextView)v.findViewById(R.id.ratingValueView);
+        mRatingValueView.setTextColor(getActivity().getColor(R.color.white));
         mIconView = (MaterialIconView)v.findViewById(R.id.iconView);
+        mIconView.setColor(getActivity().getColor(R.color.white));
         mStartTimeView = (TextView)v.findViewById(R.id.startTimeView);
         mEndTimeView = (TextView)v.findViewById(R.id.endTimeView);
         mAddressView = (TextView)v.findViewById(R.id.addressView);
@@ -144,17 +147,19 @@ public class ItemDetailFragment extends Fragment
         //loader.execute(currentItem.getYelp_item().getImage_url());
         mRatingView.setRating(currentItem.getYelp_item().getRating());
         mRatingValueView.setText(currentItem.getYelp_item().getRating() + "");
-        //mSubtitleView.setText(PhoneNumberUtils.formatNumber(currentItem.getYelp_item().getPhone(), "US"));
         mReviewCountView.setText(" - "+currentItem.getYelp_item().getReview_count()+" reviews");
 
         mStartTimeView.setText(timeSdf.format(currentItem.getStart_time().getTime()));
         mEndTimeView.setText(timeSdf.format(currentItem.getEnd_time().getTime()));
 
-        mAddressView.setText(currentItem.getLocation().getAddress()+"\n"+currentItem.getLocation().getCity()+", "+currentItem.getLocation().getState_code()+"\n"+currentItem.getLocation().getPostal_code());
+        mAddressView.setText(currentItem.getLocation().getAddress()+"\n"+
+                             currentItem.getLocation().getCity()+", "+
+                             currentItem.getLocation().getState_code()+"\n"+
+                             currentItem.getLocation().getPostal_code());
         if(!currentItem.getYelp_category().getIcon_string().equals(""))
         {
             try {
-                mIconView.setIcon(Util.fromString(currentItem.getYelp_category().getIcon_string()));
+                mIconView.setIcon(Util.iconFromString(currentItem.getYelp_category().getIcon_string()));
             }
             catch(IllegalArgumentException iaex)
             {

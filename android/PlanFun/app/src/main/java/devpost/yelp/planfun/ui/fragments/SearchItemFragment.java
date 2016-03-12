@@ -9,12 +9,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -31,11 +34,16 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnEditorAction;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.YelpCategory;
+import devpost.yelp.planfun.model.YelpEntry;
 import devpost.yelp.planfun.net.RestClient;
 import devpost.yelp.planfun.ui.adapters.ItemAdapter;
+import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
+import devpost.yelp.planfun.ui.adapters.YelpEntryAdapter;
+import devpost.yelp.planfun.ui.dialogs.EditItemDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -43,10 +51,10 @@ import retrofit2.Response;
 /**
  * Created by ros on 3/8/16.
  */
-public class SearchItemFragment extends BaseFragment {
+public class SearchItemFragment extends BaseFragment implements RecyclerItemClickListener.OnItemClickListener {
     private final int PLACES_AUTOCOMPLETE=10000;
     private Place autoCompleteResult;
-
+    private String categoriesText, termText;
     @Bind(R.id.item_place_picker)
     MaterialEditText mPlaceBox;
 
@@ -102,6 +110,8 @@ public class SearchItemFragment extends BaseFragment {
                                         buf.append(",");
                                 }
                                 mCategoriesText.setText(buf.toString());
+                                categoriesText=buf.toString().equals("") ? null : buf.toString();
+                                doQuery();
                             }
                         });
                         return true;
@@ -112,10 +122,28 @@ public class SearchItemFragment extends BaseFragment {
                 .show();
     }
 
+    @Bind(R.id.item_search_term)
+    MaterialEditText mTermText;
+
+    @OnEditorAction(R.id.item_search_term)
+    public boolean onTermEntered(TextView v, int actionId, KeyEvent event) {
+        if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                actionId == EditorInfo.IME_ACTION_DONE ||
+                event.getAction() == KeyEvent.ACTION_DOWN &&
+                        event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+            if (!event.isShiftPressed()) {
+                termText=v.getText().toString().equals("") ? null : v.getText().toString();
+                doQuery();
+                return true; // consume.
+            }
+        }
+        return false; // pass on to other listeners.
+    }
+
     @Bind(R.id.item_search_results)
     RecyclerView mItemsView;
 
-    private ItemAdapter mAdapter;
+    private YelpEntryAdapter mAdapter;
 
     @Bind(R.id.item_search_loading)
     ProgressBar mProgressView;
@@ -151,7 +179,7 @@ public class SearchItemFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_item_search, container, false);
         ButterKnife.bind(this, v);
-        mAdapter = new ItemAdapter(null,this.getActivity());
+        mAdapter = new YelpEntryAdapter(null,this.getActivity());
         mItemsView.setAdapter(mAdapter);
         mItemsView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         mAdapter.notifyDataSetChanged();
@@ -174,7 +202,7 @@ public class SearchItemFragment extends BaseFragment {
                 doQuery();
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(getContext(), data);
-                // TODO: Handle the error.
+                // TODO: Handle the error?
 
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 // The user canceled the operation.
@@ -184,19 +212,19 @@ public class SearchItemFragment extends BaseFragment {
     }
 
     public void doQuery(){
-        mItemsView.setVisibility(View.GONE);
-        mProgressView.setVisibility(View.VISIBLE);
-
-        Call<List<Item>> itemsCall = mRestClient.getSearchService().searchItems(autoCompleteResult.getLatLng().latitude,
-                autoCompleteResult.getLatLng().longitude);
-        itemsCall.enqueue(new Callback<List<Item>>() {
+        setLoading(true);
+        Call<List<YelpEntry>> itemsCall = mRestClient.getSearchService().searchItems(
+                autoCompleteResult.getLatLng().latitude,
+                autoCompleteResult.getLatLng().longitude,
+                categoriesText,
+                termText);
+        itemsCall.enqueue(new Callback<List<YelpEntry>>() {
             @Override
-            public void onResponse(Call<List<Item>> call, Response<List<Item>> response) {
+            public void onResponse(Call<List<YelpEntry>> call, Response<List<YelpEntry>> response) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mItemsView.setVisibility(View.VISIBLE);
-                        mProgressView.setVisibility(View.GONE);
+                        setLoading(false);
                         mAdapter.setItems(response.body());
                         mAdapter.notifyDataSetChanged();
                     }
@@ -204,8 +232,30 @@ public class SearchItemFragment extends BaseFragment {
             }
 
             @Override
-            public void onFailure(Call<List<Item>> call, Throwable t) {
+            public void onFailure(Call<List<YelpEntry>> call, Throwable t) {
             }
         });
+    }
+
+    public void setLoading(boolean loading){
+        if(!loading){
+            mItemsView.setVisibility(View.VISIBLE);
+            mProgressView.setVisibility(View.GONE);
+        }else{
+            mItemsView.setVisibility(View.GONE);
+            mProgressView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onItemClick(View childView, int position) {
+        YelpEntry clicked = mAdapter.getEntries().get(position);
+        //EditItemDialog dialog = EditItemDialog.newInstance(clicked);
+        //dialog.show(getActivity().getSupportFragmentManager(), "fm");
+    }
+
+    @Override
+    public void onItemLongPress(View childView, int position) {
+        //TODO dialog with info
     }
 }

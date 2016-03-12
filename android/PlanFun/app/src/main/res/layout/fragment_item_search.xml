@@ -27,35 +27,10 @@
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/item_search_term"
-        android:editable="false"
-        android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Search Term"
         app:met_floatingLabel="highlight"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="3px"
-        android:background="@color/dividers"
-        android:layout_marginLeft="10px"
-        android:layout_marginRight="10px"
-        />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Options"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_marginLeft="10px"
-        android:layout_marginRight="10px"
-        />
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="3px"
-        android:background="@color/dividers"
-        android:layout_marginLeft="10px"
-        android:layout_marginRight="10px"
-        />
 
     <RelativeLayout
         android:layout_width="match_parent"

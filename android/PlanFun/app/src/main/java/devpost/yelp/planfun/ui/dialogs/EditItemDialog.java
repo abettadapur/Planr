@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.CardView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TimePicker;
@@ -18,7 +17,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
@@ -28,6 +26,7 @@ import java.util.Calendar;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.etc.Util;
 import devpost.yelp.planfun.model.Item;
@@ -80,9 +79,20 @@ public class EditItemDialog extends DialogFragment {
     public static EditItemDialog newInstance(int item_id) {
         EditItemDialog f = new EditItemDialog();
 
-        // Supply num input as an argument.
+        //TODO load in item and just called newInstance with Item?
         Bundle args = new Bundle();
         args.putInt("item_id", item_id);
+        f.setArguments(args);
+
+        return f;
+    }
+
+
+    public static EditItemDialog newInstance(Item clicked) {
+        EditItemDialog f = new EditItemDialog();
+
+        Bundle args = new Bundle();
+        args.putParcelable("item", clicked);
         f.setArguments(args);
 
         return f;
@@ -114,22 +124,13 @@ public class EditItemDialog extends DialogFragment {
         View v = i.inflate(R.layout.dialog_edit_item, null);
         ButterKnife.bind(this, v);
 
+        if(savedInstanceState.containsKey("item"))
+            mItem = savedInstanceState.getParcelable("item");
+
         if(mItem==null){
             b = b.title("Create Activity");
             mItem = new Item();
-            mYelpItemView.setVisibility(View.GONE);
             mNameBox.requestFocusFromTouch();
-            mCategoryText.setIconLeft(MaterialDrawableBuilder.with(getContext())
-                    .setIcon(MaterialDrawableBuilder.IconValue.FOLDER)
-                    .setColor(Color.BLACK)
-                    .setToActionbarSize()
-                    .build());
-        } else {
-            if(mItem.getYelp_item()==null){
-                mYelpItemView.setVisibility(View.GONE);
-            }else{
-                mCategoryText.setVisibility(View.GONE);
-            }
         }
         updateView();
         b.customView(v, false);
@@ -171,7 +172,32 @@ public class EditItemDialog extends DialogFragment {
     private void updateView()
     {
         mNameBox.setText(mItem.getName());
+        mDescBox.setText(mItem.getDescription());
+        MaterialDrawableBuilder.IconValue categoryIcon = MaterialDrawableBuilder.IconValue.FOLDER;
+        if(mItem.getYelp_category()!=null){
+            mCategoryText.setText(mItem.getYelp_category().getName());
+            categoryIcon = Util.iconFromString(mItem.getYelp_category().getIcon_string());
+        }
+        mCategoryText.setIconRight(MaterialDrawableBuilder.with(getContext())
+                .setIcon(categoryIcon)
+                .setColor(Color.BLACK)
+                .setToActionbarSize()
+                .build());
+
+        if(mItem.getLocation()!=null)
+            mAtBox.setText(mItem.getLocation().getAddress());
+
+        if(mItem.getStart_time()!=null)
+            mStartBox.setText(PlanFunApplication.TIME_FORMAT.format(mItem.getStart_time()));
+
+        if(mItem.getEnd_time()!=null)
+            mStartBox.setText(PlanFunApplication.TIME_FORMAT.format(mItem.getStart_time()));
+
+        if(mItem.getYelp_item()==null){
+            mYelpItemView.setVisibility(View.GONE);
+        }else{
+            mCategoryText.setVisibility(View.GONE);
+        }
 
     }
-
 }

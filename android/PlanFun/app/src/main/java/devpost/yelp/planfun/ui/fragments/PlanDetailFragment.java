@@ -292,7 +292,6 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
         if (requestCode == REQUEST_LOCATION) {
             if (mGoogleMap != null) {
                 mGoogleMap.setMyLocationEnabled(true);
-
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

@@ -1,10 +1,8 @@
 package devpost.yelp.planfun.ui.fragments;
 
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,15 +12,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
-import android.widget.TimePicker;
 
 import com.google.android.gms.location.places.Place;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -58,6 +53,9 @@ public class EditPlanFragment extends BaseFragment {
                 mCurrentPlan.getStart_time().get(Calendar.MONTH),
                 mCurrentPlan.getStart_time().get(Calendar.DAY_OF_MONTH)).show();
     }
+
+    @Bind(R.id.plan_input_desc)
+    MaterialEditText mDescBox;
 
     @Bind(R.id.items_view)
     RecyclerView mItemsView;
@@ -180,6 +178,7 @@ public class EditPlanFragment extends BaseFragment {
             mCurrentPlan.getEnd_time().set(Calendar.MONTH, monthOfYear);
             mCurrentPlan.getEnd_time().set(Calendar.DAY_OF_MONTH, dayOfMonth);
             mCurrentPlan.setName(mNameBox.getText().toString());
+            mCurrentPlan.setDescription(mDescBox.getText().toString());
 
             updateView();
         }
@@ -187,13 +186,11 @@ public class EditPlanFragment extends BaseFragment {
 
     private void updateView() {
         mNameBox.setText(mCurrentPlan.getName());
-        if(mCurrentPlan.getStart_time()==null)
+        if(mCurrentPlan.getStart_time()!=null)
         {
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, 9);
-            calendar.set(Calendar.MINUTE, 0);
-            mCurrentPlan.setStart_time(calendar);
+            mDateBox.setText(PlanFunApplication.DATE_FORMAT.format(mCurrentPlan.getStart_time().getTime()));
         }
+        mDescBox.setText(mCurrentPlan.getDescription());
     }
 
     @Subscribe
@@ -224,7 +221,7 @@ public class EditPlanFragment extends BaseFragment {
         EditItemDialog dialog = new EditItemDialog();
 
         if(!request.new_item) {
-            dialog = EditItemDialog.newInstance(request.item_id);
+            dialog = EditItemDialog.newInstance(request.item);
         }
 
         dialog.show(getActivity().getSupportFragmentManager(), "fm");

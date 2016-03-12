@@ -63,7 +63,7 @@ public class LargeItemAdapter extends RecyclerView.Adapter<LargeItemAdapter.View
         if(item.getYelp_category().getIcon_string() != null && !item.getYelp_category().getIcon_string().equals(""))
         {
             try {
-                holder.mCategoryIcon.setIcon(Util.fromString(item.getYelp_category().getIcon_string()));
+                holder.mCategoryIcon.setIcon(Util.iconFromString(item.getYelp_category().getIcon_string()));
                 holder.mCategoryIcon.setVisibility(View.VISIBLE);
             }
             catch(IllegalArgumentException iaex)

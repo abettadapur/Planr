@@ -24,7 +24,6 @@ public class Plan implements Comparable<Plan>, Parcelable
     private String name;
     private Calendar start_time;
     private Calendar end_time;
-    private String city;
     private String starting_address;
     private LatLng starting_coordinate;
     private String description;
@@ -105,14 +104,6 @@ public class Plan implements Comparable<Plan>, Parcelable
         this.end_time = end_time;
     }
 
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
     public User getUser() {
         return user;
     }
@@ -162,6 +153,14 @@ public class Plan implements Comparable<Plan>, Parcelable
         this.starting_coordinate = starting_coordinate;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public Plan(Parcel in)
     {
         this.id = in.readInt();
@@ -169,7 +168,7 @@ public class Plan implements Comparable<Plan>, Parcelable
         this.start_time.setTimeInMillis(in.readLong());
         this.end_time = new GregorianCalendar(TimeZone.getTimeZone(in.readString()));
         this.end_time.setTimeInMillis(in.readLong());
-        this.city = in.readString();
+        this.description = in.readString();
         this.starting_address = in.readString();
         this.starting_coordinate = in.readParcelable(LatLng.class.getClassLoader());
         this.isPublic = in.readByte()!=0;
@@ -192,7 +191,7 @@ public class Plan implements Comparable<Plan>, Parcelable
         parcel.writeLong(start_time.getTimeInMillis());
         parcel.writeString(end_time.getTimeZone().getID());
         parcel.writeLong(end_time.getTimeInMillis());
-        parcel.writeString(city);
+        parcel.writeString(description);
         parcel.writeString(starting_address);
         parcel.writeParcelable(starting_coordinate, flags);
         parcel.writeByte((byte)(isPublic?1:0));

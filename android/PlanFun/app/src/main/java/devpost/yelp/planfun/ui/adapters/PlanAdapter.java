@@ -14,6 +14,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.ui.views.RoundedImageView;
 import devpost.yelp.planfun.model.Plan;
@@ -22,7 +23,7 @@ import devpost.yelp.planfun.model.Share;
 /**
  * Created by Alex on 3/10/2015.
  */
-public class ItineraryAdapter extends RecyclerView.Adapter<ItineraryAdapter.ViewHolder>
+public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder>
 {
     public static class ViewHolder extends RecyclerView.ViewHolder
     {
@@ -47,7 +48,7 @@ public class ItineraryAdapter extends RecyclerView.Adapter<ItineraryAdapter.View
     private List<Plan> mItems;
     private Context mContext;
 
-    public ItineraryAdapter(List<Plan> items, Context context)
+    public PlanAdapter(List<Plan> items, Context context)
     {
         this.mItems = items;
         this.mContext=context;
@@ -65,7 +66,8 @@ public class ItineraryAdapter extends RecyclerView.Adapter<ItineraryAdapter.View
     {
         Plan plan = mItems.get(i);
         viewHolder.mTitleView.setText(plan.getName());
-        viewHolder.mSubtitleView.setText(plan.getCity());
+        viewHolder.mSubtitleView.setText(plan.getItems().size()+" Activities on "+
+                         PlanFunApplication.DATE_FORMAT.format(plan.getStart_time().getTime()));
         viewHolder.itemView.setTag(i);
         viewHolder.userLayout.removeAllViews();
         ImageView ownerImageView = createImageView(plan.getUser().getFacebook_id(), false);

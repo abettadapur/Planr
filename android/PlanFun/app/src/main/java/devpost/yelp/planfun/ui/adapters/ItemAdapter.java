@@ -46,7 +46,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
     private static final View.OnClickListener CREATE_LISTENER = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            PlanFunApplication.getBus().post(new EditItemRequest(true));
+            PlanFunApplication.getBus().post(new EditItemRequest());
         }
     };
     private List<Item> mItems;
@@ -71,6 +71,10 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
 
     public void setItems(List<Item> items){
         mItems = items;
+    }
+
+    public List<Item> getItems(){
+        return mItems;
     }
 
     @Override

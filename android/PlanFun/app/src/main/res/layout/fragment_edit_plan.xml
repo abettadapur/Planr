@@ -25,7 +25,7 @@
         />
 
     <com.rengwuxian.materialedittext.MaterialEditText
-        android:id="@+id/plan_description"
+        android:id="@+id/plan_input_desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Description"

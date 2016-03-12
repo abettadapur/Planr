@@ -3,7 +3,6 @@ package devpost.yelp.planfun.ui.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,7 +29,7 @@ import butterknife.OnClick;
 import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.net.RestClient;
-import devpost.yelp.planfun.ui.adapters.ItineraryAdapter;
+import devpost.yelp.planfun.ui.adapters.PlanAdapter;
 import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
 import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.ui.events.EditPlanRequest;
@@ -60,7 +59,7 @@ public class PlanListFragment extends BaseFragment implements RecyclerItemClickL
     SwipeRefreshLayout mSwipeRefresh;
 
     private List<Plan> mPlanList;
-    private ItineraryAdapter mAdapter;
+    private PlanAdapter mAdapter;
     protected RestClient mRestClient;
     protected boolean refreshOnStart = true;
 
@@ -113,7 +112,7 @@ public class PlanListFragment extends BaseFragment implements RecyclerItemClickL
         ButterKnife.bind(this, rootView);
         mSwipeRefresh.setOnRefreshListener(this);
 
-        mAdapter = new ItineraryAdapter(mPlanList, getActivity());
+        mAdapter = new PlanAdapter(mPlanList, getActivity());
         mRecycleView.setAdapter(mAdapter);
 
         mRecycleView.setLayoutManager(new LinearLayoutManager(this.getActivity()));

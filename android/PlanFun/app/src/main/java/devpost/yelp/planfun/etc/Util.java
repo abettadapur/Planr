@@ -7,7 +7,7 @@ import net.steamcrafted.materialiconlib.MaterialDrawableBuilder.IconValue;
  */
 public class Util
 {
-    public static IconValue fromString(String text) throws IllegalArgumentException {
+    public static IconValue iconFromString(String text) throws IllegalArgumentException {
         IconValue value = IconValue.valueOf(text.replace('-', '_').toUpperCase());
         return value;
     }
