@@ -52,7 +52,7 @@ def get_yelp_item(coordinate, category, strategy=DistanceStrategy()):
         strategy = FirstRandomStrategy()
 
     search_results = query(yelpapi.search(coordinate.latitude,
-                                          coordinate.longtitude,
+                                          coordinate.longitude,
                                           category.search_term,
                                           query(category.search_filters).select(lambda f: f.filter).to_list(),
                                           **extra_yelp_params)).where(

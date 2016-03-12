@@ -29,6 +29,7 @@ class Plan(BaseModel):
     starting_address = db.Column(db.String(2000), nullable=False)
     starting_coordinate_id = db.Column(db.Integer(), db.ForeignKey("coordinate.id", ondelete="CASCADE"))
     starting_coordinate = db.relationship("Coordinate", cascade="all, delete")
+    description = db.Column(db.String(10000))
     public = db.Column(db.Boolean)
     items = db.relationship("Item", cascade="all, delete", order_by="Item.start_time")
     categories = db.relationship("YelpCategory", secondary="plan_categories")
@@ -37,12 +38,13 @@ class Plan(BaseModel):
     shared_users = db.relationship("User", secondary="plan_shares")
 
     def __init__(self, name=None, start_time=None, end_time=None, city=None, starting_address=None,
-                 starting_coordinate=None, public=False, items=[], categories=[], user=None):
+                 starting_coordinate=None, description=None, public=False, items=[], categories=[], user=None):
         self.name = name
         self.start_time = start_time
         self.end_time = end_time
         self.starting_address = starting_address
         self.starting_coordinate = starting_coordinate
+        self.description = description
         self.public = public
         self.items = items
         self.categories = categories
@@ -55,6 +57,8 @@ class Plan(BaseModel):
         plan_dict['items'] = [i.as_dict() for i in self.items]
         plan_dict['shared_users'] = [{"user": u.as_dict(), "permission": ""} for u in self.shared_users]
         plan_dict['starting_coordinate'] = self.starting_coordinate.as_dict()
+        plan_dict['description'] = self.description
+        plan_dict['categories'] = self.categories
         return plan_dict
 
     def update_from_dict(self, update_dict):
@@ -86,6 +90,13 @@ class Plan(BaseModel):
             plan.starting_address = create_dict['starting_address']
             plan.starting_coordinate = Coordinate(float(create_dict['starting_coordinate'].partition(',')[0]),
                                                   float(create_dict['starting_coordinate'].partition(',')[2]))
+
+        if 'description' in create_dict:
+            plan.description = create_dict['description']
+
+        if 'categories' in create_dict:
+            plan.categories = create_dict['categories']
+
         return plan
 
     @staticmethod
@@ -97,6 +108,7 @@ class Plan(BaseModel):
                 public=json.get('public'),
                 starting_address=json.get('starting_address'),
                 starting_coordinate=Coordinate.from_json(json.get('starting_coordinate')),
+                description=json.get('description'),
                 user=user,
             )
         return plan
