@@ -8,6 +8,7 @@ from funtimes.maps.maps import get_polyline
 from funtimes.models.entities.change_result import ChangeResult
 from funtimes.models.entities.item import Item
 from funtimes.models.entities.plan import Plan
+from funtimes.models.entities.yelp_item import YelpItem
 from funtimes.models.entities.rating import Rating
 from funtimes.models.entities.user import User
 from funtimes.repositories.itemRepository import ItemRepository
@@ -351,8 +352,10 @@ class ItemSearchResource(Resource):
     @authenticate
     def get(self, **kwargs):
         args = self.parser.parse_args()
-        return yelpapi.search(args.latitude, args.longtitude, 
+        search_results = yelpapi.search(args.latitude, args.longtitude, 
                               args.term,args.categories.split(','),**kwargs)
+        yelp_items = [YelpItem.create_from_dict(result) for result in search_results]
+        return yelp_items
 
 class ItemResource(Resource):
     def __init__(self):

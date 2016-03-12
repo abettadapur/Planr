@@ -54,6 +54,8 @@ def search(latitude, longtitude, query, category_filters, **kwargs):
         url_params['radius_filters'] = 150000  # default radius is set to 15Km
 
     businesses = _make_request(SEARCH_PATH, url_params)
+    if businesses is None:
+        return []
     return businesses['businesses']  # Sara was here yolo and ACTUALLY wrote all this code
 
 def get_business(yelp_id):
