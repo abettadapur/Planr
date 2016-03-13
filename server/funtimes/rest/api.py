@@ -4,7 +4,7 @@ from asq.initiators import query
 from flask import request
 from flask_restful import abort, Resource
 from flask_restful.reqparse import RequestParser
-from funtimes.maps.maps import get_polyline
+from funtimes.maps.maps import get_polyline, get_city
 from funtimes.models.entities.change_result import ChangeResult
 from funtimes.models.entities.item import Item
 from funtimes.models.entities.plan import Plan
@@ -204,6 +204,10 @@ class PlanListResource(Resource):
             on_error(error_message="No items were provided")
 
         plan = Plan.from_json(json, user)
+
+        if plan.starting_coordinate is not None:
+            plan.city = get_city(plan.starting_coordinate.latitude, plan.starting_coordinate.longitude)
+
         result = self.plan_repository.add_or_update(plan)
 
         if not result.success():
