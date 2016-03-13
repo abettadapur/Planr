@@ -219,7 +219,7 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
 
             for (int j = 0; j < currentPlan.getItems().size(); j++) {
                 Item i = currentPlan.getItems().get(j);
-                String drawableName = "marker_" + colors[(j + 1) % 6] + "_number_" + (j + 1);
+                String drawableName = "marker_" + colors[(j + 1) % 5] + "_number_" + (j + 1);
                 Bitmap b = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(drawableName, "drawable", getActivity().getPackageName()));
                 Bitmap scaled = Bitmap.createScaledBitmap(b, b.getWidth() * 3, b.getHeight() * 3, false);
                 Marker marker = mGoogleMap.addMarker(new MarkerOptions()
@@ -232,7 +232,7 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
             }
             for (int j = 0; j < currentPlan.getPolylines().size(); j++) {
                 PolylineModel polylineModel = currentPlan.getPolylines().get(j);
-                final String color_str = "maps_" + colors[j%6];
+                final String color_str = "maps_" + colors[j%5];
                 List<LatLng> points = PolyUtil.decode(polylineModel.getPolyline());
                 PolylineOptions line = new PolylineOptions().geodesic(true);
                 for (LatLng point : points) {
@@ -273,7 +273,7 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
     @Override
     public void onClick(View v)
     {
-        PlanFunApplication.getBus().post(new EditPlanRequest(currentPlan.getId()));
+        PlanFunApplication.getBus().post(new EditPlanRequest(currentPlan));
     }
 
     @Override

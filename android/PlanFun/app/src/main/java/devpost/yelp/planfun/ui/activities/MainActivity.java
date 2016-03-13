@@ -300,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
         EditPlanFragment fragment;
 
         if(!request.new_plan)
-            fragment = EditPlanFragment.newInstance(request.plan_id);
+            fragment = EditPlanFragment.newInstance(request.plan);
         else
             fragment = EditPlanFragment.newInstance();
 
