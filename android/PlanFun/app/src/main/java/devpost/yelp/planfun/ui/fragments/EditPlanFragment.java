@@ -85,10 +85,10 @@ public class EditPlanFragment extends BaseFragment {
         return fragment;
     }
 
-    public static EditPlanFragment newInstance(int plan_id) {
+    public static EditPlanFragment newInstance(Plan plan) {
         EditPlanFragment fragment = new EditPlanFragment();
         Bundle args = new Bundle();
-        args.putInt("plan_id", plan_id);
+        args.putParcelable("plan", plan);
         fragment.setArguments(args);
         return fragment;
     }
@@ -113,6 +113,9 @@ public class EditPlanFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         PlanFunApplication.getBus().register(this);
+        Bundle args = getArguments();
+        if(args.containsKey("plan"))
+            mCurrentPlan = args.getParcelable("plan");
     }
 
     @Override

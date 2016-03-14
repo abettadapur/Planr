@@ -24,6 +24,7 @@ class Plan(BaseModel):
     __tablename__ = "plan"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
+    city = db.Column(db.String(200))
     start_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
     starting_address = db.Column(db.String(2000), nullable=False)
@@ -40,6 +41,7 @@ class Plan(BaseModel):
     def __init__(self, name=None, start_time=None, end_time=None, city=None, starting_address=None,
                  starting_coordinate=None, description=None, public=False, items=[], categories=[], user=None):
         self.name = name
+        self.city = city
         self.start_time = start_time
         self.end_time = end_time
         self.starting_address = starting_address

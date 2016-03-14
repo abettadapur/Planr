@@ -28,3 +28,22 @@ class YelpCategory(BaseModel):
             )
             return category
         return None
+    
+    @staticmethod
+    def get_from_yelp_tuple(yelp_tuple):
+        cat_filter = yelp_tuple[1]
+        categories = []
+        match = YelpSearchFilter.query.filter_by(filter=cat_filter).all()
+        if match is None:
+            return categories
+        for filter in match:
+            cat=YelpCategory.query.filter_by(id=filter.category_id).one_or_none()
+            if cat is not None:
+                categories.append(cat)
+        return categories
+
+    def as_dict(self):
+        cat_dict = super(YelpCategory, self).as_dict()
+        cat_dict['search_filters'] = [filt.as_dict() for filt in self.search_filters]
+        return cat_dict
+

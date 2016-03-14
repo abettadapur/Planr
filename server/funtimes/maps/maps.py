@@ -1,6 +1,7 @@
 import googlemaps
 from funtimes.etc import config
 from funtimes.etc.util import pairwise
+from asq.initiators import query
 
 maps = googlemaps.Client(key=config.GOOGLE_API_KEY)
 
@@ -9,6 +10,12 @@ def get_directions(origin, destination):
     directions = maps.directions(str(origin), str(destination))
     return directions
 
+
+def get_city(latitude, longitude):
+    address_components = query(maps.reverse_geocode((latitude, longitude))[0]['address_components'])
+    city = address_components.single(lambda a: 'locality' in a['types'])['long_name']
+    state_province = address_components.single(lambda a: 'administrative_area_level_1' in a['types'])['short_name']
+    return city + ", "+state_province
 
 def get_polyline(plan):
     polylines = []

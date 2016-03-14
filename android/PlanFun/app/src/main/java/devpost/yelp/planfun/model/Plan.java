@@ -22,6 +22,7 @@ public class Plan implements Comparable<Plan>, Parcelable
 {
     private int id;
     private String name;
+    private String city;
     private Calendar start_time;
     private Calendar end_time;
     private String starting_address;
@@ -161,9 +162,18 @@ public class Plan implements Comparable<Plan>, Parcelable
         this.description = description;
     }
 
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
     public Plan(Parcel in)
     {
         this.id = in.readInt();
+        this.city = in.readString();
         this.start_time = new GregorianCalendar(TimeZone.getTimeZone(in.readString()));
         this.start_time.setTimeInMillis(in.readLong());
         this.end_time = new GregorianCalendar(TimeZone.getTimeZone(in.readString()));
@@ -178,6 +188,7 @@ public class Plan implements Comparable<Plan>, Parcelable
         this.shared_users = new ArrayList<>(Arrays.asList(in.createTypedArray(Share.CREATOR)));
 
     }
+
     @Override
     public int describeContents() {
         return 0;
@@ -187,6 +198,7 @@ public class Plan implements Comparable<Plan>, Parcelable
     public void writeToParcel(Parcel parcel, int flags)
     {
         parcel.writeInt(id);
+        parcel.writeString(city);
         parcel.writeString(start_time.getTimeZone().getID());
         parcel.writeLong(start_time.getTimeInMillis());
         parcel.writeString(end_time.getTimeZone().getID());
