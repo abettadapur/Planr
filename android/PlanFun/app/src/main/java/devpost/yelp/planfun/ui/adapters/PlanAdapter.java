@@ -1,6 +1,8 @@
 package devpost.yelp.planfun.ui.adapters;
 
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +14,9 @@ import android.widget.TextView;
 import com.daimajia.swipe.SwipeLayout;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
@@ -66,8 +70,12 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder>
     {
         Plan plan = mItems.get(i);
         viewHolder.mTitleView.setText(plan.getName());
-        viewHolder.mSubtitleView.setText(plan.getItems().size()+" Activities on "+
-                         PlanFunApplication.DATE_FORMAT.format(plan.getStart_time().getTime()));
+
+        viewHolder.mSubtitleView.setText(plan.getItems().size()+" Activities" + (plan.getCity()!=null?" in "+plan.getCity() : "") + " on "+
+            PlanFunApplication.DATE_FORMAT.format(plan.getStart_time().getTime()));
+
+
+
         viewHolder.itemView.setTag(i);
         viewHolder.userLayout.removeAllViews();
         ImageView ownerImageView = createImageView(plan.getUser().getFacebook_id(), false);
@@ -76,6 +84,8 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder>
         {
             viewHolder.userLayout.addView(createImageView(share.getUser().getFacebook_id(), true));
         }
+
+
     }
 
     private ImageView createImageView(String facebookId, boolean includeMargin)
