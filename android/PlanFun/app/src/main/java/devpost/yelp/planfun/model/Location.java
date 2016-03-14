@@ -3,7 +3,9 @@ package devpost.yelp.planfun.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.annotations.Expose;
 
 /**
  * Created by abettadapur on 3/17/2015.
@@ -16,8 +18,16 @@ public class Location implements Parcelable
     private String state_code;
     private LatLng coordinate;
 
+    @Expose(serialize=false)
+    private Place place;
+
     public Location()
     {}
+
+    public Location(Place place) {
+        address = place.getAddress().toString();
+        coordinate = place.getLatLng();
+    }
 
     public String getAddress() {
         return address;

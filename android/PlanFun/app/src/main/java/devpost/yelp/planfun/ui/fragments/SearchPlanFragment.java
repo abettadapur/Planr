@@ -73,7 +73,7 @@ public class SearchPlanFragment extends PlanListFragment implements  SearchView.
     public boolean onQueryTextSubmit(String query) {
         if(!query.equals("")) {
             setLoading(true);
-            Call<List<Plan>> itineraryCall = mRestClient.getItineraryService().searchItinerary(query);
+            Call<List<Plan>> itineraryCall = mRestClient.getPlanService().searchPlan(query);
             itineraryCall.enqueue(new Callback<List<Plan>>() {
                 @Override
                 public void onResponse(Call<List<Plan>> call, Response<List<Plan>> response) {

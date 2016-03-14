@@ -38,7 +38,8 @@
         android:layout_height="34dp"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin">
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:id="@+id/yelp_entry_rating_layout">
 
         <TextView
             android:layout_width="wrap_content"

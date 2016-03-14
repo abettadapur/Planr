@@ -10,8 +10,8 @@ public class SaveItemRequest {
 
     public Item to_save;
 
-    public SaveItemRequest(Item plan)
+    public SaveItemRequest(Item item)
     {
-        this.to_save = plan;
+        this.to_save = item;
     }
 }

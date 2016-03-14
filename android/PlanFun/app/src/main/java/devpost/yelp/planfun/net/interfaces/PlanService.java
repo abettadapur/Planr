@@ -21,36 +21,36 @@ import retrofit2.http.Query;
 public interface PlanService
 {
     @POST("plans")
-    Call<Plan> createItinerary(@Body Plan plan);
+    Call<Plan> createPlan(@Body Plan plan);
 
     @POST("plans/generate")
-    Call<Plan> generateItinerary(@Body GeneratePlanRequest request);
+    Call<Plan> generatePlan(@Body GeneratePlanRequest request);
 
     @GET("plans")
-    Call<List<Plan>> listItineraries();
+    Call<List<Plan>> listPlans();
 
     @GET("plans")
-    Call<List<Plan>> listItineraries(@Query("shared") boolean includeShared);
+    Call<List<Plan>> listPlans(@Query("shared") boolean includeShared);
 
     @GET("plans/{id}")
-    Call<Plan> getItinerary(@Path("id") int id);
+    Call<Plan> getPlan(@Path("id") int id);
 
     @GET("plans/{id}")
-    Call<Plan> getItinerary(@Path("id") int id, @Query("include_polyline") boolean polyline);
+    Call<Plan> getPlan(@Path("id") int id, @Query("include_polyline") boolean polyline);
 
     @PUT("plans/{id}")
-    Call<Plan> updateItinerary(@Path("id") int id, @Body Plan plan);
+    Call<Plan> updatePlan(@Path("id") int id, @Body Plan plan);
 
     @DELETE("plans/{id}")
-    Call<ResponseBody> deleteItinerary(@Path("id") int id);
+    Call<ResponseBody> deletePlan(@Path("id") int id);
 
     @GET("plans/search")
-    Call<List<Plan>> searchItinerary(@Query("query") String query);
+    Call<List<Plan>> searchPlan(@Query("query") String query);
 
     @POST("plans/{id}/share")
-    Call<Plan> shareItinerary(@Path("id") int id, @Body List<ShareRequest> request);
+    Call<Plan> sharePlan(@Path("id") int id, @Body List<ShareRequest> request);
 
     @POST("plans/{id}/randomize")
-    Call<Plan> randomizeItinerary(@Path("id") int id);
+    Call<Plan> randomizePlan(@Path("id") int id);
 
 }

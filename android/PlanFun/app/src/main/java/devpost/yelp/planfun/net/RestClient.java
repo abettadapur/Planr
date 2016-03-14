@@ -45,7 +45,7 @@ public class RestClient {
     private static final String BASE_URL="http://funtimes.bettadapur.com:5000/api/";
     private static String TAG = "REST";
     private AuthService authService;
-    private PlanService itineraryService;
+    private PlanService planService;
     private ItemService itemService;
     private DirectionsService directionsService;
     private CategoryService categoryService;
@@ -139,7 +139,7 @@ public class RestClient {
                 .build();
 
         authService = adapter.create(AuthService.class);
-        itineraryService = adapter.create(PlanService.class);
+        planService = adapter.create(PlanService.class);
         itemService = adapter.create(ItemService.class);
         directionsService = adapter.create(DirectionsService.class);
         categoryService = adapter.create(CategoryService.class);
@@ -149,7 +149,7 @@ public class RestClient {
     }
 
     public AuthService getAuthService() { return authService; }
-    public PlanService getItineraryService() { return itineraryService; }
+    public PlanService getPlanService() { return planService; }
     public ItemService getItemService() { return itemService; }
     public DirectionsService getDirectionsService() { return directionsService; }
     public CategoryService getCategoryService(){ return categoryService; }

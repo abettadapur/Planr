@@ -55,7 +55,17 @@ public class Item implements Parcelable
         this.id=-1;
     }
 
-    public Item()  {}
+    public Item(YelpEntry entry){
+        this.yelp_item_id = entry.getId();
+        this.yelp_item = entry;
+        this.type = ItemType.YELP;
+        this.name = entry.getName();
+        this.yelp_category = entry.getMain_category();
+        this.location = entry.getLocation();
+    }
+
+    public Item()  {
+    }
 
     public int getId() {
         return id;

@@ -134,7 +134,7 @@ public class PlanListFragment extends BaseFragment implements RecyclerItemClickL
     private void refreshList()
     {
         setLoading(true);
-        Call<List<Plan>> getItinerariesCall = mRestClient.getItineraryService().listItineraries(true);
+        Call<List<Plan>> getItinerariesCall = mRestClient.getPlanService().listPlans(true);
         getItinerariesCall.enqueue(new Callback<List<Plan>>() {
             @Override
             public void onResponse(Call<List<Plan>> call, Response<List<Plan>> response) {
@@ -173,7 +173,7 @@ public class PlanListFragment extends BaseFragment implements RecyclerItemClickL
 
     public void removeItem(int id)
     {
-        Call<ResponseBody> deleteCall = mRestClient.getItineraryService().deleteItinerary(id);
+        Call<ResponseBody> deleteCall = mRestClient.getPlanService().deletePlan(id);
         deleteCall.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
