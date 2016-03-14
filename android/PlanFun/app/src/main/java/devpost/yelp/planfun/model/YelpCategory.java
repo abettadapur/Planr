@@ -19,6 +19,7 @@ public class YelpCategory implements Parcelable {
     private int id;
     private String name;
     private String icon_string;
+    private List<YelpCategorySearchFilter> search_filters;
 
     public static List<YelpCategory> SERVER_CATEGORIES;
 
@@ -76,6 +77,11 @@ public class YelpCategory implements Parcelable {
     @Override
     public int describeContents() {
         return 0;
+    }
+
+
+    public List<YelpCategorySearchFilter> getSearch_filters() {
+        return search_filters;
     }
 
     @Override

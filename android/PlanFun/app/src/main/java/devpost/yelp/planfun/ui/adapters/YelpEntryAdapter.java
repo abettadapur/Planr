@@ -17,6 +17,7 @@ import java.util.List;
 import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.etc.Util;
+import devpost.yelp.planfun.model.YelpCategory;
 import devpost.yelp.planfun.model.YelpEntry;
 import devpost.yelp.planfun.ui.events.EditItemRequest;
 import devpost.yelp.planfun.ui.events.FindItemRequest;
@@ -48,22 +49,23 @@ public class YelpEntryAdapter extends RecyclerView.Adapter<YelpEntryAdapter.Yelp
             mRatingView.setRating(entry.getRating());
             mRatingTextView.setText(entry.getRating() + "");
             mReviewCountView.setText(" - "+entry.getReview_count()+" reviews");
-/*
-            if(!currentItem.getYelp_category().getIcon_string().equals(""))
+
+            if(entry.getCategories().size()>0 && !entry.getCategories().get(0).getIcon_string().equals(""))
             {
+                YelpCategory cat = entry.getMain_category();
                 try {
-                    mIconView.setIcon(Util.iconFromString(currentItem.getYelp_category().getIcon_string()));
+                    mIconView.setIcon(Util.iconFromString(cat.getIcon_string()));
                 }
                 catch(IllegalArgumentException iaex)
                 {
-                    Log.e("ICON", "No icon found for " + currentItem.getYelp_category().getIcon_string());
+                    Log.e("ICON", "No icon found for " + cat.getIcon_string());
                     mIconView.setImageResource(0);
                 }
             }
             else
             {
                 mIconView.setImageResource(0);
-            }*/
+            }
         }
     }
 

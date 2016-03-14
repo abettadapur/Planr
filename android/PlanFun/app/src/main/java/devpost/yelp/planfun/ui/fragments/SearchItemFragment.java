@@ -1,24 +1,22 @@
 package devpost.yelp.planfun.ui.fragments;
 
 import android.app.Activity;
-import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -28,7 +26,6 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
-import java.util.Calendar;
 import java.util.List;
 
 import butterknife.Bind;
@@ -36,14 +33,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import devpost.yelp.planfun.R;
-import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.YelpCategory;
+import devpost.yelp.planfun.model.YelpCategorySearchFilter;
 import devpost.yelp.planfun.model.YelpEntry;
 import devpost.yelp.planfun.net.RestClient;
-import devpost.yelp.planfun.ui.adapters.ItemAdapter;
 import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
 import devpost.yelp.planfun.ui.adapters.YelpEntryAdapter;
-import devpost.yelp.planfun.ui.dialogs.EditItemDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -54,7 +49,7 @@ import retrofit2.Response;
 public class SearchItemFragment extends BaseFragment implements RecyclerItemClickListener.OnItemClickListener {
     private final int PLACES_AUTOCOMPLETE=10000;
     private Place autoCompleteResult;
-    private String categoriesText, termText;
+    private String categoriesQuery, termText;
     @Bind(R.id.item_place_picker)
     MaterialEditText mPlaceBox;
 
@@ -104,13 +99,24 @@ public class SearchItemFragment extends BaseFragment implements RecyclerItemClic
                             @Override
                             public void run() {
                                 StringBuffer buf = new StringBuffer();
-                                for(int i=0;i<text.length;i++){
-                                    buf.append(text[i]);
-                                    if(i!=text.length-1)
-                                        buf.append(",");
+                                for(CharSequence str:text){
+                                    buf.append(str+",");
                                 }
+                                if(text.length>0)
+                                    buf.deleteCharAt(buf.length()-1);
                                 mCategoriesText.setText(buf.toString());
-                                categoriesText=buf.toString().equals("") ? null : buf.toString();
+
+                                categoriesQuery = null;
+                                if(!buf.toString().equals("")){
+                                    StringBuffer queryBuf = new StringBuffer();
+                                    for(Integer i:which){
+                                        for(YelpCategorySearchFilter filter: YelpCategory.SERVER_CATEGORIES.get(i).getSearch_filters()){
+                                            queryBuf.append(filter.getFilter()+",");
+                                        }
+                                    }
+                                    queryBuf.deleteCharAt(queryBuf.length()-1);
+                                    categoriesQuery = queryBuf.toString();
+                                }
                                 doQuery();
                             }
                         });
@@ -133,6 +139,10 @@ public class SearchItemFragment extends BaseFragment implements RecyclerItemClic
                         event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
             if (!event.isShiftPressed()) {
                 termText=v.getText().toString().equals("") ? null : v.getText().toString();
+                //hide keyboard
+                View view = this.getActivity().getCurrentFocus();
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 doQuery();
                 return true; // consume.
             }
@@ -147,14 +157,6 @@ public class SearchItemFragment extends BaseFragment implements RecyclerItemClic
 
     @Bind(R.id.item_search_loading)
     ProgressBar mProgressView;
-
-    @Bind(R.id.cancel_item_add)
-    Button mCancelButton;
-
-    @OnClick(R.id.cancel_item_add)
-    public void cancelClicked(View view){
-
-    }
 
     private RestClient mRestClient;
 
@@ -216,7 +218,7 @@ public class SearchItemFragment extends BaseFragment implements RecyclerItemClic
         Call<List<YelpEntry>> itemsCall = mRestClient.getSearchService().searchItems(
                 autoCompleteResult.getLatLng().latitude,
                 autoCompleteResult.getLatLng().longitude,
-                categoriesText,
+                categoriesQuery,
                 termText);
         itemsCall.enqueue(new Callback<List<YelpEntry>>() {
             @Override

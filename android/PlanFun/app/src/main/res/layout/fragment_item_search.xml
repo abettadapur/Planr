@@ -32,37 +32,20 @@
         android:hint="Search Term"
         app:met_floatingLabel="highlight"/>
 
-    <RelativeLayout
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/item_search_results"
+        android:scrollbars="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/item_search_results"
-            android:scrollbars="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="@dimen/md_button_height"/>
-
-        <ProgressBar
-            android:id="@+id/item_search_loading"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="@dimen/md_button_height"
-            android:indeterminate="true"
-            android:visibility="gone"
-            android:theme="@android:style/Widget.ProgressBar.Small.Inverse"/>
-
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/md_button_height"
-                android:orientation="horizontal"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:id="@+id/cancel_item_add"
-                android:theme="@style/ButtonThemeCancel"
-                android:text="Cancel"/>
-
-    </RelativeLayout>
+    <ProgressBar
+        android:id="@+id/item_search_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:progressTint="@color/white"
+        android:indeterminate="true"
+        android:visibility="gone"
+        android:theme="@android:style/Widget.ProgressBar.Small.Inverse"/>
 
 </LinearLayout>

@@ -266,7 +266,8 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
         {
         if(mGoogleMap!=null) {
             Geocoder coder = new Geocoder(getContext());
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 13));
+            //TODO make this zoom be based on total distance in plan?
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 15));
         }
     }
 
