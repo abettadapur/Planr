@@ -1,11 +1,16 @@
 package devpost.yelp.planfun.ui.fragments;
 
-import android.support.v4.app.Fragment;
-
 /**
  * Created by alexb on 3/10/2016.
  */
 public abstract class BackPressFragment extends BaseFragment
 {
-    public abstract boolean onBackPressed();
+    public boolean onBackPressed() {
+        if(getChildFragmentManager().getBackStackEntryCount() > 0)
+        {
+            getChildFragmentManager().popBackStack();
+            return true;
+        }
+        return false;
+    }
 }

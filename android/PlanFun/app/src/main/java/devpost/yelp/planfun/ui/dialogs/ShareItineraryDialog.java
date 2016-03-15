@@ -70,7 +70,7 @@ public class ShareItineraryDialog extends DialogFragment implements RecyclerItem
                     {
                         shares.add(new ShareRequest(u.getId()+"", "READ"));
                     }
-                    Call<Plan> shareCall = mRestClient.getItineraryService().shareItinerary(plan.getId(), shares);
+                    Call<Plan> shareCall = mRestClient.getPlanService().sharePlan(plan.getId(), shares);
                     final MaterialDialog loading = new MaterialDialog.Builder(getActivity())
                             .title("Sharing")
                             .content("Sharing your plan...")

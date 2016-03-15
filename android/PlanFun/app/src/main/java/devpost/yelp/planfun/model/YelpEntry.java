@@ -3,6 +3,8 @@ package devpost.yelp.planfun.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.List;
+
 /**
  * Created by abettadapur on 3/17/2015.
  */
@@ -17,6 +19,8 @@ public class YelpEntry implements Parcelable
     private int review_count;
     private int price;
     private Location location;
+    private List<YelpCategory> categories;
+    private YelpCategory main_category;
 
     public YelpEntry()
     {}
@@ -113,6 +117,26 @@ public class YelpEntry implements Parcelable
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    public List<YelpCategory> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<YelpCategory> categories) {
+        this.categories = categories;
+    }
+
+    public YelpCategory getMain_category() {
+        if(main_category != null)
+            return main_category;
+        if(categories.size()>0)
+            return categories.get(0);
+        return null;
+    }
+
+    public void setMain_category(YelpCategory main_category) {
+        this.main_category = main_category;
     }
 
     @Override

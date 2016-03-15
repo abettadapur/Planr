@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ import net.steamcrafted.materialiconlib.MaterialIconView;
 
 import java.text.SimpleDateFormat;
 
+import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.etc.Util;
 import devpost.yelp.planfun.model.Item;
@@ -37,10 +39,6 @@ public class ItemDetailFragment extends Fragment
     private RatingBar mRatingView;
     private MaterialIconView mIconView;
     private LinearLayout mLocationLayout;
-
-    private String timeFormat = "H:mm";
-    private SimpleDateFormat timeSdf;
-
 
     public static ItemDetailFragment newInstance(Item i)
     {
@@ -67,20 +65,24 @@ public class ItemDetailFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_item_detail, container, false);
         mTitleView = (TextView)v.findViewById(R.id.titleView);
-        mTitleView.setTextColor(getActivity().getColor(R.color.white));
-        //mSubtitleView = (TextView)v.findViewById(R.id.subtitleView);
+        mTitleView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        v.findViewById(R.id.item_layout).setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         mCallButton = (Button)v.findViewById(R.id.callButton);
         mNavButton = (Button)v.findViewById(R.id.navButton);
         mWebButton = (Button)v.findViewById(R.id.webButton);
         mReviewCountView = (TextView)v.findViewById(R.id.ratingCountView);
-        mReviewCountView.setTextColor(getActivity().getColor(R.color.white));
+        mReviewCountView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
         mRatingView = (RatingBar)v.findViewById(R.id.ratingView);
         mRatingValueView = (TextView)v.findViewById(R.id.ratingValueView);
-        mRatingValueView.setTextColor(getActivity().getColor(R.color.white));
+        mRatingValueView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
         mIconView = (MaterialIconView)v.findViewById(R.id.iconView);
-        mIconView.setColor(getActivity().getColor(R.color.white));
+        mIconView.setColor(ContextCompat.getColor(getContext(), R.color.white));
         mStartTimeView = (TextView)v.findViewById(R.id.startTimeView);
+        mStartTimeView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        TextView divView = (TextView) v.findViewById(R.id.timeDivView);
+        divView.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         mEndTimeView = (TextView)v.findViewById(R.id.endTimeView);
+        mEndTimeView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
         mAddressView = (TextView)v.findViewById(R.id.addressView);
         mLocationLayout = (LinearLayout)v.findViewById(R.id.locationLayout);
         mLocationLayout.setOnClickListener((v1)->
@@ -90,8 +92,6 @@ public class ItemDetailFragment extends Fragment
             Intent intent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
             startActivity(intent);
         });
-
-        timeSdf = new SimpleDateFormat(timeFormat);
 
         mCallButton.setCompoundDrawables(null, MaterialDrawableBuilder
                 .with(getActivity())
@@ -149,8 +149,8 @@ public class ItemDetailFragment extends Fragment
         mRatingValueView.setText(currentItem.getYelp_item().getRating() + "");
         mReviewCountView.setText(" - "+currentItem.getYelp_item().getReview_count()+" reviews");
 
-        mStartTimeView.setText(timeSdf.format(currentItem.getStart_time().getTime()));
-        mEndTimeView.setText(timeSdf.format(currentItem.getEnd_time().getTime()));
+        mStartTimeView.setText(PlanFunApplication.TIME_FORMAT.format(currentItem.getStart_time().getTime()));
+        mEndTimeView.setText(PlanFunApplication.TIME_FORMAT.format(currentItem.getEnd_time().getTime()));
 
         mAddressView.setText(currentItem.getLocation().getAddress()+"\n"+
                              currentItem.getLocation().getCity()+", "+

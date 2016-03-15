@@ -5,16 +5,12 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,7 +37,6 @@ import com.squareup.otto.Subscribe;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,12 +45,10 @@ import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.ui.events.EditPlanRequest;
 import devpost.yelp.planfun.ui.events.ItemDetailRequest;
-import devpost.yelp.planfun.ui.fragments.ItemDetailFragment;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.model.PolylineModel;
@@ -162,7 +155,7 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
         Bundle args = getArguments();
         int id = args.getInt("plan_id");
         loadingProgressDialog = loadingProgressDialogBuilder.show();
-        Call<Plan> itineraryCall = mRestClient.getItineraryService().getItinerary(id, true);
+        Call<Plan> itineraryCall = mRestClient.getPlanService().getPlan(id, true);
         itineraryCall.enqueue(new Callback<Plan>() {
             @Override
             public void onResponse(Call<Plan> call, Response<Plan> response) {
@@ -266,7 +259,8 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
         {
         if(mGoogleMap!=null) {
             Geocoder coder = new Geocoder(getContext());
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 13));
+            //TODO make this zoom be based on total distance in plan?
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 15));
         }
     }
 
@@ -361,7 +355,7 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
     private void refreshItinerary()
     {
         loadingProgressDialog = loadingProgressDialogBuilder.show();
-        Call<Plan> getItineraryCall = mRestClient.getItineraryService().getItinerary(currentPlan.getId(), true);
+        Call<Plan> getItineraryCall = mRestClient.getPlanService().getPlan(currentPlan.getId(), true);
         getItineraryCall.enqueue(new Callback<Plan>() {
             @Override
             public void onResponse(Call<Plan> call, Response<Plan> response) {
@@ -442,15 +436,5 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
     {
         mDetailFragment = ItemDetailFragment.newInstance(request.item);
         getChildFragmentManager().beginTransaction().replace(R.id.container, mDetailFragment).addToBackStack("").commit();
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        if(getChildFragmentManager().getBackStackEntryCount() > 0)
-        {
-            getChildFragmentManager().popBackStack();
-            return true;
-        }
-        return false;
     }
 }

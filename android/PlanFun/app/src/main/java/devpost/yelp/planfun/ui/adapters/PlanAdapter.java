@@ -70,11 +70,11 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder>
     {
         Plan plan = mItems.get(i);
         viewHolder.mTitleView.setText(plan.getName());
-
-        viewHolder.mSubtitleView.setText(plan.getItems().size()+" Activities" + (plan.getCity()!=null?" in "+plan.getCity() : "") + " on "+
-            PlanFunApplication.DATE_FORMAT.format(plan.getStart_time().getTime()));
-
-
+        viewHolder.mSubtitleView.setText(plan.getItems().size()+ " Activities" + 
+                                         (plan.getCity()!=null?" in "+plan.getCity() : "") + " on "+
+                                       PlanFunApplication.DATE_FORMAT.format(plan.getStart_time().getTime())+", "+
+                                       PlanFunApplication.TIME_FORMAT.format(plan.getStart_time().getTime())+"-"+
+                                       PlanFunApplication.TIME_FORMAT.format(plan.getEnd_time().getTime()));
 
         viewHolder.itemView.setTag(i);
         viewHolder.userLayout.removeAllViews();

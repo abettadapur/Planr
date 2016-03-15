@@ -7,7 +7,6 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,11 +31,9 @@ import com.squareup.otto.Subscribe;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -48,11 +45,9 @@ import devpost.yelp.planfun.model.YelpCategory;
 import devpost.yelp.planfun.net.RestClient;
 import devpost.yelp.planfun.net.requests.GeneratePlanRequest;
 import devpost.yelp.planfun.ui.adapters.CategoryAdapter;
-import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
 import devpost.yelp.planfun.ui.dialogs.PickCategoryDialog;
 import devpost.yelp.planfun.ui.events.AddCategoryRequest;
 import devpost.yelp.planfun.ui.events.OpenPlanPreviewRequest;
-import devpost.yelp.planfun.ui.events.OpenPlanRequest;
 import devpost.yelp.planfun.ui.listutils.OnStartDragListener;
 import devpost.yelp.planfun.ui.listutils.SimpleItemTouchHelperCallback;
 import retrofit2.Call;
@@ -80,12 +75,6 @@ public class GeneratePlanFragment extends BaseFragment implements OnStartDragLis
     RecyclerView mCategoryListView;
 
     private RestClient mRestClient;
-
-    private String dateFormat = "MM/dd/yyyy";
-    private SimpleDateFormat dateSdf;
-    private String timeFormat = "H:mm";
-    private SimpleDateFormat timeSdf;
-
     private final int PLACES_AUTOCOMPLETE=10001;
 
     private Plan mCurrentPlan;
@@ -147,9 +136,6 @@ public class GeneratePlanFragment extends BaseFragment implements OnStartDragLis
         View v = inflater.inflate(R.layout.fragment_generate_plan, container, false);
         ButterKnife.bind(this, v);
         mAddCategoryButton.setImageDrawable(MaterialDrawableBuilder.with(getContext()).setIcon(MaterialDrawableBuilder.IconValue.PLUS).setColor(R.color.material_drawer_primary_icon).build());
-
-        dateSdf = new SimpleDateFormat(dateFormat, Locale.US);
-        timeSdf = new SimpleDateFormat(timeFormat, Locale.US);
 
         mStartingAddressView.setOnClickListener((view) -> openAutocomplete());
 
@@ -231,8 +217,8 @@ public class GeneratePlanFragment extends BaseFragment implements OnStartDragLis
             calendar.set(Calendar.MINUTE, 0);
             mCurrentPlan.setEnd_time(calendar);
         }
-        mStartTimeView.setText(timeSdf.format(mCurrentPlan.getStart_time().getTime()));
-        mDateView.setText(dateSdf.format(mCurrentPlan.getStart_time().getTime()));
+        mStartTimeView.setText(PlanFunApplication.TIME_FORMAT.format(mCurrentPlan.getStart_time().getTime()));
+        mDateView.setText(PlanFunApplication.DATE_FORMAT.format(mCurrentPlan.getStart_time().getTime()));
     }
 
     @Override
@@ -259,7 +245,7 @@ public class GeneratePlanFragment extends BaseFragment implements OnStartDragLis
     {
         final ProgressDialog progress = ProgressDialog.show(getActivity(), "Creating", "Generating a custom plan....", true);
         mCurrentPlan.setName(mNameView.getText().toString());
-        Call<Plan> createCall = mRestClient.getItineraryService().generateItinerary(new GeneratePlanRequest(mCategories, mCurrentPlan));
+        Call<Plan> createCall = mRestClient.getPlanService().generatePlan(new GeneratePlanRequest(mCategories, mCurrentPlan));
         createCall.enqueue(new Callback<Plan>() {
             @Override
             public void onResponse(Call<Plan> call, Response<Plan> response) {

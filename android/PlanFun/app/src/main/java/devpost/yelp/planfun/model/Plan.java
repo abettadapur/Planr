@@ -40,6 +40,7 @@ public class Plan implements Comparable<Plan>, Parcelable
 
 
     public Plan(){
+        id = -1;
         start_time = Calendar.getInstance();
         end_time = Calendar.getInstance();
         items = new ArrayList<Item>();
@@ -225,4 +226,8 @@ public class Plan implements Comparable<Plan>, Parcelable
             return new Plan[size];
         }
     };
+
+    public void addItem(Item to_save) {
+        items.add(to_save);
+    }
 }

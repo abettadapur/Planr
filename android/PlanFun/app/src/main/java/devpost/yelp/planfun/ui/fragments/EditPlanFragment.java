@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.location.places.Place;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
@@ -30,13 +32,14 @@ import devpost.yelp.planfun.ui.adapters.ItemAdapter;
 import devpost.yelp.planfun.ui.dialogs.EditItemDialog;
 import devpost.yelp.planfun.ui.events.EditItemRequest;
 import devpost.yelp.planfun.ui.events.FindItemRequest;
+import devpost.yelp.planfun.ui.events.SaveItemRequest;
 import devpost.yelp.planfun.ui.events.SavePlanRequest;
 import devpost.yelp.planfun.model.Plan;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class EditPlanFragment extends BaseFragment {
+public class EditPlanFragment extends BackPressFragment {
     private Plan mCurrentPlan;
     private Place autoCompleteResult;
 
@@ -72,7 +75,47 @@ public class EditPlanFragment extends BaseFragment {
 
     @OnClick(R.id.save_plan)
     public void saveClicked(View view){
-        PlanFunApplication.getBus().post(new SavePlanRequest(mCurrentPlan));
+        MaterialDialog dialog = new MaterialDialog.Builder(getContext())
+                .title("Saving activity...")
+                .content("Just a sec")
+                .progress(true, 0)
+                .show();
+        if(mCurrentPlan.getId()==-1){
+            //new plan, call create new
+            Call<Plan> plan = RestClient.getInstance().getPlanService().createPlan(mCurrentPlan);
+            plan.enqueue(new Callback<Plan>() {
+                @Override
+                public void onResponse(Call<Plan> call, Response<Plan> response) {
+                    Log.i("EDIT_PLAN", "Successfully saved new plan " + mCurrentPlan.getId());
+                    dialog.dismiss();
+                    onBackPressed();
+                }
+
+                @Override
+                public void onFailure(Call<Plan> call, Throwable t) {
+                    Log.e("EDIT_PLAN","Could not create new plan "+mCurrentPlan.getId());
+
+                }
+            });
+        }else{
+            //existing plan, call edit
+            Call<Plan> plan = RestClient.getInstance().getPlanService().updatePlan(mCurrentPlan.getId(),mCurrentPlan);
+            plan.enqueue(new Callback<Plan>() {
+                @Override
+                public void onResponse(Call<Plan> call, Response<Plan> response) {
+                    Log.i("EDIT_PLAN", "Successfully updated plan " + mCurrentPlan.getId());
+                    dialog.dismiss();
+                    onBackPressed();
+                }
+
+                @Override
+                public void onFailure(Call<Plan> call, Throwable t) {
+                    Log.e("EDIT_PLAN","Could not update plan "+mCurrentPlan.getId());
+
+                }
+            });
+
+        }
     }
 
     private RestClient mRestClient;
@@ -144,7 +187,7 @@ public class EditPlanFragment extends BaseFragment {
         int planId = args.getInt("plan_id", -1);
         if(planId!=-1)
         {
-            Call<Plan> planCall = mRestClient.getItineraryService().getItinerary(planId);
+            Call<Plan> planCall = mRestClient.getPlanService().getPlan(planId);
             planCall.enqueue(new Callback<Plan>() {
                 @Override
                 public void onResponse(Call<Plan> call, Response<Plan> response) {
@@ -230,4 +273,16 @@ public class EditPlanFragment extends BaseFragment {
         dialog.show(getActivity().getSupportFragmentManager(), "fm");
     }
 
+
+    @Subscribe
+    public void onSaveItemRequest(SaveItemRequest request)
+    {
+        mCurrentPlan.addItem(request.to_save);
+        mAdapter.setItems(mCurrentPlan.getItems());
+        mAdapter.notifyDataSetChanged();
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, this)
+                .addToBackStack("")
+                .commit();
+    }
 }

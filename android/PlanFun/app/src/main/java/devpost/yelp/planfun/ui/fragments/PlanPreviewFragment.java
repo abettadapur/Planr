@@ -1,44 +1,25 @@
 package devpost.yelp.planfun.ui.fragments;
 
 import android.app.Dialog;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.github.clans.fab.FloatingActionButton;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.Polyline;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.otto.Subscribe;
 
-import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Item;
 import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.model.YelpCategory;
-import devpost.yelp.planfun.net.RestClient;
 import devpost.yelp.planfun.net.requests.GeneratePlanRequest;
 import devpost.yelp.planfun.ui.events.ItemDetailRequest;
 import devpost.yelp.planfun.ui.events.OpenPlanRequest;
@@ -125,7 +106,7 @@ public class PlanPreviewFragment extends PlanDetailFragment {
                             {
                                 categories.add(i.getYelp_category());
                             }
-                            Call<Plan> refreshCall = mRestClient.getItineraryService().generateItinerary(new GeneratePlanRequest(categories, currentPlan));
+                            Call<Plan> refreshCall = mRestClient.getPlanService().generatePlan(new GeneratePlanRequest(categories, currentPlan));
                             refreshCall.enqueue(new Callback<Plan>() {
                                 @Override
                                 public void onResponse(Call<Plan> call, Response<Plan> response) {
@@ -159,7 +140,7 @@ public class PlanPreviewFragment extends PlanDetailFragment {
 
         fragment.show();
 
-        Call<Plan> planCall = mRestClient.getItineraryService().createItinerary(currentPlan);
+        Call<Plan> planCall = mRestClient.getPlanService().createPlan(currentPlan);
         planCall.enqueue(new Callback<Plan>() {
             @Override
             public void onResponse(Call<Plan> call, Response<Plan> response) {
