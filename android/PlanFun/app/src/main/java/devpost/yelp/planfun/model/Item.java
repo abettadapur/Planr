@@ -67,6 +67,10 @@ public class Item implements Parcelable
     public Item()  {
     }
 
+    public void onSaveInstanceState(){
+
+    }
+
     public int getId() {
         return id;
     }

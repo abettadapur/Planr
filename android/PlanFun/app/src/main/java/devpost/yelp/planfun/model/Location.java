@@ -25,7 +25,14 @@ public class Location implements Parcelable
     {}
 
     public Location(Place place) {
-        address = place.getAddress().toString();
+        String[] commaParts = place.getAddress().toString().split(",");
+        if(commaParts.length==4){
+            address = commaParts[0].trim();
+            city = commaParts[1].trim();
+            state_code = commaParts[2].split(" ")[0];
+            postal_code = commaParts[3].split(" ")[1];
+        }else
+            address = place.getAddress().toString();
         coordinate = place.getLatLng();
     }
 

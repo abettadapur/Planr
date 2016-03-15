@@ -41,7 +41,7 @@ import retrofit2.Response;
 
 public class EditPlanFragment extends BackPressFragment {
     private Plan mCurrentPlan;
-    private Place autoCompleteResult;
+    private static final String TAG = "EDIT_PLAN_FRAGMENT";
 
     @Bind(R.id.plan_input_name)
     MaterialEditText mNameBox;
@@ -155,37 +155,13 @@ public class EditPlanFragment extends BackPressFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG,"onCreate");
         PlanFunApplication.getBus().register(this);
         Bundle args = getArguments();
+        int planId = args.getInt("plan_id", -1);
         if(args.containsKey("plan"))
             mCurrentPlan = args.getParcelable("plan");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        PlanFunApplication.getBus().unregister(this);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_edit_plan, container, false);
-        ButterKnife.bind(this, v);
-
-        mAdapter = new ItemAdapter(mCurrentPlan ==null?null: mCurrentPlan.getItems(), this.getActivity(), true);
-        mItemsView.setAdapter(mAdapter);
-        mItemsView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-        mAdapter.notifyDataSetChanged();
-        return v;
-    }
-
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        Bundle args = getArguments();
-        int planId = args.getInt("plan_id", -1);
-        if(planId!=-1)
+        else if(planId!=-1)
         {
             Call<Plan> planCall = mRestClient.getPlanService().getPlan(planId);
             planCall.enqueue(new Callback<Plan>() {
@@ -207,10 +183,28 @@ public class EditPlanFragment extends BackPressFragment {
         {
             mCurrentPlan = new Plan();
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Create Plan");
-            mNameBox.requestFocusFromTouch();
         }
+        mAdapter = new ItemAdapter(mCurrentPlan ==null?null: mCurrentPlan.getItems(), this.getActivity(), true);
+    }
 
-        super.onViewCreated(view, savedInstanceState);
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG, "onDestroy");
+        PlanFunApplication.getBus().unregister(this);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.i(TAG, "onCreteView");
+        View v = inflater.inflate(R.layout.fragment_edit_plan, container, false);
+        ButterKnife.bind(this, v);
+
+        mItemsView.setAdapter(mAdapter);
+        mItemsView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+        mAdapter.notifyDataSetChanged();
+        return v;
     }
 
     DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
