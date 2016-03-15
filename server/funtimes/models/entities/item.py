@@ -45,7 +45,8 @@ class Item(BaseModel):
 
     def as_dict(self):
         item_dict = super(Item, self).as_dict()
-        item_dict['yelp_item'] = self.yelp_item.as_dict()
+        if self.yelp_item!=None:
+            item_dict['yelp_item'] = self.yelp_item.as_dict()
         item_dict['location'] = self.location.as_dict()
         item_dict['start_time'] = self.start_time
         item_dict['end_time'] = self.end_time

@@ -113,6 +113,7 @@ class Plan(BaseModel):
                 description=json.get('description'),
                 user=user,
             )
+        
         return plan
 
     def _set_start_item(self, item):
