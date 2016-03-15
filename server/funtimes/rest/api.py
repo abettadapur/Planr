@@ -206,7 +206,8 @@ class PlanListResource(Resource):
         plan = Plan.from_json(json, user)
 
         if plan.starting_coordinate is not None:
-            plan.city = get_city(plan.starting_coordinate.latitude, plan.starting_coordinate.longitude)
+            plan.city = get_city(plan.starting_coordinate.latitude, 
+                                 plan.starting_coordinate.longitude)
 
         result = self.plan_repository.add_or_update(plan)
 
