@@ -283,7 +283,7 @@ public class EditItemDialog extends DialogFragment {
         }else{
             mCategoryText.setVisibility(View.GONE);
             mAtBox.setVisibility(View.GONE);
-            YelpEntryAdapter.YelpEntryViewHolder holder = new YelpEntryAdapter.YelpEntryViewHolder(mYelpItemView);
+            YelpEntryAdapter.YelpEntryViewHolder holder = new YelpEntryAdapter.YelpEntryViewHolder(getContext(), mYelpItemView);
             holder.fillIn(mItem.getYelp_item());
         }
     }

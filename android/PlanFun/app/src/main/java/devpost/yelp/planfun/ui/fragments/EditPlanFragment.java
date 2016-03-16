@@ -32,6 +32,7 @@ import devpost.yelp.planfun.ui.adapters.ItemAdapter;
 import devpost.yelp.planfun.ui.dialogs.EditItemDialog;
 import devpost.yelp.planfun.ui.events.EditItemRequest;
 import devpost.yelp.planfun.ui.events.FindItemRequest;
+import devpost.yelp.planfun.ui.events.OpenPlanRequest;
 import devpost.yelp.planfun.ui.events.SaveItemRequest;
 import devpost.yelp.planfun.ui.events.SavePlanRequest;
 import devpost.yelp.planfun.model.Plan;
@@ -82,13 +83,16 @@ public class EditPlanFragment extends BackPressFragment {
                 .show();
         if(mCurrentPlan.getId()==-1){
             //new plan, call create new
+            mCurrentPlan.setName(mNameBox.getText().toString());
+            mCurrentPlan.setDescription(mNameBox.getText().toString());
+
             Call<Plan> plan = RestClient.getInstance().getPlanService().createPlan(mCurrentPlan);
             plan.enqueue(new Callback<Plan>() {
                 @Override
                 public void onResponse(Call<Plan> call, Response<Plan> response) {
                     Log.i("EDIT_PLAN", "Successfully saved new plan " + mCurrentPlan.getId());
                     dialog.dismiss();
-                    onBackPressed();
+                    PlanFunApplication.getBus().post(new OpenPlanRequest(response.body().getId(), true));
                 }
 
                 @Override
@@ -105,7 +109,7 @@ public class EditPlanFragment extends BackPressFragment {
                 public void onResponse(Call<Plan> call, Response<Plan> response) {
                     Log.i("EDIT_PLAN", "Successfully updated plan " + mCurrentPlan.getId());
                     dialog.dismiss();
-                    onBackPressed();
+                    getActivity().getSupportFragmentManager().popBackStack();
                 }
 
                 @Override
@@ -177,7 +181,7 @@ public class EditPlanFragment extends BackPressFragment {
                 }
             });
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Edit Plan");
-            updateView();
+
         }
         else
         {
@@ -204,7 +208,14 @@ public class EditPlanFragment extends BackPressFragment {
         mItemsView.setAdapter(mAdapter);
         mItemsView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         mAdapter.notifyDataSetChanged();
+
         return v;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        updateView();
     }
 
     DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
