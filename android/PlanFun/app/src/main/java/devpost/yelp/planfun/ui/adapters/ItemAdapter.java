@@ -64,18 +64,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
         }
     }
 
-    private static final View.OnClickListener FIND_LISTENER = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            PlanFunApplication.getBus().post(new FindItemRequest());
-        }
-    };
-    private static final View.OnClickListener CREATE_LISTENER = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            PlanFunApplication.getBus().post(new EditItemRequest());
-        }
-    };
+    private static final View.OnClickListener FIND_LISTENER = v -> PlanFunApplication.getBus().post(new FindItemRequest());
+    private static final View.OnClickListener CREATE_LISTENER = v -> PlanFunApplication.getBus().post(new EditItemRequest());
     private List<Item> mItems;
     private Context mContext;
     private boolean addButton;
