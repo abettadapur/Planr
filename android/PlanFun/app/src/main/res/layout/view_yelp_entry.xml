@@ -54,13 +54,14 @@
             android:progressTint="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp" />
+            android:layout_marginLeft="10dp"
+        <!--android:progressTintMode="@color/progress_bar"-->/>
 
-        <TextView
-            android:id="@+id/ratingCountView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0 reviews"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/ratingCountView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0 reviews"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+</LinearLayout>
 </LinearLayout>

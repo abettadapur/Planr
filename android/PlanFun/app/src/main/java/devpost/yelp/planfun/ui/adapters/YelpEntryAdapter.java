@@ -51,7 +51,6 @@ public class YelpEntryAdapter extends RecyclerView.Adapter<YelpEntryAdapter.Yelp
         public void fillIn(YelpEntry entry){
             mTitleView.setText(entry.getName());
             mRatingView.setRating(entry.getRating());
-            mRatingView.setProgressTintList(mContext.getResources().getColorStateList(R.color.progress_bar, null));
             mRatingTextView.setText(entry.getRating() + "");
             mReviewCountView.setText(" - "+entry.getReview_count()+" reviews");
 

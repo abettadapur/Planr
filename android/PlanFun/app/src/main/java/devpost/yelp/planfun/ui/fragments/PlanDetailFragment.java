@@ -298,7 +298,6 @@ public class PlanDetailFragment extends BackPressFragment implements View.OnClic
         Item i = marker_to_item.get(marker);
         if(i != null) {
             if (mSlidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED) {
-
                 itemClicked = true;
                 clickedItem = i;
                 mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
