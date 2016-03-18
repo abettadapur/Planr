@@ -1488,7 +1488,8 @@ input[type="radio"] + label:before {
   position: relative; }
   .image img {
     border-radius: 3px;
-    display: block; }
+    display: block; 
+    margin:auto; }
   .image.left {
     float: left;
     margin: 0 2em 2em 0;
