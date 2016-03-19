@@ -35,7 +35,7 @@ class Location(BaseModel):
             city=create_dict['city'],
             postal_code=create_dict['postal_code'] if 'postal_code' in create_dict else None,
             state_code=create_dict['state_code'] if 'state_code' in create_dict else None,
-            coordinate=Coordinate(lat=create_dict['coordinate']['latitude'], long=create_dict['coordinate']['longitude'])
+            coordinate=Coordinate(lat=create_dict['coordinate']['latitude'], long=create_dict['coordinate']['longitude']) if 'coordinate' in create_dict else None
         )
         return location
 

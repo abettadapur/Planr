@@ -116,7 +116,7 @@ class Plan(BaseModel):
         
         return plan
 
-    def _set_start_item(self, item):
+    def set_start_item(self, item):
         self.start_time = item.start_time
         self.starting_address = item.location.address
         self.starting_coordinate = item.location.coordinate
@@ -125,7 +125,7 @@ class Plan(BaseModel):
     def add_item(self, item):
         # Item model assumed to be valid here (correct plan ID)
         if self.start_time is None or item.start_time < self.start_time:
-            self._set_start_item(item)
+            self.set_start_item(item)
         if self.end_time is None or item.end_time < self.end_time:
             self.end_time = item.end_time
 
@@ -136,7 +136,8 @@ class Plan(BaseModel):
         result = ItemRepository().validate(item)
 
         if result.success():
-            self.categories.append(item.yelp_category)
+            if item.yelp_category is not None:
+                self.categories.append(item.yelp_category)
             self.items.append(item)
 
         return result
