@@ -184,13 +184,11 @@ public class EditPlanFragment extends BackPressFragment {
 
                 }
             });
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Edit Plan");
 
         }
         else
         {
             mCurrentPlan = new Plan();
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Create Plan");
         }
         mAdapter = new ItemAdapter(mCurrentPlan ==null?null: mCurrentPlan.getItems(), this.getActivity(), true);
     }
@@ -212,6 +210,17 @@ public class EditPlanFragment extends BackPressFragment {
         mItemsView.setAdapter(mAdapter);
         mItemsView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         mAdapter.notifyDataSetChanged();
+
+        int planId = mCurrentPlan.getId();
+        if(planId!=-1)
+        {
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Edit Plan");
+
+        }
+        else
+        {
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Create Plan");
+        }
 
         return v;
     }
@@ -286,13 +295,15 @@ public class EditPlanFragment extends BackPressFragment {
     @Subscribe
     public void onSaveItemRequest(SaveItemRequest request)
     {
-        mCurrentPlan.addItem(request.to_save);
+        boolean newItem = mCurrentPlan.addItem(request.to_save);
         mAdapter.setItems(mCurrentPlan.getItems());
         mAdapter.notifyDataSetChanged();
         getActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, this)
                 .addToBackStack("")
                 .commit();
+        mItemsView.scrollToPosition(mCurrentPlan.getItems().size()-1);
+
     }
 
     private boolean validate()

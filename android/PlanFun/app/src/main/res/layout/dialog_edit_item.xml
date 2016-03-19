@@ -67,7 +67,7 @@
         android:id="@+id/item_add_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Description"
+        android:hint="Note"
         app:met_floatingLabel="highlight"/>
 
     <include android:id="@+id/add_item_yelp_view"

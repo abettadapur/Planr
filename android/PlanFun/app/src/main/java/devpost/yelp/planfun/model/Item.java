@@ -198,4 +198,12 @@ public class Item implements Parcelable
             return new Item[size];
         }
     };
+
+    public boolean equals(Object toObj){
+        if(toObj instanceof Item){
+            Item toItem = (Item) toObj;
+            return toItem.name.equals(name) && toItem.id==toItem.getId();
+        }
+        return false;
+    }
 }

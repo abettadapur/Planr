@@ -11,7 +11,52 @@
         card_view:cardUseCompatPadding="true"
         >
 
-    <include layout="@layout/view_item"/>
+    <com.daimajia.swipe.SwipeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id = "@+id/itemSwipeLayout"
+        >
+
+        <LinearLayout
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:weightSum="2"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/editItemButton"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:textColor="#FFFFFF"
+                android:theme="@style/ButtonTheme"
+                android:textAlignment="center"
+                android:background="@color/accentColor"
+                android:src="@drawable/ic_mode_edit_white_24dp"
+                android:gravity="center" />
+
+            <ImageButton
+                android:id="@+id/deleteItemButton"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:textColor="#FFFFFF"
+                android:background="@android:color/holo_red_light"
+                android:theme="@style/ButtonTheme"
+                android:textAlignment="center"
+                android:src="@drawable/ic_mode_edit_white_24dp"
+                android:gravity="center"/>
+
+        </LinearLayout>
+
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            layout="@layout/view_item"/>
+
+    </com.daimajia.swipe.SwipeLayout>
 
 
 </android.support.v7.widget.CardView>

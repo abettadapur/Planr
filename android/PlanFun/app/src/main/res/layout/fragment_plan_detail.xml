@@ -38,8 +38,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_margin="16dp"
                 android:src="@drawable/ic_mode_edit_white_24dp"
-                fab:fab_colorNormal="@color/accentColor"
-                fab:fab_colorPressed="@color/accentPressed"
+                fab:fab_colorNormal="@color/primaryColor"
+                fab:fab_colorPressed="@color/primaryColorDark"
                 />
 
 

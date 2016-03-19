@@ -44,6 +44,8 @@ public class Plan implements Comparable<Plan>, Parcelable
         start_time = Calendar.getInstance();
         end_time = Calendar.getInstance();
         items = new ArrayList<Item>();
+        polylines = new ArrayList<PolylineModel>();
+        shared_users = new ArrayList<Share>();
     }
 
     public Plan(String name, Calendar start_time, Calendar end_time,  boolean isPublic, List<Item> items)
@@ -207,7 +209,7 @@ public class Plan implements Comparable<Plan>, Parcelable
         parcel.writeString(description);
         parcel.writeString(starting_address);
         parcel.writeParcelable(starting_coordinate, flags);
-        parcel.writeByte((byte)(isPublic?1:0));
+        parcel.writeByte((byte) (isPublic?1:0));
         parcel.writeTypedArray((items.toArray(new Item[items.size()])), flags);
         parcel.writeParcelable(user, flags);
         parcel.writeTypedArray(polylines.toArray(new PolylineModel[polylines.size()]), flags);
@@ -227,7 +229,10 @@ public class Plan implements Comparable<Plan>, Parcelable
         }
     };
 
-    public void addItem(Item to_save) {
+    public boolean addItem(Item to_save) {
+        if(items.contains(to_save))
+            return false;
         items.add(to_save);
+        return true;
     }
 }

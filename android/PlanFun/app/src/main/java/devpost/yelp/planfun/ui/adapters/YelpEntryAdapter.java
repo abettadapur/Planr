@@ -54,10 +54,14 @@ public class YelpEntryAdapter extends RecyclerView.Adapter<YelpEntryAdapter.Yelp
             mRatingView.setRating(entry.getRating());
 
             PorterDuff.Mode mode = PorterDuff.Mode.SRC_IN;
-            if (mRatingView.getIndeterminateDrawable() != null)
-                mRatingView.getIndeterminateDrawable().setColorFilter(mContext.getColor(R.color.primaryColor), mode);
-            if (mRatingView.getProgressDrawable() != null)
-                mRatingView.getProgressDrawable().setColorFilter(mContext.getColor(R.color.primaryColor), mode);
+            try {
+                if (mRatingView.getIndeterminateDrawable() != null)
+                    mRatingView.getIndeterminateDrawable().setColorFilter(mContext.getColor(R.color.primaryColor), mode);
+                if (mRatingView.getProgressDrawable() != null)
+                    mRatingView.getProgressDrawable().setColorFilter(mContext.getColor(R.color.primaryColor), mode);
+            }catch(NoSuchMethodError e){
+                Log.i("YELP_ENTRY_ADAPTER","Could not set progress "+e.toString());
+            }
 
             mRatingTextView.setText(entry.getRating() + "");
             mReviewCountView.setText(" - "+entry.getReview_count()+" reviews");

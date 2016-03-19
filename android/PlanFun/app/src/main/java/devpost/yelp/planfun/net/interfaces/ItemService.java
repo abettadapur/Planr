@@ -16,17 +16,17 @@ import retrofit2.http.Query;
  */
 public interface ItemService
 {
-    @POST("itinerary/{id}/item/create")
-    Call<Item> createItem(@Path("id") int itinerary_id, @Body Item item);
+    @POST("plan/{id}/item/create")
+    Call<Item> createItem(@Path("id") int plan_id, @Body Item item);
 
-    @GET("itinerary/{i_id}/item/{id}")
-    Call<Item> getItem(@Path("i_id") int itinerary_id, @Path("id") int item_id);
+    @GET("plan/{i_id}/item/{id}")
+    Call<Item> getItem(@Path("i_id") int plan_id, @Path("id") int item_id);
 
-    @PUT("itinerary/{i_id}/item/{id")
-    Call<Item> updateItem(@Path("i_id") int itinerary_id, @Path("id") int item_id, @Body Item item);
+    @PUT("plan/{i_id}/item/{id")
+    Call<Item> updateItem(@Path("i_id") int plan_id, @Path("id") int item_id, @Body Item item);
 
-    @DELETE("itinerary/{i_id}/item/{id}")
-    Call<Boolean> delteItem(@Path("i_id") int itinerary_id, @Path("id") int item_id);
+    @DELETE("plan/{i_id}/item/{id}")
+    Call<Boolean> deleteItem(@Path("i_id") int plan_id, @Path("id") int item_id);
 
 
 }

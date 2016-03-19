@@ -9,6 +9,8 @@
     card_view:cardElevation="3dp"
     card_view:cardUseCompatPadding="true">
 
-    <include layout="@layout/view_yelp_entry"/>
+
+        <include
+                 layout="@layout/view_yelp_entry"/>
 
 </android.support.v7.widget.CardView>
