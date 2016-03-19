@@ -1,5 +1,6 @@
 package devpost.yelp.planfun.ui.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -37,6 +39,10 @@ import devpost.yelp.planfun.ui.events.SharePlanRequest;
 import devpost.yelp.planfun.ui.views.RoundedImageView;
 import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.model.Share;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Alex on 3/10/2015.
@@ -51,7 +57,7 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder>
         public SwipeLayout mSwipeDelete;
         public View itemView;
         public LinearLayout userLayout;
-        public Button mShareView,mEditView,mDeleteView;
+        public ImageButton mShareView,mEditView,mDeleteView;
 
 
         public ViewHolder(View itemView, int position) {
@@ -64,77 +70,76 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder>
             mSwipeDelete = (SwipeLayout)itemView.findViewById(R.id.swipeLayout);
             mSwipeDelete.setShowMode(SwipeLayout.ShowMode.PullOut);
             mSwipeDelete.setDragEdge(SwipeLayout.DragEdge.Right);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            itemView.setOnClickListener(v -> {
 
-                    int itinerary_id = mItems.get(position).getId();
-                    PlanFunApplication.getBus().post(new OpenPlanRequest(itinerary_id, false));
-                }
+                int itinerary_id = mItems.get(position).getId();
+                PlanFunApplication.getBus().post(new OpenPlanRequest(itinerary_id, false));
             });
-            mShareView = (Button)itemView.findViewById(R.id.sharePlanButton);
-            mEditView = (Button)itemView.findViewById(R.id.editPlanButton);
-            mDeleteView = (Button)itemView.findViewById(R.id.deletePlanButton);
+            mShareView = (ImageButton)itemView.findViewById(R.id.sharePlanButton);
+            mEditView = (ImageButton)itemView.findViewById(R.id.editPlanButton);
+            mDeleteView = (ImageButton)itemView.findViewById(R.id.deletePlanButton);
 
-            mShareView.setCompoundDrawables(MaterialDrawableBuilder
+            mShareView.setImageDrawable(MaterialDrawableBuilder
                     .with(mContext)
                     .setIcon(MaterialDrawableBuilder.IconValue.ACCOUNT_PLUS)
                     .setColor(Color.WHITE)
-                    .build()
-                    , null, null, null);
-            mShareView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Plan plan = mItems.get(position);
-                    PlanFunApplication.getBus().post(new SharePlanRequest(plan));
-                }
+                    .build());
+            mShareView.setOnClickListener(v -> {
+                Plan plan = mItems.get(position);
+                PlanFunApplication.getBus().post(new SharePlanRequest(plan));
             });
 
-            mEditView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Plan plan = mItems.get(position);
-                    PlanFunApplication.getBus().post(new EditPlanRequest(plan));
-                }
+            mEditView.setOnClickListener(v -> {
+                Plan plan = mItems.get(position);
+                PlanFunApplication.getBus().post(new EditPlanRequest(plan));
             });
 
-            mDeleteView.setCompoundDrawables(MaterialDrawableBuilder
+            mDeleteView.setImageDrawable(MaterialDrawableBuilder
                     .with(mContext)
                     .setIcon(MaterialDrawableBuilder.IconValue.DELETE)
                     .setColor(Color.WHITE)
-                    .build(), null, null, null);
+                    .build());
 
-            mDeleteView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new MaterialDialog.Builder(mContext)
-                            .title("Delete plan?")
-                            .content("Are you sure you want to delete plan "+mPlan.getName())
-                            .positiveText("Yes")
-                            .negativeText("Cancel")
-                            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                    RestClient.getInstance().getPlanService().deletePlan(PlanAdapter.this.mItems.get(position).getId());
-                                    PlanAdapter.this.mItems.remove(position);
-                                    PlanAdapter.this.notifyItemRemoved(position);
+            mDeleteView.setOnClickListener(v -> new MaterialDialog.Builder(mContext)
+                    .title("Delete plan?")
+                    .content("Are you sure you want to delete plan " + mPlan.getName())
+                    .positiveText("Yes")
+                    .negativeText("Cancel")
+                    .onPositive((materialDialog, dialogAction) -> {
+                        Call<ResponseBody> call = RestClient.getInstance().getPlanService().deletePlan(PlanAdapter.this.mItems.get(position).getId());
+                        call.enqueue(new Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response)
+                            {
+                                if(response.isSuccess())
+                                {
+                                    mContext.runOnUiThread(()-> {
+                                        PlanAdapter.this.mItems.remove(position);
+                                        PlanAdapter.this.notifyItemRemoved(position);
+                                    });
                                 }
-                            })
-                            .icon(MaterialDrawableBuilder
-                                    .with(mContext)
-                                    .setIcon(MaterialDrawableBuilder.IconValue.DELETE)
-                                    .build())
-                            .show();
-                }
-            });
+                            }
+
+
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                            }
+                        });
+                    })
+                    .icon(MaterialDrawableBuilder
+                            .with(mContext)
+                            .setIcon(MaterialDrawableBuilder.IconValue.DELETE)
+                            .build())
+                    .show());
 
             this.itemView = itemView;
         }
     }
     private List<Plan> mItems;
-    private Context mContext;
+    private Activity mContext;
 
-    public PlanAdapter(List<Plan> items, Context context)
+    public PlanAdapter(List<Plan> items, Activity context)
     {
         this.mItems = items;
         this.mContext=context;

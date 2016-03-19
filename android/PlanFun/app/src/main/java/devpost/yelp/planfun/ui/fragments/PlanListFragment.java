@@ -152,6 +152,7 @@ public class PlanListFragment extends BaseFragment implements SwipeRefreshLayout
                         getActivity().runOnUiThread(() -> {
                             updateItems(response.body());
                             setLoading(false);
+                            mSwipeRefresh.setRefreshing(false);
                         });
                     }
                 } else {

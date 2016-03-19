@@ -3,6 +3,7 @@ package devpost.yelp.planfun.ui.adapters;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.PorterDuff;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -51,6 +52,13 @@ public class YelpEntryAdapter extends RecyclerView.Adapter<YelpEntryAdapter.Yelp
         public void fillIn(YelpEntry entry){
             mTitleView.setText(entry.getName());
             mRatingView.setRating(entry.getRating());
+
+            PorterDuff.Mode mode = PorterDuff.Mode.SRC_IN;
+            if (mRatingView.getIndeterminateDrawable() != null)
+                mRatingView.getIndeterminateDrawable().setColorFilter(mContext.getColor(R.color.primaryColor), mode);
+            if (mRatingView.getProgressDrawable() != null)
+                mRatingView.getProgressDrawable().setColorFilter(mContext.getColor(R.color.primaryColor), mode);
+
             mRatingTextView.setText(entry.getRating() + "");
             mReviewCountView.setText(" - "+entry.getReview_count()+" reviews");
 
