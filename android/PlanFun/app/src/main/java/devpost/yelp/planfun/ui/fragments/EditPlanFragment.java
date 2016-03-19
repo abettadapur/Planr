@@ -14,8 +14,10 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.location.places.Place;
+import com.mikepenz.materialize.color.Material;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
 
@@ -32,6 +34,7 @@ import devpost.yelp.planfun.ui.adapters.ItemAdapter;
 import devpost.yelp.planfun.ui.dialogs.EditItemDialog;
 import devpost.yelp.planfun.ui.events.EditItemRequest;
 import devpost.yelp.planfun.ui.events.FindItemRequest;
+import devpost.yelp.planfun.ui.events.OpenPlanRequest;
 import devpost.yelp.planfun.ui.events.SaveItemRequest;
 import devpost.yelp.planfun.ui.events.SavePlanRequest;
 import devpost.yelp.planfun.model.Plan;
@@ -75,46 +78,51 @@ public class EditPlanFragment extends BackPressFragment {
 
     @OnClick(R.id.save_plan)
     public void saveClicked(View view){
-        MaterialDialog dialog = new MaterialDialog.Builder(getContext())
-                .title("Saving activity...")
-                .content("Just a sec")
-                .progress(true, 0)
-                .show();
-        if(mCurrentPlan.getId()==-1){
-            //new plan, call create new
-            Call<Plan> plan = RestClient.getInstance().getPlanService().createPlan(mCurrentPlan);
-            plan.enqueue(new Callback<Plan>() {
-                @Override
-                public void onResponse(Call<Plan> call, Response<Plan> response) {
-                    Log.i("EDIT_PLAN", "Successfully saved new plan " + mCurrentPlan.getId());
-                    dialog.dismiss();
-                    onBackPressed();
-                }
+        if(validate()) {
+            MaterialDialog dialog = new MaterialDialog.Builder(getContext())
+                    .title("Saving activity...")
+                    .content("Just a sec")
+                    .progress(true, 0)
+                    .show();
+            if (mCurrentPlan.getId() == -1) {
+                //new plan, call create new
+                mCurrentPlan.setName(mNameBox.getText().toString());
+                mCurrentPlan.setDescription(mNameBox.getText().toString());
 
-                @Override
-                public void onFailure(Call<Plan> call, Throwable t) {
-                    Log.e("EDIT_PLAN","Could not create new plan "+mCurrentPlan.getId());
+                Call<Plan> plan = RestClient.getInstance().getPlanService().createPlan(mCurrentPlan);
+                plan.enqueue(new Callback<Plan>() {
+                    @Override
+                    public void onResponse(Call<Plan> call, Response<Plan> response) {
+                        Log.i("EDIT_PLAN", "Successfully saved new plan " + mCurrentPlan.getId());
+                        dialog.dismiss();
+                        PlanFunApplication.getBus().post(new OpenPlanRequest(response.body().getId(), true));
+                    }
 
-                }
-            });
-        }else{
-            //existing plan, call edit
-            Call<Plan> plan = RestClient.getInstance().getPlanService().updatePlan(mCurrentPlan.getId(),mCurrentPlan);
-            plan.enqueue(new Callback<Plan>() {
-                @Override
-                public void onResponse(Call<Plan> call, Response<Plan> response) {
-                    Log.i("EDIT_PLAN", "Successfully updated plan " + mCurrentPlan.getId());
-                    dialog.dismiss();
-                    onBackPressed();
-                }
+                    @Override
+                    public void onFailure(Call<Plan> call, Throwable t) {
+                        Log.e("EDIT_PLAN", "Could not create new plan " + mCurrentPlan.getId());
 
-                @Override
-                public void onFailure(Call<Plan> call, Throwable t) {
-                    Log.e("EDIT_PLAN","Could not update plan "+mCurrentPlan.getId());
+                    }
+                });
+            } else {
+                //existing plan, call edit
+                Call<Plan> plan = RestClient.getInstance().getPlanService().updatePlan(mCurrentPlan.getId(), mCurrentPlan);
+                plan.enqueue(new Callback<Plan>() {
+                    @Override
+                    public void onResponse(Call<Plan> call, Response<Plan> response) {
+                        Log.i("EDIT_PLAN", "Successfully updated plan " + mCurrentPlan.getId());
+                        dialog.dismiss();
+                        getActivity().getSupportFragmentManager().popBackStack();
+                    }
 
-                }
-            });
+                    @Override
+                    public void onFailure(Call<Plan> call, Throwable t) {
+                        Log.e("EDIT_PLAN", "Could not update plan " + mCurrentPlan.getId());
 
+                    }
+                });
+
+            }
         }
     }
 
@@ -177,7 +185,7 @@ public class EditPlanFragment extends BackPressFragment {
                 }
             });
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Edit Plan");
-            updateView();
+
         }
         else
         {
@@ -204,7 +212,14 @@ public class EditPlanFragment extends BackPressFragment {
         mItemsView.setAdapter(mAdapter);
         mItemsView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         mAdapter.notifyDataSetChanged();
+
         return v;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        updateView();
     }
 
     DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
@@ -278,5 +293,27 @@ public class EditPlanFragment extends BackPressFragment {
                 .replace(R.id.container, this)
                 .addToBackStack("")
                 .commit();
+    }
+
+    private boolean validate()
+    {
+        boolean result = true;
+        if(mNameBox.getText().toString().isEmpty())
+        {
+            mNameBox.setError("Name cannot be empty");
+            result = false;
+        }
+        if(mCurrentPlan.getItems().size()==0)
+        {
+            new MaterialDialog.Builder(getContext())
+                    .title("Error")
+                    .content("Your plan must have at least one item")
+                    .positiveText("Ok")
+                    .onPositive((dialog, which) -> {
+                        dialog.dismiss();
+                    }).show();
+            result = false;
+        }
+        return result;
     }
 }

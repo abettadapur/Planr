@@ -1,36 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<com.daimajia.swipe.SwipeLayout
+<android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_gravity="center"
+    android:layout_width="fill_parent"
     android:layout_height="100dp"
-    android:id = "@+id/swipeLayout"
+    card_view:cardCornerRadius="1dp"
+    card_view:cardElevation="3dp"
+    card_view:cardUseCompatPadding="true"
     >
-    <!--Bottom View -->
-    <LinearLayout
-        android:padding="10dp"
-        android:background="#ffffff"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="YOU CAN SEE THIS!!"/>
-        <!--What you want to show in SurfaceView-->
-    </LinearLayout>
-
-    <!--Top View -->
-    <android.support.v7.widget.CardView
+    <com.daimajia.swipe.SwipeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/card_view"
-        android:layout_gravity="center"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        card_view:cardCornerRadius="1dp"
-        card_view:cardElevation="3dp"
-        card_view:cardUseCompatPadding="true"
+        android:id = "@+id/swipeLayout"
+        android:weightSum="3"
         >
+        <!--Bottom View -->
+        <LinearLayout
+            android:padding="10dp"
+            android:background="#ffffff"
+            android:layout_width="160dp"
+            android:layout_height="match_parent"
+            android:weightSum="3">
+            <ImageButton
+                android:id="@+id/sharePlanButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:theme="@style/ButtonTheme"
+                android:background="@color/primaryColor"
+                android:textColor="#FFFFFF"
+                android:textAlignment="center"
+                android:gravity="center"/>
+
+            <ImageButton
+                android:id="@+id/editPlanButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textColor="#FFFFFF"
+                android:theme="@style/ButtonTheme"
+                android:textAlignment="center"
+                android:background="@color/accentColor"
+                android:src="@drawable/ic_mode_edit_white_24dp"
+                android:gravity="center" />
+
+            <ImageButton
+                android:id="@+id/deletePlanButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textColor="#FFFFFF"
+                android:background="@android:color/holo_red_light"
+                android:theme="@style/ButtonTheme"
+                android:textAlignment="center"
+                android:gravity="center"/>
+
+            <!--What you want to show in SurfaceView-->
+        </LinearLayout>
+
+        <!--Top View -->
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -72,5 +104,5 @@
                 android:id="@+id/detailView" />
 
         </LinearLayout>
-    </android.support.v7.widget.CardView>
-</com.daimajia.swipe.SwipeLayout>
+    </com.daimajia.swipe.SwipeLayout>
+</android.support.v7.widget.CardView>

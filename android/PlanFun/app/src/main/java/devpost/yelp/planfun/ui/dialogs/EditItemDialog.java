@@ -177,9 +177,11 @@ public class EditItemDialog extends DialogFragment {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        mItem.setDescription(mDescBox.getText().toString());
-                        mItem.setName(mNameBox.getText().toString());
-                        PlanFunApplication.getBus().post(new SaveItemRequest(mItem));
+                        if(validate()) {
+                            mItem.setDescription(mDescBox.getText().toString());
+                            mItem.setName(mNameBox.getText().toString());
+                            PlanFunApplication.getBus().post(new SaveItemRequest(mItem));
+                        }
                     }
                 })
                 .negativeText("Cancel");
@@ -283,7 +285,7 @@ public class EditItemDialog extends DialogFragment {
         }else{
             mCategoryText.setVisibility(View.GONE);
             mAtBox.setVisibility(View.GONE);
-            YelpEntryAdapter.YelpEntryViewHolder holder = new YelpEntryAdapter.YelpEntryViewHolder(mYelpItemView);
+            YelpEntryAdapter.YelpEntryViewHolder holder = new YelpEntryAdapter.YelpEntryViewHolder(getContext(), mYelpItemView);
             holder.fillIn(mItem.getYelp_item());
         }
     }
@@ -295,6 +297,27 @@ public class EditItemDialog extends DialogFragment {
         Log.i("EDIT_ITEM", "Category received, id: " + request.category.getId());
         mItem.setYelp_category(request.category);
         updateView();
+    }
+
+    private boolean validate()
+    {
+        boolean result = true;
+        if(mNameBox.getText().toString().isEmpty())
+        {
+            mNameBox.setError("Name cannot be empty");
+            result = false;
+        }
+        if(mStartBox.getText().toString().isEmpty())
+        {
+            mStartBox.setError("Start time cannot be empty");
+            result = false;
+        }
+        if(mEndBox.getText().toString().isEmpty())
+        {
+            mEndBox.setError("End time cannot be empty");
+            result = false;
+        }
+        return result;
     }
 
 }

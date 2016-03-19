@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,10 +33,13 @@ import devpost.yelp.planfun.net.RestClient;
 import devpost.yelp.planfun.ui.adapters.PlanAdapter;
 import devpost.yelp.planfun.ui.adapters.RecyclerItemClickListener;
 import devpost.yelp.planfun.model.Plan;
+import devpost.yelp.planfun.ui.dialogs.ShareItineraryDialog;
+import devpost.yelp.planfun.ui.events.DeletePlanRequest;
 import devpost.yelp.planfun.ui.events.EditPlanRequest;
 import devpost.yelp.planfun.ui.events.FindPlanRequest;
 import devpost.yelp.planfun.ui.events.GeneratePlanRequest;
 import devpost.yelp.planfun.ui.events.OpenPlanRequest;
+import devpost.yelp.planfun.ui.events.SharePlanRequest;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,7 +51,7 @@ import retrofit2.Response;
  * <p/>
  * interface.
  */
-public class PlanListFragment extends BaseFragment implements RecyclerItemClickListener.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class PlanListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 
     @Bind(R.id.recycle_view)
     RecyclerView mRecycleView;
@@ -100,6 +104,12 @@ public class PlanListFragment extends BaseFragment implements RecyclerItemClickL
         super.onCreate(savedInstanceState);
         mPlanList = new ArrayList<>();
         mRestClient = RestClient.getInstance();
+        PlanFunApplication.getBus().register(this);
+    }
+
+    @Override
+    public void onDestroy(){
+        PlanFunApplication.getBus().unregister(this);
     }
 
     @Override
@@ -118,7 +128,6 @@ public class PlanListFragment extends BaseFragment implements RecyclerItemClickL
         mRecycleView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         mRecycleView.setItemAnimator(new DefaultItemAnimator());
 
-        mRecycleView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), this));
         registerForContextMenu(mRecycleView);
 
         return rootView;
@@ -139,10 +148,11 @@ public class PlanListFragment extends BaseFragment implements RecyclerItemClickL
             @Override
             public void onResponse(Call<List<Plan>> call, Response<List<Plan>> response) {
                 if (response.isSuccess()) {
-                    if(getActivity() != null) {
+                    if (getActivity() != null) {
                         getActivity().runOnUiThread(() -> {
                             updateItems(response.body());
                             setLoading(false);
+                            mSwipeRefresh.setRefreshing(false);
                         });
                     }
                 } else {
@@ -208,22 +218,6 @@ public class PlanListFragment extends BaseFragment implements RecyclerItemClickL
     }
 
     @Override
-    public void onItemClick(View childView, int position)
-    {
-        int itinerary_id = mPlanList.get(position).getId();
-        PlanFunApplication.getBus().post(new OpenPlanRequest(itinerary_id, false));
-    }
-
-    @Override
-    public void onItemLongPress(View childView, int position)
-    {
-        Vibrator vb = (Vibrator)getActivity().getSystemService(Context.VIBRATOR_SERVICE);
-        vb.vibrate(100);
-        mContextIndex = position;
-        getActivity().openContextMenu(childView);
-    }
-
-    @Override
     public void onRefresh() {
         mSwipeRefresh.setRefreshing(true);
         refreshList();
@@ -251,5 +245,11 @@ public class PlanListFragment extends BaseFragment implements RecyclerItemClickL
         PlanFunApplication.getBus().post(new GeneratePlanRequest());
     }
 
+    @Subscribe
+    public void onSharePlanRequest(SharePlanRequest request)
+    {
+        ShareItineraryDialog shareDialog = new ShareItineraryDialog(request.toShare);
+        shareDialog.show(this.getChildFragmentManager(), "fm");
+    }
 
 }

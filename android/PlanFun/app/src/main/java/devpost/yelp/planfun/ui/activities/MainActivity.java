@@ -45,6 +45,7 @@ import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
 import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.net.RestClient;
+import devpost.yelp.planfun.ui.dialogs.ShareItineraryDialog;
 import devpost.yelp.planfun.ui.events.CurrentFragmentEvent;
 import devpost.yelp.planfun.ui.events.EditPlanRequest;
 import devpost.yelp.planfun.ui.events.FindPlanRequest;
@@ -52,6 +53,7 @@ import devpost.yelp.planfun.ui.events.GeneratePlanRequest;
 import devpost.yelp.planfun.ui.events.OpenPlanPreviewRequest;
 import devpost.yelp.planfun.ui.events.OpenPlanRequest;
 import devpost.yelp.planfun.ui.events.SavePlanRequest;
+import devpost.yelp.planfun.ui.events.SharePlanRequest;
 import devpost.yelp.planfun.ui.fragments.BackPressFragment;
 import devpost.yelp.planfun.ui.fragments.EditPlanFragment;
 import devpost.yelp.planfun.ui.fragments.EditPlanFragment;
@@ -293,6 +295,7 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack("")
                 .commit();
     }
+
 
     @Subscribe
     public void onEditPlanRequest(EditPlanRequest request)

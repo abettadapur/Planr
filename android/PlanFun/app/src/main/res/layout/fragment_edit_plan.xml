@@ -32,21 +32,14 @@
         app:met_floatingLabel="highlight"
         />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="3px"
-        android:background="@color/dividers"
-        android:layout_marginLeft="10px"
-        android:layout_marginRight="10px"
-        />
     <TextView
+        android:layout_marginTop="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Activities"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_marginLeft="10px"
-        android:layout_marginRight="10px"
-        />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAllCaps="true"
+        android:layout_centerVertical="true"
+        android:text="Activities"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="3px"

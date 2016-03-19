@@ -243,26 +243,54 @@ public class GeneratePlanFragment extends BaseFragment implements OnStartDragLis
     @OnClick(R.id.save_plan)
     public void generatePlan()
     {
-        final ProgressDialog progress = ProgressDialog.show(getActivity(), "Creating", "Generating a custom plan....", true);
-        mCurrentPlan.setName(mNameView.getText().toString());
-        Call<Plan> createCall = mRestClient.getPlanService().generatePlan(new GeneratePlanRequest(mCategories, mCurrentPlan));
-        createCall.enqueue(new Callback<Plan>() {
-            @Override
-            public void onResponse(Call<Plan> call, Response<Plan> response) {
-                progress.dismiss();
-                if (response.isSuccess()) {
-                    Log.i("CREATE ITINERARY", "SUCCESS " + response.body());
-                    PlanFunApplication.getBus().post(new OpenPlanPreviewRequest(response.body()));
-                } else {
-                    Log.i("CREATE ITINERARY", "FAIL: " + response.errorBody());
+        if(validate()) {
+            final ProgressDialog progress = ProgressDialog.show(getActivity(), "Creating", "Generating a custom plan....", true);
+            mCurrentPlan.setName(mNameView.getText().toString());
+            Call<Plan> createCall = mRestClient.getPlanService().generatePlan(new GeneratePlanRequest(mCategories, mCurrentPlan));
+            createCall.enqueue(new Callback<Plan>() {
+                @Override
+                public void onResponse(Call<Plan> call, Response<Plan> response) {
+                    progress.dismiss();
+                    if (response.isSuccess()) {
+                        Log.i("CREATE ITINERARY", "SUCCESS " + response.body());
+                        PlanFunApplication.getBus().post(new OpenPlanPreviewRequest(response.body()));
+                    } else {
+                        Log.i("CREATE ITINERARY", "FAIL: " + response.errorBody());
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<Plan> call, Throwable t) {
+                @Override
+                public void onFailure(Call<Plan> call, Throwable t) {
 
-            }
-        });
+                }
+            });
+        }
+    }
+
+    private boolean validate()
+    {
+        boolean result = true;
+        if(mNameView.getText().toString().isEmpty())
+        {
+            mNameView.setError("Name cannot be empty");
+            result = false;
+        }
+        if(mStartingAddressView.getText().toString().isEmpty())
+        {
+            mStartingAddressView.setError("Starting address cannot be empty");
+            result = false;
+        }
+        if(mStartTimeView.getText().toString().isEmpty())
+        {
+            mStartTimeView.setError("Start time cannot be empty");
+            result = false;
+        }
+        if(mDateView.getText().toString().isEmpty())
+        {
+            mDateView.setError("Date cannot be empty");
+            result = false;
+        }
+        return result;
     }
 
     @OnClick(R.id.add_category)

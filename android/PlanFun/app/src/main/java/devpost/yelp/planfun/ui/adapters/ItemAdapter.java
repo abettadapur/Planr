@@ -34,8 +34,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
         public Button mCreateButton;
         public Button mFindButton;
 
-        public ItemViewHolder(View itemView) {
-            super(itemView);
+        public ItemViewHolder(Context context, View itemView) {
+            super(context, itemView);
             mStartTimeView = (TextView) itemView.findViewById(R.id.startTimeView);
             mEndTimeView = (TextView) itemView.findViewById(R.id.endTimeView);
             mFindButton = (Button)itemView.findViewById(R.id.item_find);
@@ -51,31 +51,21 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
             mTitleView.setText(item.getName());
 
             YelpCategory cat = item.getYelp_category();
-            try {
-                mIconView.setIcon(Util.iconFromString(cat.getIcon_string()));
-            }
-            catch(IllegalArgumentException iaex)
-            {
-                Log.e("ICON", "No icon found for " + cat.getIcon_string());
-                mIconView.setImageResource(0);
+            if(cat!=null) {
+                try {
+                    mIconView.setIcon(Util.iconFromString(cat.getIcon_string()));
+                } catch (IllegalArgumentException iaex) {
+                    Log.e("ICON", "No icon found for " + cat.getIcon_string());
+                    mIconView.setImageResource(0);
+                }
             }
             mStartTimeView.setText(PlanFunApplication.TIME_FORMAT.format(item.getStart_time().getTime()));
             mEndTimeView.setText(PlanFunApplication.TIME_FORMAT.format(item.getEnd_time().getTime()));
         }
     }
 
-    private static final View.OnClickListener FIND_LISTENER = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            PlanFunApplication.getBus().post(new FindItemRequest());
-        }
-    };
-    private static final View.OnClickListener CREATE_LISTENER = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            PlanFunApplication.getBus().post(new EditItemRequest());
-        }
-    };
+    private static final View.OnClickListener FIND_LISTENER = v -> PlanFunApplication.getBus().post(new FindItemRequest());
+    private static final View.OnClickListener CREATE_LISTENER = v -> PlanFunApplication.getBus().post(new EditItemRequest());
     private List<Item> mItems;
     private Context mContext;
     private boolean addButton;
@@ -124,7 +114,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
     public ItemViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         int layout = getItemViewType(i);
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(layout, viewGroup, false);
-        return new ItemViewHolder(v);
+        return new ItemViewHolder(mContext, v);
     }
 
     @Override

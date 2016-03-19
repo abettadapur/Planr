@@ -35,6 +35,7 @@ public class ItemDetailFragment extends Fragment
 
     private Item currentItem;
     private TextView mTitleView, mReviewCountView, mStartTimeView, mEndTimeView, mRatingValueView, mAddressView;
+    private View mYelpEntryView;
     private Button mCallButton, mNavButton, mWebButton;
     private RatingBar mRatingView;
     private MaterialIconView mIconView;
@@ -66,7 +67,8 @@ public class ItemDetailFragment extends Fragment
         View v = inflater.inflate(R.layout.fragment_item_detail, container, false);
         mTitleView = (TextView)v.findViewById(R.id.titleView);
         mTitleView.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
-        v.findViewById(R.id.item_layout).setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+        v.findViewById(R.id.itemView).setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+        mYelpEntryView = v.findViewById(R.id.yelp_entry_rating_layout);
         mCallButton = (Button)v.findViewById(R.id.callButton);
         mNavButton = (Button)v.findViewById(R.id.navButton);
         mWebButton = (Button)v.findViewById(R.id.webButton);
@@ -145,9 +147,15 @@ public class ItemDetailFragment extends Fragment
         mTitleView.setText(currentItem.getName());
         //ImageLoader loader = new ImageLoader(mImageView);
         //loader.execute(currentItem.getYelp_item().getImage_url());
-        mRatingView.setRating(currentItem.getYelp_item().getRating());
-        mRatingValueView.setText(currentItem.getYelp_item().getRating() + "");
-        mReviewCountView.setText(" - "+currentItem.getYelp_item().getReview_count()+" reviews");
+        if(currentItem.getYelp_item() != null) {
+            mRatingView.setRating(currentItem.getYelp_item().getRating());
+            mRatingValueView.setText(currentItem.getYelp_item().getRating() + "");
+            mReviewCountView.setText(" - " + currentItem.getYelp_item().getReview_count() + " reviews");
+        }
+        else
+        {
+            mYelpEntryView.setVisibility(View.GONE);
+        }
 
         mStartTimeView.setText(PlanFunApplication.TIME_FORMAT.format(currentItem.getStart_time().getTime()));
         mEndTimeView.setText(PlanFunApplication.TIME_FORMAT.format(currentItem.getEnd_time().getTime()));
