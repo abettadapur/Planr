@@ -204,17 +204,20 @@ class PlanListResource(Resource):
             on_error(error_message="No items were provided")
 
         plan = Plan.from_json(json, user)
+        items = self.item_repository.from_list(json['items'])
 
         if plan.starting_coordinate is not None:
             plan.city = get_city(plan.starting_coordinate.latitude, 
                                  plan.starting_coordinate.longitude)
+
+        if plan.starting_address is None:
+            plan.set_start_item(items[0])
 
         result = self.plan_repository.add_or_update(plan)
 
         if not result.success():
             on_error(error_message="Could not create plan", result=result)
 
-        items = self.item_repository.from_list(json['items'])
         for item in items:
             result.add_child_result(plan.add_item(item))
 
