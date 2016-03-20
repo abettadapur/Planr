@@ -1,7 +1,10 @@
 package devpost.yelp.planfun.ui.fragments;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
@@ -168,11 +171,23 @@ public class ItemDetailFragment extends Fragment
         {
             try {
                 mIconView.setIcon(Util.iconFromString(currentItem.getYelp_category().getIcon_string()));
+                mIconView.setVisibility(View.VISIBLE);
             }
             catch(IllegalArgumentException iaex)
             {
-                Log.e("ICON", "No icon found for " + currentItem.getYelp_category().getIcon_string());
-                mIconView.setImageResource(0);
+                try {
+                    Drawable d = getContext().getResources().getDrawable(Util.customIconFromString(currentItem.getYelp_category().getIcon_string()).getNumVal());
+                    Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
+
+                    float scale = getContext().getResources().getDisplayMetrics().density;
+                    Drawable scaled = new BitmapDrawable(getContext().getResources(), Bitmap.createScaledBitmap(bitmap, (int)(36*scale), (int)(36*scale), true));
+                    mIconView.setImageDrawable(scaled);
+                    mIconView.setVisibility(View.VISIBLE);
+                }
+                catch (IllegalArgumentException iaex2) {
+                    Log.e("ICON", "No icon found for " + currentItem.getYelp_category().getIcon_string());
+                    mIconView.setVisibility(View.INVISIBLE);
+                }
             }
         }
         else

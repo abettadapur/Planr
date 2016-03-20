@@ -1,7 +1,11 @@
 package devpost.yelp.planfun.ui.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,8 +85,19 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             }
             catch(IllegalArgumentException iaex)
             {
-                Log.e("ICON", "No icon found for " + category.getIcon_string());
-                holder.mCategoryIcon.setVisibility(View.INVISIBLE);
+                try {
+                    Drawable d = mContext.getResources().getDrawable(Util.customIconFromString(category.getIcon_string()).getNumVal());
+                    Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
+
+                    float scale = mContext.getResources().getDisplayMetrics().density;
+                    Drawable scaled = new BitmapDrawable(mContext.getResources(), Bitmap.createScaledBitmap(bitmap, (int)(36*scale), (int)(36*scale), true));
+                    holder.mCategoryIcon.setImageDrawable(scaled);
+                    holder.mCategoryIcon.setVisibility(View.VISIBLE);
+                }
+                catch (IllegalArgumentException iaex2) {
+                    Log.e("ICON", "No icon found for " + category.getIcon_string());
+                    holder.mCategoryIcon.setVisibility(View.INVISIBLE);
+                }
             }
         }
         else
