@@ -1,7 +1,7 @@
 from funtimes import db
 from funtimes.models.entities.base import BaseModel
 from funtimes.models.entities.yelp_search_filter import YelpSearchFilter
-from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
+
 
 
 class YelpCategory(BaseModel):
@@ -50,6 +50,7 @@ class YelpCategory(BaseModel):
 
     @staticmethod
     def get_default():
+        from funtimes.repositories.yelpCategoryRepository import YelpCategoryRepository
         category_repository = YelpCategoryRepository()
         return category_repository.get(name="Other")
 
