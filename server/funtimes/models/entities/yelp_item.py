@@ -42,9 +42,13 @@ class YelpItem(BaseModel):
 
     @staticmethod
     def create_from_dict(dict):
-        categories=[]
+        categories = []
         for tup in dict['categories']:
-            categories+=YelpCategory.get_from_yelp_tuple(tup)
+            categories += YelpCategory.get_from_yelp_tuple(tup)
+
+        if len(categories) == 0:
+            categories.append(YelpCategory.get_default())
+
         item = YelpItem(
             id=dict['id'],
             name=dict['name'],
