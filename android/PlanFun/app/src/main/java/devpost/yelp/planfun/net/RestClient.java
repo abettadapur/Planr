@@ -52,7 +52,7 @@ public class RestClient {
     private CityService cityService;
     private FriendsService friendsService;
     private SearchService searchService;
-
+    private Retrofit retrofit;
     private static RestClient client;
     private static Application context;
 
@@ -131,21 +131,21 @@ public class RestClient {
         // Create Executor
         Executor executor = Executors.newCachedThreadPool();
 
-        Retrofit adapter = new Retrofit.Builder()
+        retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .callbackExecutor(executor)
                 .build();
 
-        authService = adapter.create(AuthService.class);
-        planService = adapter.create(PlanService.class);
-        itemService = adapter.create(ItemService.class);
-        directionsService = adapter.create(DirectionsService.class);
-        categoryService = adapter.create(CategoryService.class);
-        cityService = adapter.create(CityService.class);
-        friendsService = adapter.create(FriendsService.class);
-        searchService = adapter.create(SearchService.class);
+        authService = retrofit.create(AuthService.class);
+        planService = retrofit.create(PlanService.class);
+        itemService = retrofit.create(ItemService.class);
+        directionsService = retrofit.create(DirectionsService.class);
+        categoryService = retrofit.create(CategoryService.class);
+        cityService = retrofit.create(CityService.class);
+        friendsService = retrofit.create(FriendsService.class);
+        searchService = retrofit.create(SearchService.class);
     }
 
     public AuthService getAuthService() { return authService; }
@@ -156,6 +156,10 @@ public class RestClient {
     public CityService getCityService(){ return cityService; }
     public FriendsService getFriendsService() { return friendsService; }
     public SearchService getSearchService(){ return searchService; }
+    public Retrofit getRetrofitInstance()
+    {
+        return retrofit;
+    }
 
     private static final Interceptor mAuthCacheInterceptor = new Interceptor() {
         @Override

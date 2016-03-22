@@ -21,6 +21,7 @@ import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.TimePicker;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
@@ -31,6 +32,8 @@ import com.squareup.otto.Subscribe;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
+import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -40,6 +43,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import devpost.yelp.planfun.PlanFunApplication;
 import devpost.yelp.planfun.R;
+import devpost.yelp.planfun.model.GenerateError;
 import devpost.yelp.planfun.model.Plan;
 import devpost.yelp.planfun.model.YelpCategory;
 import devpost.yelp.planfun.net.RestClient;
@@ -50,8 +54,10 @@ import devpost.yelp.planfun.ui.events.AddCategoryRequest;
 import devpost.yelp.planfun.ui.events.OpenPlanPreviewRequest;
 import devpost.yelp.planfun.ui.listutils.OnStartDragListener;
 import devpost.yelp.planfun.ui.listutils.SimpleItemTouchHelperCallback;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Converter;
 import retrofit2.Response;
 
 /**
@@ -255,7 +261,27 @@ public class GeneratePlanFragment extends BaseFragment implements OnStartDragLis
                         Log.i("CREATE ITINERARY", "SUCCESS " + response.body());
                         PlanFunApplication.getBus().post(new OpenPlanPreviewRequest(response.body()));
                     } else {
-                        Log.i("CREATE ITINERARY", "FAIL: " + response.errorBody());
+                        Converter<ResponseBody, GenerateError> errorConverter =
+                                mRestClient.getRetrofitInstance().responseBodyConverter(GenerateError.class, new Annotation[0]);
+                        try {
+                            List<YelpCategory> failedCategories = errorConverter.convert(response.errorBody()).categories;
+                            String errorMessage = "";
+                            for(YelpCategory c: failedCategories)
+                            {
+                                errorMessage+=c.getName() + ", ";
+                            }
+                            final String finalErrorMessage = errorMessage.substring(0, errorMessage.length()-2);
+                            getActivity().runOnUiThread(()->
+                            new MaterialDialog.Builder(getContext())
+                                    .title("Error")
+                                    .content("Sorry! We could not find activities for the following categories: "+finalErrorMessage+". Please try another selection")
+                                    .positiveText("Ok")
+                                    .build()
+                                    .show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        //DO ERROR HANDLING HERE
                     }
                 }
 
