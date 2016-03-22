@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                     SharedPreferences.Editor e = getPrefs.edit();
 
                     //  Edit preference to make it false because we don't want this to run again
-                    //e.putBoolean("firstStart", false);
+                    e.putBoolean("firstStart", false);
 
                     //  Apply changes
                     e.apply();
@@ -202,17 +202,17 @@ public class MainActivity extends AppCompatActivity {
                                 .setToActionbarSize()
                                 .setIcon(MaterialDrawableBuilder.IconValue.FORMAT_LIST_BULLETED)
                                 .build()),
-                        new PrimaryDrawerItem().withName("Search Plans").withIcon(MaterialDrawableBuilder.with(this)
-                                .setColor(Color.BLACK)
-                                .setToActionbarSize()
-                                .setIcon(MaterialDrawableBuilder.IconValue.MAGNIFY)
-                                .build()),
+//                        new PrimaryDrawerItem().withName("Search Plans").withIcon(MaterialDrawableBuilder.with(this)
+//                                .setColor(Color.BLACK)
+//                                .setToActionbarSize()
+//                                .setIcon(MaterialDrawableBuilder.IconValue.MAGNIFY)
+//                                .build()),
                         new SectionDrawerItem(),
-                        new SecondaryDrawerItem().withName("Settings").withIcon(MaterialDrawableBuilder.with(this)
-                                .setColor(Color.BLACK)
-                                .setToActionbarSize()
-                                .setIcon(MaterialDrawableBuilder.IconValue.SETTINGS)
-                                .build()),
+//                        new SecondaryDrawerItem().withName("Settings").withIcon(MaterialDrawableBuilder.with(this)
+//                                .setColor(Color.BLACK)
+//                                .setToActionbarSize()
+//                                .setIcon(MaterialDrawableBuilder.IconValue.SETTINGS)
+//                                .build()),
                         new SecondaryDrawerItem().withName("Logout").withIcon(MaterialDrawableBuilder.with(this)
                                 .setColor(Color.BLACK)
                                 .setToActionbarSize()

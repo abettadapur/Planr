@@ -1,6 +1,7 @@
 import facebook
 
 from asq.initiators import query
+import flask
 from flask import request
 from flask_restful import abort, Resource
 from flask_restful.reqparse import RequestParser
@@ -249,7 +250,10 @@ class PlanGenerateResource(Resource):
 
         plan = Plan.from_json(plan, user)
         self.plan_repository.expunge(plan)
-        populate_sample_plan(plan, categories)
+        result, failed_categories = populate_sample_plan(plan, categories)
+
+        if not result:
+            return failed_categories, 400
 
         polyline = get_polyline(plan)
         plan_dict = plan.as_dict()

@@ -49,7 +49,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
             mEndTimeView = (TextView) itemView.findViewById(R.id.endTimeView);
             mFindButton = (Button)itemView.findViewById(R.id.item_find);
             mCreateButton = (Button)itemView.findViewById(R.id.item_create);
-            mNoteView = (TextView)itemView.findViewById(R.id.itemNoteContentView);
+            mNoteView = (TextView)itemView.findViewById(R.id.descriptionView);
             mEditView = (ImageButton)itemView.findViewById(R.id.editItemButton);
             mDeleteView = (ImageButton)itemView.findViewById(R.id.deleteItemButton);
             if(mDeleteView!=null)
@@ -81,11 +81,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
                     mIconView.setImageResource(0);
                 }
             }
-
-            if(item.getDescription()==null || item.getDescription().equals(""))
-                mNoteView.setVisibility(View.GONE);
-            else
-                mNoteView.setText(item.getDescription());
             mStartTimeView.setText(PlanFunApplication.TIME_FORMAT.format(item.getStart_time().getTime()));
             mEndTimeView.setText(PlanFunApplication.TIME_FORMAT.format(item.getEnd_time().getTime()));
             if(mEditView!=null){

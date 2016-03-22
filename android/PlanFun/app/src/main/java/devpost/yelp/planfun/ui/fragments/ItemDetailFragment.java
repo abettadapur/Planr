@@ -37,7 +37,7 @@ public class ItemDetailFragment extends Fragment
 {
 
     private Item currentItem;
-    private TextView mTitleView, mReviewCountView, mStartTimeView, mEndTimeView, mRatingValueView, mAddressView;
+    private TextView mTitleView, mReviewCountView, mStartTimeView, mEndTimeView, mRatingValueView, mAddressView, mDescriptionView;
     private View mYelpEntryView;
     private Button mCallButton, mNavButton, mWebButton;
     private RatingBar mRatingView;
@@ -97,6 +97,7 @@ public class ItemDetailFragment extends Fragment
             Intent intent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
             startActivity(intent);
         });
+        mDescriptionView = (TextView)v.findViewById(R.id.descriptionView);
 
         mCallButton.setCompoundDrawables(null, MaterialDrawableBuilder
                 .with(getActivity())
@@ -167,6 +168,9 @@ public class ItemDetailFragment extends Fragment
                              currentItem.getLocation().getCity()+", "+
                              currentItem.getLocation().getState_code()+"\n"+
                              currentItem.getLocation().getPostal_code());
+
+        mDescriptionView.setText(currentItem.getDescription() == null || currentItem.getDescription().isEmpty() ? "No notes for this item": currentItem.getDescription());
+
         if(!currentItem.getYelp_category().getIcon_string().equals(""))
         {
             try {
