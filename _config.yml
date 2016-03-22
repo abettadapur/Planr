@@ -2,9 +2,9 @@
 #
 
 # Site settings
-title: Plans
+title: Planr
 description: |
-  A new way to make plans
+  A new way to make plans with your friends
 owner: Alex Bettadapur, Andrey Kurenkov
 first_published: 2016 # if migrating another site, the year of your first publish
 email: alexbettadapur@gmail.com
