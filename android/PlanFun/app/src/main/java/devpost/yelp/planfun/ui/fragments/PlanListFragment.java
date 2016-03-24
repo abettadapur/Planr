@@ -111,6 +111,7 @@ public class PlanListFragment extends BaseFragment implements SwipeRefreshLayout
 
     @Override
     public void onDestroy(){
+        super.onDestroy();
         PlanFunApplication.getBus().unregister(this);
     }
 

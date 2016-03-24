@@ -23,7 +23,7 @@
             android:value="AIzaSyBBLLd9YMzs4PE3PuMrUrhL3IJ__YTvOno"/>
         <activity
             android:name=".ui.activities.SplashActivity"
-            android:label="PlanFun"
+            android:label="@string/app_name"
             android:screenOrientation="portrait"
             >
             <intent-filter android:label="Plans">

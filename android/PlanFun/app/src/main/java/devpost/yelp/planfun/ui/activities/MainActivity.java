@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -315,6 +316,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe
     public void onFindPlanRequest(FindPlanRequest request){
+        new MaterialDialog.Builder(this)
+                .title("Coming soon!")
+                .content("This app is still in alpha, and this feature is still not quite polished enough. Coming soon though!")
+                .positiveText("Sweet")
+                .show();
+        /* TODO
         if(currentFragment != searchItineraryFragment) {
             getSupportFragmentManager()
                     .beginTransaction()
@@ -322,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
             mDrawer.setSelectionAtPosition(1);
             getSupportActionBar().setTitle("Search Results");
-        }
+        }*/
     }
 
     @Subscribe

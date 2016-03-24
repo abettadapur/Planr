@@ -31,8 +31,6 @@ import retrofit2.Response;
 Main activity, that starts the app. Handles login, and if succesfull starts MainActivity.
  */
 public class SplashActivity extends AppCompatActivity {
-
-
     private LoginButton authButton;
     private ProgressBar progressBar;
     private CallbackManager callbackManager;
@@ -45,7 +43,6 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         authButton = (LoginButton)findViewById(R.id.authButton);
         authButton.setReadPermissions(Arrays.asList("email", "public_profile", "user_friends"));
-
         callbackManager = CallbackManager.Factory.create();
 
         authButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -61,7 +58,7 @@ public class SplashActivity extends AppCompatActivity {
 
             @Override
             public void onError(FacebookException error) {
-                //some error
+                Log.e("SPLASH","Error: "+error.toString());
             }
         });
 
