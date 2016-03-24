@@ -22,6 +22,8 @@ import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.Bind;
@@ -178,6 +180,7 @@ public class PlanListFragment extends BaseFragment implements SwipeRefreshLayout
 
         mPlanList.clear();
         mPlanList.addAll(items);
+        Collections.sort(mPlanList, (lhs, rhs) -> lhs.getStart_time().compareTo(rhs.getStart_time()));
         mAdapter.notifyDataSetChanged();
     }
 

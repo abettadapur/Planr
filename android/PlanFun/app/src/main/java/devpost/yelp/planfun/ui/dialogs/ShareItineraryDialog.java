@@ -14,6 +14,8 @@ import android.widget.ProgressBar;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import devpost.yelp.planfun.R;
@@ -144,6 +146,7 @@ public class ShareItineraryDialog extends DialogFragment implements RecyclerItem
                             response.body().remove(u);
                         }
                         friends.addAll(response.body());
+                        Collections.sort(friends, (lhs, rhs) -> lhs.getFirst_name().compareTo(rhs.getFirst_name()));
                         mFriendsAdapter.notifyDataSetChanged();
                         setLoading(false);
                     });
