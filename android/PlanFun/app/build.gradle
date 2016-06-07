@@ -34,7 +34,7 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.0.1'
     compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta4'
-    compile 'com.facebook.android:facebook-android-sdk:4.+'
+    compile 'com.facebook.android:facebook-android-sdk:4.10.1'
     compile 'net.steamcrafted:materialiconlib:1.0.9'
     compile 'com.rengwuxian.materialedittext:library:2.1.4'
     compile 'com.google.maps.android:android-maps-utils:0.4.2'
